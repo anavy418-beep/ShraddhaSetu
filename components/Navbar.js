@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -18,31 +18,59 @@ const navItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  useEffect(() => {
-    let mounted = true;
-    fetch("/api/auth/me")
-      .then((response) => response.json())
-      .then((data) => {
-        if (mounted) {
-          setUser(data.user || null);
-        }
-      })
-      .catch(() => {
-        if (mounted) {
-          setUser(null);
-        }
+  const dashboardHref = useMemo(() => {
+    if (!user) {
+      return "/login";
+    }
+    if (user.role === "ADMIN") {
+      return "/admin-dashboard";
+    }
+    if (user.role === "PANDIT") {
+      return "/pandits";
+    }
+    return "/user-dashboard";
+  }, [user]);
+
+  const loadAuthState = useCallback(async () => {
+    setAuthLoading(true);
+    try {
+      const response = await fetch("/api/auth/me", {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" }
       });
-    return () => {
-      mounted = false;
-    };
+      if (!response.ok) {
+        setUser(null);
+        return;
+      }
+      const data = await response.json();
+      setUser(data?.user || null);
+    } catch {
+      setUser(null);
+    } finally {
+      setAuthLoading(false);
+    }
   }, []);
 
+  useEffect(() => {
+    loadAuthState();
+  }, [loadAuthState, pathname]);
+
   const onLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    window.location.href = "/";
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include"
+    });
+    setUser(null);
+    setMobileOpen(false);
+    router.push("/");
+    router.refresh();
   };
 
   return (
@@ -68,10 +96,15 @@ export default function Navbar() {
               </Link>
             );
           })}
-          {user?.role === "ADMIN" && <Link href="/admin-dashboard" onClick={() => setMobileOpen(false)}>Admin Dashboard</Link>}
-          {user?.role === "USER" && <Link href="/user-dashboard" onClick={() => setMobileOpen(false)}>My Dashboard</Link>}
-          {user?.role === "PANDIT" && <Link href="/pandits" onClick={() => setMobileOpen(false)}>Pandit Dashboard</Link>}
-          {!user && <Link href="/login" onClick={() => setMobileOpen(false)}>Login/Register</Link>}
+          {user && (
+            <>
+              <span style={{ color: "#5f4635", fontSize: "0.95rem", padding: "6px 8px" }}>
+                {user.name || user.email}
+              </span>
+              <Link href={dashboardHref} onClick={() => setMobileOpen(false)}>Dashboard</Link>
+            </>
+          )}
+          {!authLoading && !user && <Link href="/login" onClick={() => setMobileOpen(false)}>Login/Register</Link>}
           {user && (
             <button type="button" className="btn btn-outline" onClick={onLogout}>
               Logout
