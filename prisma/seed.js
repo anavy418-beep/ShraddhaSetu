@@ -66,7 +66,7 @@ const services = [
     duration: "2 - 3 hours",
     languages: "Hindi,Marathi,English",
     specialization: "Satyanarayan Katha,Family Puja",
-    image: "https://images.unsplash.com/photo-1573641287741-36f53a6bb6ff?auto=format&fit=crop&w=1200&q=80"
+    image: "/images/satyanarayan-puja.png"
   },
   {
     title: "Rudrabhishek",
