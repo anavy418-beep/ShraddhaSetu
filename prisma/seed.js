@@ -114,7 +114,7 @@ const services = [
     duration: "2 - 3 hours",
     languages: "Hindi,Sanskrit",
     specialization: "Pitru Karya,Tarpan",
-    image: "https://images.unsplash.com/photo-1474031317822-f51f48735ddd?auto=format&fit=crop&w=1200&q=80"
+    image: "/images/pitru-dosh-shanti.jpg"
   }
 ];
 
