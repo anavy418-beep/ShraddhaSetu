@@ -12,7 +12,6 @@ const navItems = [
   { label: "Panchang", href: "/panchang" },
   { label: "Astrology", href: "/astrology" },
   { label: "Kundali", href: "/astrology/kundali" },
-  { label: "Match Making", href: "/astrology/match-making" },
   { label: "Shop", href: "/shop" },
   { label: "Book Now", href: "/booking" }
 ];
