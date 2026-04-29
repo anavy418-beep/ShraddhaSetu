@@ -102,7 +102,7 @@ const services = [
     duration: "3 - 4 hours",
     languages: "Hindi,Sanskrit",
     specialization: "Astro Remedies,Naga Puja",
-    image: "https://images.unsplash.com/photo-1505253216365-3f7b8b64a6c5?auto=format&fit=crop&w=1200&q=80"
+    image: "/images/kaal-sarp-dosh-puja.jpg"
   },
   {
     title: "Pitru Dosh Shanti",
