@@ -78,7 +78,7 @@ const services = [
     duration: "1.5 - 2.5 hours",
     languages: "Hindi,Sanskrit",
     specialization: "Shiva Puja,Dosha Shanti",
-    image: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=80"
+    image: "/images/rudrabhishek-puja.jpg"
   },
   {
     title: "Marriage Puja",
