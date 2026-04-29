@@ -42,7 +42,7 @@ const cityNames = [
   "Ahmedabad"
 ];
 
-const services = [
+const servicesRaw = [
   {
     title: "Griha Pravesh Puja",
     slug: "griha-pravesh-puja",
@@ -515,6 +515,53 @@ const services = [
   }
 ];
 
+const serviceCategoryBySlug = {
+  "griha-pravesh-puja": "Home & Prosperity",
+  "bhoomi-puja": "Home & Prosperity",
+  "satyanarayan-puja": "Home & Prosperity",
+  "mahalakshmi-puja": "Home & Prosperity",
+  "diwali-puja": "Home & Prosperity",
+  "office-opening-puja": "Home & Prosperity",
+  "vehicle-puja": "Home & Prosperity",
+  "marriage-puja": "Marriage & Family",
+  "engagement-puja": "Marriage & Family",
+  "namkaran-puja": "Marriage & Family",
+  "annaprashan-puja": "Marriage & Family",
+  "godh-bharai-ceremony": "Marriage & Family",
+  "marriage-anniversary-puja": "Marriage & Family",
+  "birthday-puja": "Marriage & Family",
+  "navagraha-shanti-puja": "Dosha Nivaran & Shanti",
+  "kaal-sarp-dosh-puja": "Dosha Nivaran & Shanti",
+  "pitru-dosh-shanti": "Dosha Nivaran & Shanti",
+  "mahamrityunjay-jaap": "Dosha Nivaran & Shanti",
+  rudrabhishek: "Dosha Nivaran & Shanti",
+  "narayan-bali-puja": "Dosha Nivaran & Shanti",
+  "pind-daan-puja": "Ancestor & Shraddha",
+  "tripindi-shradh-puja": "Ancestor & Shraddha",
+  "varshika-shraddha-puja": "Ancestor & Shraddha",
+  "ganesh-chaturthi-puja": "Festival Pujas",
+  "navratri-puja": "Festival Pujas",
+  "durga-puja": "Festival Pujas",
+  "krishna-janmashtami-puja": "Festival Pujas",
+  "ram-navami-puja": "Festival Pujas",
+  "holika-puja": "Festival Pujas",
+  "dhanteras-puja": "Festival Pujas",
+  "saraswati-puja": "Festival Pujas",
+  "govardhan-puja": "Festival Pujas",
+  "hanuman-janmotsav-puja": "Festival Pujas",
+  "sunderkand-path": "Path / Jaap",
+  "shiv-puran-puja": "Path / Jaap",
+  "vishwakarma-puja": "Business & Prosperity",
+  "kuber-upasana-puja": "Business & Prosperity",
+  "mangal-bhat-puja": "Business & Prosperity",
+  "shuddhikaran-puja": "Dosha Nivaran & Shanti"
+};
+
+const services = servicesRaw.map((service) => ({
+  ...service,
+  category: serviceCategoryBySlug[service.slug] || service.category
+}));
+
 const products = [
   {
     name: "Griha Pravesh Samagri Kit",
@@ -736,7 +783,15 @@ async function main() {
   if (allowProduction) {
     const onlyNewServices = services.filter((item) => newServiceSlugs.has(item.slug));
     await upsertServiceCatalog(onlyNewServices);
-    console.log(`Safely upserted ${onlyNewServices.length} new puja services by slug.`);
+    for (const service of services) {
+      await prisma.pujaService.updateMany({
+        where: { slug: service.slug },
+        data: { category: service.category }
+      });
+    }
+    console.log(
+      `Safely upserted ${onlyNewServices.length} new puja services and synced categories for ${services.length} services.`
+    );
     return;
   }
 
