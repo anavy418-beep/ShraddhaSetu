@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const navItems = [
-  { label: "Home", href: "/" },
   { label: "All Puja Services", href: "/services" },
   { label: "Cities", href: "/cities" },
   { label: "E-Puja", href: "/e-puja" },
