@@ -90,7 +90,7 @@ const services = [
     duration: "4 - 6 hours",
     languages: "Hindi,Sanskrit,Tamil,Telugu",
     specialization: "Vivah Sanskar,Regional Rituals",
-    image: "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=1200&q=80"
+    image: "/images/marriage-puja.jpg"
   },
   {
     title: "Kaal Sarp Dosh Puja",
