@@ -17,7 +17,8 @@ export default function PanditRegisterForm() {
     experienceYears: "",
     languages: "",
     specialization: "",
-    bio: ""
+    bio: "",
+    subscriptionPlan: "BASIC"
   });
 
   useEffect(() => {
@@ -97,6 +98,11 @@ export default function PanditRegisterForm() {
           value={form.specialization}
           onChange={(e) => setForm((p) => ({ ...p, specialization: e.target.value }))}
         />
+        <select value={form.subscriptionPlan} onChange={(e) => setForm((p) => ({ ...p, subscriptionPlan: e.target.value }))}>
+          <option value="BASIC">Basic Plan</option>
+          <option value="PREMIUM">Premium Plan</option>
+          <option value="FEATURED">Featured Plan</option>
+        </select>
         <textarea
           rows={4}
           placeholder="Short bio"

@@ -82,6 +82,7 @@ export default function AdminDashboardClient({ stats }) {
                   <th>Status</th>
                   <th>Pandit</th>
                   <th>Payment</th>
+                  <th>Paid / Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -117,11 +118,14 @@ export default function AdminDashboardClient({ stats }) {
                       </select>
                     </td>
                     <td>{booking.paymentStatus}</td>
+                    <td>
+                      Rs {(booking.amountPaid || 0).toLocaleString("en-IN")} / Rs {(booking.amount || 0).toLocaleString("en-IN")}
+                    </td>
                   </tr>
                 ))}
                 {!bookings.length && (
                   <tr>
-                    <td colSpan={8}>No bookings found. User bookings will appear here once created.</td>
+                    <td colSpan={9}>No bookings found. User bookings will appear here once created.</td>
                   </tr>
                 )}
               </tbody>
@@ -141,6 +145,8 @@ export default function AdminDashboardClient({ stats }) {
                   <th>Email</th>
                   <th>City</th>
                   <th>Experience</th>
+                  <th>Plan</th>
+                  <th>Plan Status</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
@@ -152,6 +158,8 @@ export default function AdminDashboardClient({ stats }) {
                     <td>{pandit.email}</td>
                     <td>{pandit.city}</td>
                     <td>{pandit.experience} years</td>
+                    <td>{pandit.subscriptionPlan || "BASIC"}</td>
+                    <td>{pandit.subscriptionStatus || "pending"}</td>
                     <td>{pandit.verificationStatus}</td>
                     <td>
                       <button className="btn btn-outline" onClick={() => updatePanditApproval(pandit.id, "approve")}>
@@ -159,13 +167,19 @@ export default function AdminDashboardClient({ stats }) {
                       </button>{" "}
                       <button className="btn btn-outline" onClick={() => updatePanditApproval(pandit.id, "reject")}>
                         Reject
+                      </button>{" "}
+                      <button className="btn btn-outline" onClick={() => updatePanditApproval(pandit.id, "approve-plan")}>
+                        Approve Plan
+                      </button>{" "}
+                      <button className="btn btn-outline" onClick={() => updatePanditApproval(pandit.id, "reject-plan")}>
+                        Reject Plan
                       </button>
                     </td>
                   </tr>
                 ))}
                 {!approvalList.length && (
                   <tr>
-                    <td colSpan={6}>No pandit registrations found yet.</td>
+                    <td colSpan={8}>No pandit registrations found yet.</td>
                   </tr>
                 )}
               </tbody>

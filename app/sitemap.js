@@ -7,11 +7,15 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://shraddhasetu.in";
 export default async function sitemap() {
   let services = [];
   let cities = [];
+  let blogPosts = [];
+  let blogCategories = [];
 
   try {
-    [services, cities] = await Promise.all([
+    [services, cities, blogPosts, blogCategories] = await Promise.all([
       prisma.pujaService.findMany({ where: { isActive: true }, select: { slug: true, updatedAt: true } }),
-      prisma.city.findMany({ where: { isActive: true }, select: { slug: true, updatedAt: true } })
+      prisma.city.findMany({ where: { isActive: true }, select: { slug: true, updatedAt: true } }),
+      prisma.blogPost.findMany({ where: { isPublished: true }, select: { slug: true, updatedAt: true } }),
+      prisma.blogCategory.findMany({ select: { slug: true, updatedAt: true } })
     ]);
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
@@ -34,7 +38,8 @@ export default async function sitemap() {
     "/register",
     "/pandits",
     "/pandit-register",
-    "/contact"
+    "/contact",
+    "/blog"
   ].map((path) => ({
     url: `${BASE_URL}${path}`,
     lastModified: new Date(),
@@ -65,5 +70,19 @@ export default async function sitemap() {
     }))
   );
 
-  return [...staticRoutes, ...serviceRoutes, ...cityRoutes, ...cityServiceRoutes];
+  const blogRoutes = blogPosts.map((post) => ({
+    url: `${BASE_URL}/blog/${post.slug}`,
+    lastModified: post.updatedAt,
+    changeFrequency: "weekly",
+    priority: 0.68
+  }));
+
+  const blogCategoryRoutes = blogCategories.map((category) => ({
+    url: `${BASE_URL}/blog/category/${category.slug}`,
+    lastModified: category.updatedAt,
+    changeFrequency: "weekly",
+    priority: 0.64
+  }));
+
+  return [...staticRoutes, ...serviceRoutes, ...cityRoutes, ...cityServiceRoutes, ...blogRoutes, ...blogCategoryRoutes];
 }

@@ -48,8 +48,6 @@ export async function POST(request) {
       }
     });
 
-    await prisma.cartItem.deleteMany({ where: { userId: user.id } });
-
     return jsonOk(
       {
         message: "Order created successfully.",

@@ -28,7 +28,15 @@ export default async function PanditsPage() {
                   <p>Language: {pandit.languages.join(", ")}</p>
                   <p>Specialization: {pandit.specialization.join(", ")}</p>
                   <p>Rating: {pandit.rating} / 5</p>
+                  <p>
+                    Plan: {pandit.subscriptionPlan} ({pandit.subscriptionStatus})
+                  </p>
                   <span className="tag">Verified</span>
+                  {pandit.subscriptionPlan === "FEATURED" && pandit.subscriptionStatus === "active" && (
+                    <span className="tag" style={{ background: "#fef3c7", color: "#92400e" }}>
+                      Featured Pandit
+                    </span>
+                  )}
                 </div>
               </article>
             ))}

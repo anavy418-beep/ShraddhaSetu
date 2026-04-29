@@ -1,6 +1,6 @@
 # ShraddhaSetu
 
-Production-ready Next.js booking platform for pandit/pooja services with role-based auth, booking lifecycle, admin workflows, cart/checkout, payments placeholder, and SEO routes.
+Production-ready Next.js booking platform for pandit/pooja services with role-based auth, booking lifecycle, admin workflows, cart/checkout, Razorpay payment flow, WhatsApp notifications, and SEO routes.
 
 ## Stack
 
@@ -17,6 +17,11 @@ Use `.env.example` as the template.
 - `AUTH_COOKIE_SECURE` (`true` on HTTPS production)
 - `RAZORPAY_KEY_ID`
 - `RAZORPAY_KEY_SECRET`
+- `RAZORPAY_WEBHOOK_SECRET`
+- `NEXT_PUBLIC_WHATSAPP_NUMBER` (for floating WhatsApp chat button)
+- `WHATSAPP_ADMIN_PHONE` (for booking alerts)
+- `WHATSAPP_API_URL` (optional)
+- `WHATSAPP_API_TOKEN` (optional)
 - `NEXT_PUBLIC_SITE_URL` (public base URL, used in metadata/sitemap/robots)
 
 Example:
@@ -27,6 +32,11 @@ AUTH_SECRET="replace-with-a-strong-random-secret"
 AUTH_COOKIE_SECURE="true"
 RAZORPAY_KEY_ID="rzp_test_placeholder"
 RAZORPAY_KEY_SECRET="replace-me"
+RAZORPAY_WEBHOOK_SECRET="replace-with-webhook-secret"
+NEXT_PUBLIC_WHATSAPP_NUMBER="919000000000"
+WHATSAPP_ADMIN_PHONE="919000000000"
+WHATSAPP_API_URL=""
+WHATSAPP_API_TOKEN=""
 NEXT_PUBLIC_SITE_URL="https://your-domain.vercel.app"
 ```
 
@@ -147,6 +157,11 @@ npm install
 npm run prisma:generate
 npm run build
 ```
+
+## Android App Readiness
+
+- API-first mobile wrappers are available under `/api/mobile/*`.
+- Route documentation: `docs/mobile-api.md`
 
 ## Seeded Accounts (from seed script)
 

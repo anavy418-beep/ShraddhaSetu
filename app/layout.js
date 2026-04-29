@@ -1,6 +1,7 @@
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import WhatsAppFloatingButton from "@/components/WhatsAppFloatingButton";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://shraddhasetu.in";
 
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
         <Navbar />
         <main>{children}</main>
         <Footer />
+        <WhatsAppFloatingButton />
       </body>
     </html>
   );

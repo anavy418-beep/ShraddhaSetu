@@ -40,8 +40,8 @@ export default async function Footer() {
         </section>
         <section>
           <h4>Blog & Policies</h4>
-          <Link href="/services">Festive Puja Guide</Link>
-          <Link href="/astrology">Astrology Insights</Link>
+          <Link href="/blog">Festive Puja Guide</Link>
+          <Link href="/blog/category/astrology">Astrology Insights</Link>
           <Link href="/contact">Contact Us</Link>
           <Link href="/privacy-policy">Privacy Policy</Link>
           <Link href="/refund-policy">Refund Policy</Link>

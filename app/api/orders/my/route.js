@@ -27,6 +27,7 @@ export async function GET(request) {
         id: order.id,
         orderId: order.orderId,
         totalAmount: order.totalAmount,
+        amountPaid: order.amountPaid,
         status: order.status,
         paymentStatus: order.paymentStatus,
         createdAt: order.createdAt,

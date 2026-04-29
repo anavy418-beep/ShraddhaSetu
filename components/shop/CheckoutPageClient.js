@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { openRazorpayCheckout } from "@/lib/razorpay-client";
 
 export default function CheckoutPageClient() {
   const router = useRouter();
@@ -30,7 +31,8 @@ export default function CheckoutPageClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           entityType: "ORDER",
-          entityId: orderData.order.id
+          entityId: orderData.order.id,
+          paymentMethod
         })
       });
       const paymentOrderData = await paymentOrderRes.json();
@@ -38,20 +40,44 @@ export default function CheckoutPageClient() {
         throw new Error(paymentOrderData.error || "Payment initialization failed.");
       }
 
-      const verifyRes = await fetch("/api/payments/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          paymentId: paymentOrderData.paymentId,
-          status: "paid"
-        })
-      });
-      const verifyData = await verifyRes.json();
-      if (!verifyRes.ok) {
-        throw new Error(verifyData.error || "Payment verification failed.");
-      }
+      await openRazorpayCheckout({
+        orderConfig: paymentOrderData.razorpay,
+        onSuccess: async (response) => {
+          try {
+            const verifyRes = await fetch("/api/payments/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                paymentId: paymentOrderData.paymentId,
+                status: "paid",
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature
+              })
+            });
+            const verifyData = await verifyRes.json();
+            if (!verifyRes.ok) {
+              throw new Error(verifyData.error || "Payment verification failed.");
+            }
 
-      router.push(`/payment-success?orderId=${orderData.order.orderId}`);
+            router.push(`/payment-success?orderId=${orderData.order.orderId}`);
+          } catch (verifyError) {
+            setError(verifyError instanceof Error ? verifyError.message : "Payment verification failed.");
+            router.push("/payment-failure");
+          }
+        },
+        onFailure: async () => {
+          await fetch("/api/payments/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              paymentId: paymentOrderData.paymentId,
+              status: "failed"
+            })
+          });
+          router.push("/payment-failure");
+        }
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Checkout failed.");
       router.push("/payment-failure");
@@ -73,7 +99,6 @@ export default function CheckoutPageClient() {
             <option>UPI</option>
             <option>Card</option>
             <option>Net Banking</option>
-            <option>Cash on Delivery</option>
           </select>
         </div>
         <div className="row" style={{ marginTop: 14 }}>

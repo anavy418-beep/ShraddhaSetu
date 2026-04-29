@@ -38,6 +38,8 @@ export async function GET(request) {
         date: booking.scheduledFor.toISOString().slice(0, 10),
         status: booking.status,
         paymentStatus: booking.paymentStatus,
+        amount: booking.amount,
+        amountPaid: booking.amountPaid,
         panditId: booking.panditId,
         panditName: booking.pandit?.name || null
       })),

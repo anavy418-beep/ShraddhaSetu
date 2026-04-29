@@ -31,7 +31,10 @@ export async function GET(request) {
         experience: item.experienceYears,
         languages: item.languages,
         specialization: item.specialization,
-        verificationStatus: item.verificationStatus
+        verificationStatus: item.verificationStatus,
+        subscriptionPlan: item.subscriptionPlan,
+        subscriptionStatus: item.subscriptionStatus,
+        subscriptionExpiresAt: item.subscriptionExpiresAt
       }))
     });
   } catch (error) {

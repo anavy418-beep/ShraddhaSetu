@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { openRazorpayCheckout } from "@/lib/razorpay-client";
 
 const steps = ["Select Puja", "Schedule", "Customer Details", "Choose Package", "Payment & Confirm"];
 
@@ -30,7 +31,8 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
     email: "",
     address: "",
     packageId: "standard",
-    paymentMode: "UPI"
+    paymentMode: "UPI",
+    paymentOption: "ADVANCE"
   });
 
   useEffect(() => {
@@ -56,6 +58,8 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
     [form.packageId]
   );
   const totalAmount = (chosenPuja?.priceFrom || 0) + chosenPackage.price;
+  const advanceAmount = Math.min(totalAmount, Math.max(501, Math.round(totalAmount * 0.3)));
+  const payableAmount = form.paymentOption === "ADVANCE" ? advanceAmount : totalAmount;
 
   const setValue = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
 
@@ -78,6 +82,9 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
           address: form.address,
           packageName: chosenPackage.name,
           packagePrice: chosenPackage.price,
+          customerName: form.fullName,
+          customerPhone: form.phone,
+          customerEmail: form.email,
           notes: `Booked by ${form.fullName || "Customer"} | Phone: ${form.phone || "N/A"} | Email: ${form.email || "N/A"}`
         })
       });
@@ -91,7 +98,9 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           entityType: "BOOKING",
-          entityId: bookingData.booking.id
+          entityId: bookingData.booking.id,
+          paymentOption: form.paymentOption,
+          paymentMethod: form.paymentMode
         })
       });
       const paymentOrderData = await paymentOrderRes.json();
@@ -99,20 +108,43 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
         throw new Error(paymentOrderData.error || "Payment initialization failed.");
       }
 
-      const verifyRes = await fetch("/api/payments/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          paymentId: paymentOrderData.paymentId,
-          status: "paid"
-        })
+      await openRazorpayCheckout({
+        orderConfig: paymentOrderData.razorpay,
+        onSuccess: async (response) => {
+          try {
+            const verifyRes = await fetch("/api/payments/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                paymentId: paymentOrderData.paymentId,
+                status: "paid",
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature
+              })
+            });
+            const verifyData = await verifyRes.json();
+            if (!verifyRes.ok) {
+              throw new Error(verifyData.error || "Payment confirmation failed.");
+            }
+            router.push(`/confirmation?bookingId=${bookingData.booking.bookingId}`);
+          } catch (verifyError) {
+            setError(verifyError instanceof Error ? verifyError.message : "Payment confirmation failed.");
+            router.push(`/payment-failure?bookingId=${bookingData.booking.bookingId}`);
+          }
+        },
+        onFailure: async () => {
+          await fetch("/api/payments/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              paymentId: paymentOrderData.paymentId,
+              status: "failed"
+            })
+          });
+          router.push(`/payment-failure?bookingId=${bookingData.booking.bookingId}`);
+        }
       });
-      const verifyData = await verifyRes.json();
-      if (!verifyRes.ok) {
-        throw new Error(verifyData.error || "Payment confirmation failed.");
-      }
-
-      router.push(`/confirmation?bookingId=${bookingData.booking.bookingId}`);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unable to complete booking.";
       if (message.toLowerCase().includes("login")) {
@@ -260,11 +292,14 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
               <>
                 <h2>Payment and confirmation</h2>
                 <div className="form-grid">
+                  <select value={form.paymentOption} onChange={(event) => setValue("paymentOption", event.target.value)}>
+                    <option value="ADVANCE">Pay Advance (30%)</option>
+                    <option value="FULL">Pay Full Amount</option>
+                  </select>
                   <select value={form.paymentMode} onChange={(event) => setValue("paymentMode", event.target.value)}>
                     <option>UPI</option>
                     <option>Card</option>
                     <option>Net Banking</option>
-                    <option>Cash on Service</option>
                   </select>
                 </div>
                 <div className="card" style={{ marginTop: 14 }}>
@@ -287,6 +322,9 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
                     </p>
                     <p>
                       <strong>Total:</strong> Rs {totalAmount.toLocaleString("en-IN")}
+                    </p>
+                    <p>
+                      <strong>Payable Now:</strong> Rs {payableAmount.toLocaleString("en-IN")} ({form.paymentOption})
                     </p>
                   </div>
                 </div>

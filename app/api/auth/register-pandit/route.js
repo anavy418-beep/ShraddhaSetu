@@ -1,4 +1,4 @@
-import { PanditVerificationStatus, Role } from "@prisma/client";
+import { PanditSubscriptionPlan, PanditVerificationStatus, Role, SubscriptionStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createSessionToken, hashPassword, setSessionCookie } from "@/lib/auth";
 import { jsonError, jsonOk } from "@/lib/http";
@@ -15,6 +15,9 @@ export async function POST(request) {
     const languages = body.languages?.trim();
     const specialization = body.specialization?.trim();
     const bio = body.bio?.trim() || null;
+    const selectedPlan = body.subscriptionPlan || "BASIC";
+    const allowedPlans = ["BASIC", "PREMIUM", "FEATURED"];
+    const subscriptionPlan = allowedPlans.includes(selectedPlan) ? selectedPlan : "BASIC";
 
     if (!name || !email || !password || !phone || !citySlug || !languages || !specialization || !experienceYears) {
       return jsonError("All pandit registration fields are required.", 400);
@@ -45,7 +48,10 @@ export async function POST(request) {
             languages,
             specialization,
             bio,
-            verificationStatus: PanditVerificationStatus.PENDING
+            verificationStatus: PanditVerificationStatus.PENDING,
+            subscriptionPlan: PanditSubscriptionPlan[subscriptionPlan],
+            subscriptionStatus: SubscriptionStatus.pending,
+            subscriptionSelectedAt: new Date()
           }
         }
       },
@@ -58,7 +64,9 @@ export async function POST(request) {
     const response = jsonOk({
       message: "Pandit registration submitted. Awaiting admin approval.",
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
-      verificationStatus: user.panditProfile?.verificationStatus
+      verificationStatus: user.panditProfile?.verificationStatus,
+      subscriptionPlan: user.panditProfile?.subscriptionPlan,
+      subscriptionStatus: user.panditProfile?.subscriptionStatus
     });
     setSessionCookie(response, token);
     return response;

@@ -3,6 +3,7 @@ import { getSessionFromRequest } from "@/lib/auth";
 import { jsonError, jsonOk } from "@/lib/http";
 import { generateBookingId } from "@/lib/id";
 import { prisma } from "@/lib/prisma";
+import { sendWhatsAppNotification } from "@/lib/whatsapp";
 
 export async function POST(request) {
   try {
@@ -20,6 +21,8 @@ export async function POST(request) {
     const address = body.address;
     const packageName = body.packageName;
     const packagePrice = Number(body.packagePrice || 0);
+    const customerName = body.customerName?.trim() || user.name || "Customer";
+    const customerPhone = body.customerPhone?.trim() || user.phone || "N/A";
 
     if (!serviceSlug || !citySlug || !date || !time || !language || !address || !packageName) {
       return jsonError("Missing required booking fields.", 400);
@@ -58,6 +61,18 @@ export async function POST(request) {
       }
     });
 
+    const bookingDate = scheduledFor.toISOString().slice(0, 10);
+    const bookingTime = scheduledFor.toISOString().slice(11, 16);
+    const whatsappResult = await sendWhatsAppNotification({
+      bookingId: booking.bookingId,
+      pujaName: booking.pujaService.title,
+      city: booking.city.name,
+      date: bookingDate,
+      time: bookingTime,
+      customerName,
+      phone: customerPhone
+    });
+
     return jsonOk({
       message: "Booking created.",
       booking: {
@@ -68,7 +83,8 @@ export async function POST(request) {
         amount: booking.amount,
         status: booking.status,
         paymentStatus: booking.paymentStatus
-      }
+      },
+      whatsapp: whatsappResult
     });
   } catch (error) {
     console.error(error);

@@ -84,7 +84,13 @@ export default async function ServiceDetailPage({ params }) {
                   <p>City: {item.city}</p>
                   <p>Languages: {item.languages.join(", ")}</p>
                   <p>Rating: {item.rating} / 5</p>
+                  <p>Plan: {item.subscriptionPlan}</p>
                   <span className="tag">Verified</span>
+                  {item.subscriptionPlan === "FEATURED" && item.subscriptionStatus === "active" && (
+                    <span className="tag" style={{ background: "#fef3c7", color: "#92400e" }}>
+                      Featured
+                    </span>
+                  )}
                 </div>
               </article>
             ))}

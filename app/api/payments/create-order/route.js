@@ -2,10 +2,15 @@ import { PaymentEntity, Role } from "@prisma/client";
 import { getSessionFromRequest } from "@/lib/auth";
 import { jsonError, jsonOk } from "@/lib/http";
 import { prisma } from "@/lib/prisma";
+import {
+  calculateAdvanceAmount,
+  getCurrency,
+  getRazorpayClient,
+  getRazorpayKeyId,
+  toPaise
+} from "@/lib/payments";
 
-function fakeRazorpayOrderId() {
-  return `order_${Math.random().toString(36).slice(2, 14)}`;
-}
+export const dynamic = "force-dynamic";
 
 export async function POST(request) {
   try {
@@ -17,6 +22,8 @@ export async function POST(request) {
     const body = await request.json();
     const entityType = body.entityType;
     const entityId = body.entityId;
+    const paymentOption = body.paymentOption === "ADVANCE" ? "ADVANCE" : "FULL";
+    const paymentMethod = body.paymentMethod || "UPI";
 
     if (!entityType || !entityId || !["BOOKING", "ORDER"].includes(entityType)) {
       return jsonError("Invalid payment create request.", 400);
@@ -25,44 +32,80 @@ export async function POST(request) {
     let amount = 0;
     let bookingId = null;
     let orderId = null;
+    let displayId = "";
+    let ownerUserId = "";
 
     if (entityType === PaymentEntity.BOOKING) {
       const booking = await prisma.booking.findUnique({ where: { id: entityId } });
       if (!booking) {
         return jsonError("Booking not found.", 404);
       }
-      amount = booking.amount;
+      ownerUserId = booking.userId;
+      displayId = booking.bookingId;
+      amount = paymentOption === "ADVANCE" ? calculateAdvanceAmount(booking.amount) : booking.amount;
       bookingId = booking.id;
     } else {
       const order = await prisma.shopOrder.findUnique({ where: { id: entityId } });
       if (!order) {
         return jsonError("Order not found.", 404);
       }
+      ownerUserId = order.userId;
+      displayId = order.orderId;
       amount = order.totalAmount;
       orderId = order.id;
     }
 
-    const gatewayOrderId = fakeRazorpayOrderId();
+    if (user.role === Role.USER && ownerUserId !== user.id) {
+      return jsonError("You are not authorized for this payment.", 403);
+    }
+
+    const razorpay = getRazorpayClient();
+    const gatewayOrder = await razorpay.orders.create({
+      amount: toPaise(amount),
+      currency: getCurrency(),
+      receipt: `${entityType}-${displayId}-${Date.now()}`,
+      notes: {
+        entityType,
+        entityId,
+        paymentOption,
+        paymentMethod
+      }
+    });
+
     const payment = await prisma.payment.create({
       data: {
         entityType,
         bookingId,
         orderId,
         amount,
+        method: paymentMethod,
+        notes: `Payment option: ${paymentOption}`,
         gateway: "RAZORPAY",
-        gatewayOrderId
+        gatewayOrderId: gatewayOrder.id
       }
     });
 
     return jsonOk({
       message: "Payment order created.",
       razorpay: {
-        keyId: process.env.RAZORPAY_KEY_ID || "rzp_test_placeholder",
-        orderId: gatewayOrderId,
-        amount,
-        currency: "INR",
+        keyId: getRazorpayKeyId(),
+        orderId: gatewayOrder.id,
+        amount: gatewayOrder.amount,
+        amountInRupees: amount,
+        currency: gatewayOrder.currency,
+        name: "ShraddhaSetu",
+        description:
+          entityType === "BOOKING"
+            ? `${paymentOption} payment for booking ${displayId}`
+            : `Payment for order ${displayId}`,
+        prefill: {
+          name: user.name,
+          email: user.email,
+          contact: user.phone || ""
+        },
         entityType,
-        entityId
+        entityId,
+        paymentOption
       },
       paymentId: payment.id
     });

@@ -1,4 +1,4 @@
-import { PanditVerificationStatus, Role } from "@prisma/client";
+import { PanditVerificationStatus, Role, SubscriptionStatus } from "@prisma/client";
 import { getSessionFromRequest } from "@/lib/auth";
 import { jsonError, jsonOk } from "@/lib/http";
 import { prisma } from "@/lib/prisma";
@@ -14,8 +14,39 @@ export async function PATCH(request, { params }) {
     const body = await request.json();
     const action = body.action;
 
-    if (!["approve", "reject"].includes(action)) {
+    if (!["approve", "reject", "approve-plan", "reject-plan"].includes(action)) {
       return jsonError("Invalid action.", 400);
+    }
+
+    if (action === "approve-plan" || action === "reject-plan") {
+      const durationDays = Math.max(30, Number(body.durationDays || 90));
+      const now = new Date();
+      const expiresAt = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
+      const subscriptionStatus = action === "approve-plan" ? SubscriptionStatus.active : SubscriptionStatus.rejected;
+
+      const updatedPlan = await prisma.panditProfile.update({
+        where: { id },
+        data: {
+          subscriptionStatus,
+          subscriptionApprovedAt: action === "approve-plan" ? now : null,
+          subscriptionExpiresAt: action === "approve-plan" ? expiresAt : null,
+          subscriptionApprovedById: action === "approve-plan" ? user.id : null
+        },
+        include: {
+          user: true
+        }
+      });
+
+      return jsonOk({
+        message: action === "approve-plan" ? "Subscription approved successfully." : "Subscription rejected successfully.",
+        pandit: {
+          id: updatedPlan.id,
+          name: updatedPlan.user.name,
+          subscriptionPlan: updatedPlan.subscriptionPlan,
+          subscriptionStatus: updatedPlan.subscriptionStatus,
+          subscriptionExpiresAt: updatedPlan.subscriptionExpiresAt
+        }
+      });
     }
 
     const updated = await prisma.panditProfile.update({

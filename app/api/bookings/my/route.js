@@ -31,7 +31,9 @@ export async function GET(request) {
         time: booking.scheduledFor.toISOString().slice(11, 16),
         status: booking.status,
         paymentStatus: booking.paymentStatus,
-        package: booking.packageName
+        package: booking.packageName,
+        amount: booking.amount,
+        amountPaid: booking.amountPaid
       }))
     });
   } catch (error) {

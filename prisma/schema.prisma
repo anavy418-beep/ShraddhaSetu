@@ -27,6 +27,7 @@ enum BookingStatus {
 
 enum PaymentStatus {
   unpaid
+  partial
   paid
   failed
 }
@@ -44,24 +45,38 @@ enum PaymentEntity {
   ORDER
 }
 
+enum PanditSubscriptionPlan {
+  BASIC
+  PREMIUM
+  FEATURED
+}
+
+enum SubscriptionStatus {
+  pending
+  active
+  expired
+  rejected
+}
+
 model User {
-  id             String          @id @default(cuid())
-  name           String
-  email          String          @unique
-  passwordHash   String
-  phone          String?
-  role           Role            @default(USER)
-  cityId         String?
-  city           City?           @relation(fields: [cityId], references: [id])
-  panditProfile  PanditProfile?
-  bookings       Booking[]       @relation("BookingUser")
-  assignedJobs   Booking[]       @relation("BookingPandit")
-  orders         ShopOrder[]
-  reviews        Review[]
-  cartItems      CartItem[]
-  approvedPandits PanditProfile[] @relation("PanditApprovals")
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  id                    String          @id @default(cuid())
+  name                  String
+  email                 String          @unique
+  passwordHash          String
+  phone                 String?
+  role                  Role            @default(USER)
+  cityId                String?
+  city                  City?           @relation(fields: [cityId], references: [id])
+  panditProfile         PanditProfile?
+  bookings              Booking[]       @relation("BookingUser")
+  assignedJobs          Booking[]       @relation("BookingPandit")
+  orders                ShopOrder[]
+  reviews               Review[]
+  cartItems             CartItem[]
+  approvedPandits       PanditProfile[] @relation("PanditApprovals")
+  approvedSubscriptions PanditProfile[] @relation("PanditSubscriptionApprovals")
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
 }
 
 model City {
@@ -97,22 +112,29 @@ model PujaService {
 }
 
 model PanditProfile {
-  id                 String                   @id @default(cuid())
-  userId             String                   @unique
-  user               User                     @relation(fields: [userId], references: [id])
-  cityId             String
-  city               City                     @relation(fields: [cityId], references: [id])
-  experienceYears    Int
-  languages          String
-  specialization     String
-  bio                String?
-  verificationStatus PanditVerificationStatus @default(PENDING)
-  rating             Float                    @default(0)
-  approvedAt         DateTime?
-  approvedById       String?
-  approvedBy         User?                    @relation("PanditApprovals", fields: [approvedById], references: [id])
-  createdAt          DateTime                 @default(now())
-  updatedAt          DateTime                 @updatedAt
+  id                       String                   @id @default(cuid())
+  userId                   String                   @unique
+  user                     User                     @relation(fields: [userId], references: [id])
+  cityId                   String
+  city                     City                     @relation(fields: [cityId], references: [id])
+  experienceYears          Int
+  languages                String
+  specialization           String
+  bio                      String?
+  verificationStatus       PanditVerificationStatus @default(PENDING)
+  rating                   Float                    @default(0)
+  approvedAt               DateTime?
+  approvedById             String?
+  approvedBy               User?                    @relation("PanditApprovals", fields: [approvedById], references: [id])
+  subscriptionPlan         PanditSubscriptionPlan   @default(BASIC)
+  subscriptionStatus       SubscriptionStatus       @default(pending)
+  subscriptionSelectedAt   DateTime?
+  subscriptionApprovedAt   DateTime?
+  subscriptionExpiresAt    DateTime?
+  subscriptionApprovedById String?
+  subscriptionApprovedBy   User?                    @relation("PanditSubscriptionApprovals", fields: [subscriptionApprovedById], references: [id])
+  createdAt                DateTime                 @default(now())
+  updatedAt                DateTime                 @updatedAt
 }
 
 model Booking {
@@ -132,6 +154,7 @@ model Booking {
   packageName   String
   packagePrice  Int
   amount        Int
+  amountPaid    Int           @default(0)
   status        BookingStatus @default(pending)
   paymentStatus PaymentStatus @default(unpaid)
   paymentRef    String?
@@ -176,6 +199,7 @@ model ShopOrder {
   userId        String
   user          User          @relation(fields: [userId], references: [id])
   totalAmount   Int
+  amountPaid    Int           @default(0)
   status        OrderStatus   @default(pending)
   paymentStatus PaymentStatus @default(unpaid)
   paymentRef    String?
@@ -223,9 +247,40 @@ model Payment {
   gateway          String         @default("RAZORPAY")
   gatewayOrderId   String?
   gatewayPaymentId String?
+  gatewaySignature String?
+  method           String?
   amount           Int
   currency         String         @default("INR")
   status           PaymentStatus  @default(unpaid)
+  notes            String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+}
+
+model BlogCategory {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  posts       BlogPost[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model BlogPost {
+  id          String       @id @default(cuid())
+  title       String
+  slug        String       @unique
+  excerpt     String
+  content     String
+  coverImage  String
+  tags        String
+  serviceSlug String?
+  citySlug    String?
+  isPublished Boolean      @default(true)
+  publishedAt DateTime?
+  categoryId  String
+  category    BlogCategory @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }

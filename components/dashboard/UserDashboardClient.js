@@ -78,6 +78,7 @@ export default function UserDashboardClient() {
                   <th>Date</th>
                   <th>Status</th>
                   <th>Payment</th>
+                  <th>Paid / Total</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -97,6 +98,9 @@ export default function UserDashboardClient() {
                       <span className={`status ${booking.paymentStatus}`}>{booking.paymentStatus}</span>
                     </td>
                     <td>
+                      Rs {booking.amountPaid?.toLocaleString("en-IN") || 0} / Rs {booking.amount?.toLocaleString("en-IN") || 0}
+                    </td>
+                    <td>
                       <button className="btn btn-outline" onClick={() => updateBooking(booking.id, "cancel")}>
                         Cancel
                       </button>{" "}
@@ -108,7 +112,7 @@ export default function UserDashboardClient() {
                 ))}
                 {!bookings.length && (
                   <tr>
-                    <td colSpan={7}>No bookings yet. Start by booking a puja from the services page.</td>
+                    <td colSpan={8}>No bookings yet. Start by booking a puja from the services page.</td>
                   </tr>
                 )}
               </tbody>
@@ -126,6 +130,7 @@ export default function UserDashboardClient() {
                 <tr>
                   <th>Order ID</th>
                   <th>Total</th>
+                  <th>Paid</th>
                   <th>Status</th>
                   <th>Payment</th>
                 </tr>
@@ -135,6 +140,7 @@ export default function UserDashboardClient() {
                   <tr key={order.id}>
                     <td>{order.orderId}</td>
                     <td>Rs {order.totalAmount.toLocaleString("en-IN")}</td>
+                    <td>Rs {(order.amountPaid || 0).toLocaleString("en-IN")}</td>
                     <td>
                       <span className={`status ${order.status}`}>{order.status}</span>
                     </td>
@@ -145,7 +151,7 @@ export default function UserDashboardClient() {
                 ))}
                 {!orders.length && (
                   <tr>
-                    <td colSpan={4}>No orders yet. Add a puja samagri kit to cart to begin.</td>
+                    <td colSpan={5}>No orders yet. Add a puja samagri kit to cart to begin.</td>
                   </tr>
                 )}
               </tbody>
