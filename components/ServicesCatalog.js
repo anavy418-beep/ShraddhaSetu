@@ -5,7 +5,6 @@ import PujaCard from "@/components/PujaCard";
 
 export default function ServicesCatalog({ search = "", services = [], categories = [] }) {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [count, setCount] = useState(6);
 
   const filteredPujas = useMemo(() => {
     const query = search.toLowerCase().trim();
@@ -20,8 +19,6 @@ export default function ServicesCatalog({ search = "", services = [], categories
     });
   }, [activeCategory, search, services]);
 
-  const visible = filteredPujas.slice(0, count);
-
   return (
     <section className="section">
       <div className="container">
@@ -31,7 +28,6 @@ export default function ServicesCatalog({ search = "", services = [], categories
             style={{ cursor: "pointer", borderColor: activeCategory === "All" ? "#a16207" : undefined }}
             onClick={() => {
               setActiveCategory("All");
-              setCount(6);
             }}
           >
             All Services
@@ -43,7 +39,6 @@ export default function ServicesCatalog({ search = "", services = [], categories
               style={{ cursor: "pointer", borderColor: activeCategory === category ? "#a16207" : undefined }}
               onClick={() => {
                 setActiveCategory(category);
-                setCount(6);
               }}
             >
               {category}
@@ -51,18 +46,11 @@ export default function ServicesCatalog({ search = "", services = [], categories
           ))}
         </div>
         <div className="card-grid">
-          {visible.map((puja) => (
+          {filteredPujas.map((puja) => (
             <PujaCard key={puja.id} puja={puja} />
           ))}
         </div>
-        {!visible.length && <p>No pujas found for this filter.</p>}
-        {count < filteredPujas.length && (
-          <div style={{ marginTop: 20 }}>
-            <button className="btn btn-outline" onClick={() => setCount((prev) => prev + 3)}>
-              Load More
-            </button>
-          </div>
-        )}
+        {!filteredPujas.length && <p>No pujas found for this filter.</p>}
       </div>
     </section>
   );
