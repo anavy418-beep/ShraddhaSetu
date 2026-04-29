@@ -97,10 +97,10 @@ export default function Navbar() {
           })}
           {user && (
             <>
-              <span style={{ color: "#5f4635", fontSize: "0.95rem", padding: "6px 8px" }}>
+              <Link href={dashboardHref} onClick={() => setMobileOpen(false)}>Dashboard</Link>
+              <span style={{ color: "#5f4635", fontSize: "0.95rem", padding: "6px 8px", fontWeight: 600, marginLeft: 4 }}>
                 {user.name || user.email}
               </span>
-              <Link href={dashboardHref} onClick={() => setMobileOpen(false)}>Dashboard</Link>
             </>
           )}
           {!authLoading && !user && <Link href="/login" onClick={() => setMobileOpen(false)}>Login/Register</Link>}
