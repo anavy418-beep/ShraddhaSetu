@@ -1,0 +1,231 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  PANDIT
+  ADMIN
+}
+
+enum PanditVerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  completed
+  cancelled
+}
+
+enum PaymentStatus {
+  unpaid
+  paid
+  failed
+}
+
+enum OrderStatus {
+  pending
+  confirmed
+  shipped
+  delivered
+  cancelled
+}
+
+enum PaymentEntity {
+  BOOKING
+  ORDER
+}
+
+model User {
+  id             String          @id @default(cuid())
+  name           String
+  email          String          @unique
+  passwordHash   String
+  phone          String?
+  role           Role            @default(USER)
+  cityId         String?
+  city           City?           @relation(fields: [cityId], references: [id])
+  panditProfile  PanditProfile?
+  bookings       Booking[]       @relation("BookingUser")
+  assignedJobs   Booking[]       @relation("BookingPandit")
+  orders         ShopOrder[]
+  reviews        Review[]
+  cartItems      CartItem[]
+  approvedPandits PanditProfile[] @relation("PanditApprovals")
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model City {
+  id         String          @id @default(cuid())
+  name       String          @unique
+  slug       String          @unique
+  state      String?
+  isActive   Boolean         @default(true)
+  users      User[]
+  pandits    PanditProfile[]
+  bookings   Booking[]
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+}
+
+model PujaService {
+  id              String    @id @default(cuid())
+  title           String
+  slug            String    @unique
+  category        String
+  description     String
+  longDescription String
+  image           String
+  priceFrom       Int
+  duration        String
+  languages       String
+  specialization  String
+  isActive        Boolean   @default(true)
+  bookings        Booking[]
+  reviews         Review[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model PanditProfile {
+  id                 String                   @id @default(cuid())
+  userId             String                   @unique
+  user               User                     @relation(fields: [userId], references: [id])
+  cityId             String
+  city               City                     @relation(fields: [cityId], references: [id])
+  experienceYears    Int
+  languages          String
+  specialization     String
+  bio                String?
+  verificationStatus PanditVerificationStatus @default(PENDING)
+  rating             Float                    @default(0)
+  approvedAt         DateTime?
+  approvedById       String?
+  approvedBy         User?                    @relation("PanditApprovals", fields: [approvedById], references: [id])
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+}
+
+model Booking {
+  id            String        @id @default(cuid())
+  bookingId     String        @unique
+  userId        String
+  user          User          @relation("BookingUser", fields: [userId], references: [id])
+  panditId      String?
+  pandit        User?         @relation("BookingPandit", fields: [panditId], references: [id])
+  pujaServiceId String
+  pujaService   PujaService   @relation(fields: [pujaServiceId], references: [id])
+  cityId        String
+  city          City          @relation(fields: [cityId], references: [id])
+  scheduledFor  DateTime
+  language      String
+  address       String
+  packageName   String
+  packagePrice  Int
+  amount        Int
+  status        BookingStatus @default(pending)
+  paymentStatus PaymentStatus @default(unpaid)
+  paymentRef    String?
+  notes         String?
+  reviews       Review[]
+  payments      Payment[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String
+  image       String
+  price       Int
+  stock       Int         @default(100)
+  isActive    Boolean     @default(true)
+  cartItems   CartItem[]
+  orderItems  ShopOrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+}
+
+model ShopOrder {
+  id            String        @id @default(cuid())
+  orderId       String        @unique
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  totalAmount   Int
+  status        OrderStatus   @default(pending)
+  paymentStatus PaymentStatus @default(unpaid)
+  paymentRef    String?
+  address       String
+  paymentMethod String
+  items         ShopOrderItem[]
+  payments      Payment[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model ShopOrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     ShopOrder    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Int
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id            String       @id @default(cuid())
+  userId        String
+  user          User         @relation(fields: [userId], references: [id])
+  pujaServiceId String?
+  pujaService   PujaService? @relation(fields: [pujaServiceId], references: [id])
+  bookingId     String?
+  booking       Booking?     @relation(fields: [bookingId], references: [id])
+  rating        Int
+  text          String
+  isApproved    Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Payment {
+  id               String         @id @default(cuid())
+  entityType       PaymentEntity
+  bookingId        String?
+  booking          Booking?       @relation(fields: [bookingId], references: [id])
+  orderId          String?
+  order            ShopOrder?     @relation(fields: [orderId], references: [id])
+  gateway          String         @default("RAZORPAY")
+  gatewayOrderId   String?
+  gatewayPaymentId String?
+  amount           Int
+  currency         String         @default("INR")
+  status           PaymentStatus  @default(unpaid)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}

@@ -1,0 +1,72 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { getServiceBySlug } from "@/lib/queries";
+
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }) {
+  const { city, puja } = await params;
+  const [cityRecord, service] = await Promise.all([
+    prisma.city.findUnique({ where: { slug: city } }),
+    getServiceBySlug(puja)
+  ]);
+  if (!cityRecord || !service) {
+    return {
+      title: "Not Found | ShraddhaSetu"
+    };
+  }
+  return {
+    title: `${service.title} in ${cityRecord.name} | ShraddhaSetu`,
+    description: `Book ${service.title} in ${cityRecord.name} with verified pandits and transparent pricing.`
+  };
+}
+
+export default async function CityPujaPage({ params }) {
+  const { city, puja: pujaSlug } = await params;
+  const [cityRecord, puja] = await Promise.all([
+    prisma.city.findUnique({ where: { slug: city } }),
+    getServiceBySlug(pujaSlug)
+  ]);
+
+  if (!cityRecord || !puja) {
+    notFound();
+  }
+
+  return (
+    <>
+      <section className="page-header">
+        <div className="container">
+          <h1>
+            {puja.title} in {cityRecord.name}
+          </h1>
+          <p>Book verified pandits for {puja.title.toLowerCase()} in {cityRecord.name}.</p>
+        </div>
+      </section>
+      <section className="section">
+        <div className="container">
+          <div className="card">
+            <img src={puja.image} alt={puja.title} style={{ width: "100%", maxHeight: 320, objectFit: "cover" }} />
+            <div className="card-body">
+              <p>{puja.longDescription}</p>
+              <p>
+                <strong>Price starts from:</strong> Rs {puja.priceFrom.toLocaleString("en-IN")}
+              </p>
+              <p>
+                <strong>Duration:</strong> {puja.duration}
+              </p>
+              <div className="row" style={{ marginTop: 12 }}>
+                <Link className="btn btn-primary" href={`/booking?puja=${puja.slug}&city=${cityRecord.slug}`}>
+                  Book in {cityRecord.name}
+                </Link>
+                <Link className="btn btn-outline" href={`/cities/${cityRecord.slug}`}>
+                  Back to {cityRecord.name}
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

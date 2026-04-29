@@ -1,0 +1,33 @@
+{
+  "name": "shraddhasetu",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:migrate:status": "prisma migrate status",
+    "db:seed": "node prisma/seed.js",
+    "db:seed:prod": "node prisma/seed.js --allow-production",
+    "db:init": "npm run prisma:migrate:deploy && npm run db:seed",
+    "db:init:prod": "npm run prisma:migrate:deploy && npm run db:seed:prod",
+    "vercel-build": "npm run prisma:generate && npm run build"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "bcryptjs": "^2.4.3",
+    "jose": "^6.0.11",
+    "next": "^15.5.15",
+    "pg": "^8.16.3",
+    "react": "^19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.8.0"
+  }
+}
