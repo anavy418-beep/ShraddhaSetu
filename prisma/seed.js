@@ -54,7 +54,7 @@ const services = [
     duration: "2.5 - 3.5 hours",
     languages: "Hindi,Sanskrit,English",
     specialization: "Vastu,Havan,Griha Shanti",
-    image: "https://images.unsplash.com/photo-1532372576444-dda954194ad0?auto=format&fit=crop&w=1200&q=80"
+    image: "/images/griha-pravesh-puja.png"
   },
   {
     title: "Satyanarayan Puja",
