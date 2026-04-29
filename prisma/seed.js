@@ -115,6 +115,403 @@ const services = [
     languages: "Hindi,Sanskrit",
     specialization: "Pitru Karya,Tarpan",
     image: "/images/pitru-dosh-shanti.jpg"
+  },
+  {
+    title: "Ganesh Chaturthi Puja",
+    slug: "ganesh-chaturthi-puja",
+    category: "Festival Puja",
+    description: "Auspicious Ganpati sthapana and puja for wisdom, prosperity and obstacle removal.",
+    longDescription:
+      "Includes avahan, shodashopachar puja, aarti and visarjan guidance according to family tradition.",
+    priceFrom: 3600,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Marathi,Sanskrit",
+    specialization: "Ganpati Sthapana,Festival Rituals",
+    image: "/images/services/ganesh-chaturthi-puja.jpg"
+  },
+  {
+    title: "Saraswati Puja",
+    slug: "saraswati-puja",
+    category: "Festival Puja",
+    description: "Invoke Maa Saraswati for knowledge, creativity and academic success.",
+    longDescription: "Ideal for students, artists and institutions with mantra path and vidya sankalp.",
+    priceFrom: 3200,
+    duration: "1.5 - 2.5 hours",
+    languages: "Hindi,Sanskrit,Bengali",
+    specialization: "Vidya Puja,Festival Rituals",
+    image: "/images/services/saraswati-puja.jpg"
+  },
+  {
+    title: "Diwali Puja",
+    slug: "diwali-puja",
+    category: "Festival Puja",
+    description: "Lakshmi-Ganesh puja for abundance, harmony and auspicious beginnings.",
+    longDescription: "Includes muhurat guidance, account-book puja, deepa aarti and prosperity sankalp.",
+    priceFrom: 4100,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Sanskrit,Gujarati",
+    specialization: "Lakshmi Puja,Festival Rituals",
+    image: "/images/services/diwali-puja.jpg"
+  },
+  {
+    title: "Office Opening Puja",
+    slug: "office-opening-puja",
+    category: "Business Puja",
+    description: "Sacred inauguration puja to begin office operations with divine blessings.",
+    longDescription: "Performed with vastu shanti, havan and Lakshmi-Ganesh puja for business growth.",
+    priceFrom: 5200,
+    duration: "2.5 - 3.5 hours",
+    languages: "Hindi,Sanskrit,English",
+    specialization: "Business Inauguration,Vastu Shanti",
+    image: "/images/services/office-opening-puja.jpg"
+  },
+  {
+    title: "Navratri Puja",
+    slug: "navratri-puja",
+    category: "Festival Puja",
+    description: "Durga upasana and kalash sthapana for strength, protection and devotion.",
+    longDescription: "Includes ghatasthapana, daily puja guidance, aarti and kanya pujan rituals.",
+    priceFrom: 3900,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Sanskrit,Gujarati",
+    specialization: "Durga Sadhana,Festival Rituals",
+    image: "/images/services/navratri-puja.jpg"
+  },
+  {
+    title: "Pind Daan Puja",
+    slug: "pind-daan-puja",
+    category: "Mukti Karmas",
+    description: "Traditional ritual for ancestral peace and spiritual liberation.",
+    longDescription: "Performed with Vedic vidhi for pitru tarpan and pind daan at home or tirtha.",
+    priceFrom: 7500,
+    duration: "3 - 4 hours",
+    languages: "Hindi,Sanskrit",
+    specialization: "Pitru Karmas,Tarpan Vidhi",
+    image: "/images/services/pind-daan-puja.jpg"
+  },
+  {
+    title: "Bhoomi Puja",
+    slug: "bhoomi-puja",
+    category: "Special Event Puja",
+    description: "Land worship ritual before construction for safety and success.",
+    longDescription: "Includes bhumi shuddhi, vastu puja and sankalp before foundation work.",
+    priceFrom: 4800,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Sanskrit,English",
+    specialization: "Vastu Puja,Construction Rituals",
+    image: "/images/services/bhoomi-puja.jpg"
+  },
+  {
+    title: "Sunderkand Path",
+    slug: "sunderkand-path",
+    category: "Path / Jaap",
+    description: "Powerful recitation of Sunderkand for courage, protection and positivity.",
+    longDescription: "Complete path with Hanuman aarti and sankalp for health, success and peace.",
+    priceFrom: 3100,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Sanskrit",
+    specialization: "Ramayan Path,Hanuman Bhakti",
+    image: "/images/services/sunderkand-path.jpg"
+  },
+  {
+    title: "Navagraha Shanti Puja",
+    slug: "navagraha-shanti-puja",
+    category: "Dosha Nivaran Puja",
+    description: "Planetary peace ritual to reduce graha dosha and balance life energies.",
+    longDescription: "Includes navagraha mantra, havan and remedies based on family requirements.",
+    priceFrom: 6900,
+    duration: "3 - 4 hours",
+    languages: "Hindi,Sanskrit",
+    specialization: "Graha Shanti,Astro Remedies",
+    image: "/images/services/navagraha-shanti-puja.jpg"
+  },
+  {
+    title: "Namkaran Puja",
+    slug: "namkaran-puja",
+    category: "Sanskar Puja",
+    description: "Naming ceremony with blessings for the newborn’s health and prosperity.",
+    longDescription: "Traditional naamkaran sanskar with nakshatra-based naming and family sankalp.",
+    priceFrom: 3500,
+    duration: "1.5 - 2.5 hours",
+    languages: "Hindi,Sanskrit,Marathi",
+    specialization: "Bal Sanskar,Naming Ceremony",
+    image: "/images/services/namkaran-puja.jpg"
+  },
+  {
+    title: "Birthday Puja",
+    slug: "birthday-puja",
+    category: "Special Event Puja",
+    description: "Ayushya puja for long life, wellness and joyful new beginnings.",
+    longDescription: "Performed on birthday with sankalp, havan and blessings for the upcoming year.",
+    priceFrom: 2900,
+    duration: "1.5 - 2.5 hours",
+    languages: "Hindi,Sanskrit,English",
+    specialization: "Ayushya Puja,Family Rituals",
+    image: "/images/services/birthday-puja.jpg"
+  },
+  {
+    title: "Tripindi Shradh Puja",
+    slug: "tripindi-shradh-puja",
+    category: "Mukti Karmas",
+    description: "Sacred shradh ritual for unresolved ancestral karmic peace.",
+    longDescription: "Performed with pind daan, tarpan and specific vidhi for pitru shanti.",
+    priceFrom: 8600,
+    duration: "3 - 4.5 hours",
+    languages: "Hindi,Sanskrit",
+    specialization: "Shradh Vidhi,Pitru Shanti",
+    image: "/images/services/tripindi-shradh-puja.jpg"
+  },
+  {
+    title: "Mahalakshmi Puja",
+    slug: "mahalakshmi-puja",
+    category: "Festival Puja",
+    description: "Invoke Mahalakshmi for wealth, auspiciousness and family wellbeing.",
+    longDescription: "Includes Lakshmi avahan, mantra path and prosperity sankalp with aarti.",
+    priceFrom: 3800,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Sanskrit,Gujarati",
+    specialization: "Lakshmi Upasana,Festival Rituals",
+    image: "/images/services/mahalakshmi-puja.jpg"
+  },
+  {
+    title: "Narayan Bali Puja",
+    slug: "narayan-bali-puja",
+    category: "Mukti Karmas",
+    description: "Specialized ritual for ancestral relief and karmic peace.",
+    longDescription: "Vedic procedure performed for pitru dosha nivaran and family spiritual harmony.",
+    priceFrom: 12500,
+    duration: "5 - 6 hours",
+    languages: "Hindi,Sanskrit",
+    specialization: "Narayan Bali,Pitru Remedies",
+    image: "/images/services/narayan-bali-puja.jpg"
+  },
+  {
+    title: "Mangal Bhat Puja",
+    slug: "mangal-bhat-puja",
+    category: "Dosha Nivaran Puja",
+    description: "Ritual remedy for Mangal-related obstacles in marriage and harmony.",
+    longDescription: "Performed with specific mantras and havan to calm Mars-related astrological effects.",
+    priceFrom: 6100,
+    duration: "2.5 - 3.5 hours",
+    languages: "Hindi,Sanskrit,Marathi",
+    specialization: "Mangal Dosha Remedies,Marriage Harmony",
+    image: "/images/services/mangal-bhat-puja.jpg"
+  },
+  {
+    title: "Engagement Puja",
+    slug: "engagement-puja",
+    category: "Sanskar Puja",
+    description: "Blessing ceremony for ring exchange and a harmonious marital journey.",
+    longDescription: "Includes Ganesh puja, family sankalp and mangal aarti before engagement rituals.",
+    priceFrom: 4200,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Sanskrit,English",
+    specialization: "Pre-Wedding Sanskar,Family Rituals",
+    image: "/images/services/engagement-puja.jpg"
+  },
+  {
+    title: "Varshika Shraddha Puja",
+    slug: "varshika-shraddha-puja",
+    category: "Mukti Karmas",
+    description: "Annual ancestral remembrance ritual for peace, blessings and gratitude.",
+    longDescription: "Traditional varshik shradh with tarpan, pind pradan and brahman bhojan guidance.",
+    priceFrom: 5300,
+    duration: "2.5 - 3.5 hours",
+    languages: "Hindi,Sanskrit",
+    specialization: "Annual Shradh,Pitru Tarpan",
+    image: "/images/services/varshika-shraddha-puja.jpg"
+  },
+  {
+    title: "Dhanteras Puja",
+    slug: "dhanteras-puja",
+    category: "Festival Puja",
+    description: "Auspicious Dhanteras ritual for wealth, health and prosperous beginnings.",
+    longDescription: "Includes Dhanvantari-Lakshmi puja, deep daan and prosperity sankalp.",
+    priceFrom: 3400,
+    duration: "1.5 - 2.5 hours",
+    languages: "Hindi,Sanskrit,Gujarati",
+    specialization: "Dhanteras Rituals,Lakshmi Upasana",
+    image: "/images/services/dhanteras-puja.jpg"
+  },
+  {
+    title: "Shiv Puran Puja",
+    slug: "shiv-puran-puja",
+    category: "Path / Jaap",
+    description: "Sacred Shiva Purana recitation and puja for spiritual growth and peace.",
+    longDescription: "Includes path segments, Rudra mantras and devotional aarti under pandit guidance.",
+    priceFrom: 5800,
+    duration: "3 - 4 hours",
+    languages: "Hindi,Sanskrit",
+    specialization: "Shiv Puran Path,Shiva Bhakti",
+    image: "/images/services/shiv-puran-puja.jpg"
+  },
+  {
+    title: "Durga Puja",
+    slug: "durga-puja",
+    category: "Festival Puja",
+    description: "Maa Durga worship for courage, protection and divine grace.",
+    longDescription: "Performed with Durga saptashati, kumkum archana and traditional aarti.",
+    priceFrom: 4300,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Sanskrit,Bengali",
+    specialization: "Durga Sadhana,Festival Rituals",
+    image: "/images/services/durga-puja.jpg"
+  },
+  {
+    title: "Mahamrityunjay Jaap",
+    slug: "mahamrityunjay-jaap",
+    category: "Path / Jaap",
+    description: "Powerful Shiva mantra jaap for health, protection and inner strength.",
+    longDescription: "Jaap count and havan can be tailored for wellness, recovery and spiritual upliftment.",
+    priceFrom: 6700,
+    duration: "3 - 5 hours",
+    languages: "Hindi,Sanskrit",
+    specialization: "Shiva Mantra Jaap,Healing Rituals",
+    image: "/images/services/mahamrityunjay-jaap.jpg"
+  },
+  {
+    title: "Vishwakarma Puja",
+    slug: "vishwakarma-puja",
+    category: "Business Puja",
+    description: "Factory/workplace puja for tools, machinery and productive operations.",
+    longDescription: "Includes equipment blessing, safety sankalp and prosperity prayers for teams.",
+    priceFrom: 4600,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Sanskrit,Bengali",
+    specialization: "Workplace Blessings,Business Rituals",
+    image: "/images/services/vishwakarma-puja.jpg"
+  },
+  {
+    title: "Godh Bharai Ceremony",
+    slug: "godh-bharai-ceremony",
+    category: "Sanskar Puja",
+    description: "Traditional baby shower ceremony with blessings for mother and child.",
+    longDescription: "Includes mangal geet, sankalp and puja rituals as per family customs.",
+    priceFrom: 3900,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Sanskrit,Marathi",
+    specialization: "Maternity Sanskar,Family Rituals",
+    image: "/images/services/godh-bharai-ceremony.jpg"
+  },
+  {
+    title: "Hanuman Janmotsav Puja",
+    slug: "hanuman-janmotsav-puja",
+    category: "Festival Puja",
+    description: "Hanuman ji puja and path for strength, devotion and protection.",
+    longDescription: "Includes Hanuman Chalisa path, aarti and sankalp for courage and success.",
+    priceFrom: 3300,
+    duration: "1.5 - 2.5 hours",
+    languages: "Hindi,Sanskrit",
+    specialization: "Hanuman Bhakti,Festival Rituals",
+    image: "/images/services/hanuman-janmotsav-puja.jpg"
+  },
+  {
+    title: "Marriage Anniversary Puja",
+    slug: "marriage-anniversary-puja",
+    category: "Special Event Puja",
+    description: "Couple blessing puja for harmony, gratitude and renewed commitment.",
+    longDescription: "Includes Ganesh-Lakshmi puja, sankalp and aarti for family wellbeing.",
+    priceFrom: 3200,
+    duration: "1.5 - 2.5 hours",
+    languages: "Hindi,Sanskrit,English",
+    specialization: "Couple Blessings,Family Rituals",
+    image: "/images/services/marriage-anniversary-puja.jpg"
+  },
+  {
+    title: "Annaprashan Puja",
+    slug: "annaprashan-puja",
+    category: "Sanskar Puja",
+    description: "First-feeding ceremony for babies with health and prosperity blessings.",
+    longDescription: "Traditional annaprashan sanskar with puja, mantra and family participation.",
+    priceFrom: 3400,
+    duration: "1.5 - 2.5 hours",
+    languages: "Hindi,Sanskrit,Bengali",
+    specialization: "Child Sanskar,Family Rituals",
+    image: "/images/services/annaprashan-puja.jpg"
+  },
+  {
+    title: "Krishna Janmashtami Puja",
+    slug: "krishna-janmashtami-puja",
+    category: "Festival Puja",
+    description: "Devotional Krishna puja for joy, devotion and family harmony.",
+    longDescription: "Includes midnight puja, bhajan, aarti and makhan-mishri bhog rituals.",
+    priceFrom: 3600,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Sanskrit,Gujarati",
+    specialization: "Krishna Bhakti,Festival Rituals",
+    image: "/images/services/krishna-janmashtami-puja.jpg"
+  },
+  {
+    title: "Govardhan Puja",
+    slug: "govardhan-puja",
+    category: "Festival Puja",
+    description: "Ritual worship of Govardhan for gratitude, nourishment and protection.",
+    longDescription: "Performed after Diwali with anna-koot offerings and Krishna devotional rituals.",
+    priceFrom: 3000,
+    duration: "1.5 - 2.5 hours",
+    languages: "Hindi,Sanskrit",
+    specialization: "Krishna Upasana,Festival Rituals",
+    image: "/images/services/govardhan-puja.jpg"
+  },
+  {
+    title: "Shuddhikaran Puja",
+    slug: "shuddhikaran-puja",
+    category: "Special Event Puja",
+    description: "Purification ritual for home or workspace to restore spiritual positivity.",
+    longDescription: "Includes vastu shuddhi, mantra chanting and havan for cleansing energies.",
+    priceFrom: 4700,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Sanskrit,English",
+    specialization: "Space Purification,Vastu Rituals",
+    image: "/images/services/shuddhikaran-puja.jpg"
+  },
+  {
+    title: "Ram Navami Puja",
+    slug: "ram-navami-puja",
+    category: "Festival Puja",
+    description: "Lord Rama puja for righteousness, peace and family wellbeing.",
+    longDescription: "Includes Ramayan path, bhajan, aarti and sankalp during Ram Navami.",
+    priceFrom: 3400,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Sanskrit",
+    specialization: "Rama Bhakti,Festival Rituals",
+    image: "/images/services/ram-navami-puja.jpg"
+  },
+  {
+    title: "Holika Puja",
+    slug: "holika-puja",
+    category: "Festival Puja",
+    description: "Holika dahan ritual for protection, cleansing and positive transformation.",
+    longDescription: "Performed with traditional offerings and prayers on Holika Dahan evening.",
+    priceFrom: 2800,
+    duration: "1 - 2 hours",
+    languages: "Hindi,Sanskrit",
+    specialization: "Holi Rituals,Festival Traditions",
+    image: "/images/services/holika-puja.jpg"
+  },
+  {
+    title: "Kuber Upasana Puja",
+    slug: "kuber-upasana-puja",
+    category: "Dosha Nivaran Puja",
+    description: "Prosperity-focused ritual invoking Lord Kuber for financial stability.",
+    longDescription: "Includes Kuber mantra, yantra puja and sankalp for wealth management and growth.",
+    priceFrom: 5400,
+    duration: "2 - 3 hours",
+    languages: "Hindi,Sanskrit",
+    specialization: "Wealth Remedies,Kuber Sadhana",
+    image: "/images/services/kuber-upasana-puja.jpg"
+  },
+  {
+    title: "Vehicle Puja",
+    slug: "vehicle-puja",
+    category: "Vehicle Puja",
+    description: "New vehicle blessing ritual for safety, success and smooth journeys.",
+    longDescription: "Performed with Ganesh puja, raksha sankalp and protective mantra recitation.",
+    priceFrom: 2100,
+    duration: "45 - 90 minutes",
+    languages: "Hindi,Sanskrit,English",
+    specialization: "Vahana Puja,Safety Blessings",
+    image: "/images/services/vehicle-puja.jpg"
   }
 ];
 
@@ -276,7 +673,73 @@ function citySlug(name) {
   return name.toLowerCase().replace(/\s+/g, "-");
 }
 
+const newServiceSlugs = new Set([
+  "ganesh-chaturthi-puja",
+  "saraswati-puja",
+  "diwali-puja",
+  "office-opening-puja",
+  "navratri-puja",
+  "pind-daan-puja",
+  "bhoomi-puja",
+  "sunderkand-path",
+  "navagraha-shanti-puja",
+  "namkaran-puja",
+  "birthday-puja",
+  "tripindi-shradh-puja",
+  "mahalakshmi-puja",
+  "narayan-bali-puja",
+  "mangal-bhat-puja",
+  "engagement-puja",
+  "varshika-shraddha-puja",
+  "dhanteras-puja",
+  "shiv-puran-puja",
+  "durga-puja",
+  "mahamrityunjay-jaap",
+  "vishwakarma-puja",
+  "godh-bharai-ceremony",
+  "hanuman-janmotsav-puja",
+  "marriage-anniversary-puja",
+  "annaprashan-puja",
+  "krishna-janmashtami-puja",
+  "govardhan-puja",
+  "shuddhikaran-puja",
+  "ram-navami-puja",
+  "holika-puja",
+  "kuber-upasana-puja",
+  "vehicle-puja"
+]);
+
+async function upsertServiceCatalog(serviceList) {
+  for (const service of serviceList) {
+    const data = {
+      title: service.title,
+      slug: service.slug,
+      category: service.category,
+      description: service.description,
+      longDescription: service.longDescription,
+      image: service.image,
+      priceFrom: service.priceFrom,
+      duration: service.duration,
+      languages: service.languages,
+      specialization: service.specialization,
+      isActive: true
+    };
+    await prisma.pujaService.upsert({
+      where: { slug: service.slug },
+      create: data,
+      update: data
+    });
+  }
+}
+
 async function main() {
+  if (allowProduction) {
+    const onlyNewServices = services.filter((item) => newServiceSlugs.has(item.slug));
+    await upsertServiceCatalog(onlyNewServices);
+    console.log(`Safely upserted ${onlyNewServices.length} new puja services by slug.`);
+    return;
+  }
+
   await prisma.payment.deleteMany();
   await prisma.shopOrderItem.deleteMany();
   await prisma.shopOrder.deleteMany();
@@ -302,9 +765,7 @@ async function main() {
     createdCities[name] = city;
   }
 
-  for (const service of services) {
-    await prisma.pujaService.create({ data: service });
-  }
+  await upsertServiceCatalog(services);
 
   for (const product of products) {
     await prisma.product.create({ data: product });
