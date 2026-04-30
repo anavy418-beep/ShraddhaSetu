@@ -559,7 +559,8 @@ const serviceCategoryBySlug = {
 
 const services = servicesRaw.map((service) => ({
   ...service,
-  category: serviceCategoryBySlug[service.slug] || service.category
+  category: serviceCategoryBySlug[service.slug] || service.category,
+  image: `/images/services/${service.slug}.jpg`
 }));
 
 const products = [
@@ -720,42 +721,6 @@ function citySlug(name) {
   return name.toLowerCase().replace(/\s+/g, "-");
 }
 
-const newServiceSlugs = new Set([
-  "ganesh-chaturthi-puja",
-  "saraswati-puja",
-  "diwali-puja",
-  "office-opening-puja",
-  "navratri-puja",
-  "pind-daan-puja",
-  "bhoomi-puja",
-  "sunderkand-path",
-  "navagraha-shanti-puja",
-  "namkaran-puja",
-  "birthday-puja",
-  "tripindi-shradh-puja",
-  "mahalakshmi-puja",
-  "narayan-bali-puja",
-  "mangal-bhat-puja",
-  "engagement-puja",
-  "varshika-shraddha-puja",
-  "dhanteras-puja",
-  "shiv-puran-puja",
-  "durga-puja",
-  "mahamrityunjay-jaap",
-  "vishwakarma-puja",
-  "godh-bharai-ceremony",
-  "hanuman-janmotsav-puja",
-  "marriage-anniversary-puja",
-  "annaprashan-puja",
-  "krishna-janmashtami-puja",
-  "govardhan-puja",
-  "shuddhikaran-puja",
-  "ram-navami-puja",
-  "holika-puja",
-  "kuber-upasana-puja",
-  "vehicle-puja"
-]);
-
 async function upsertServiceCatalog(serviceList) {
   for (const service of serviceList) {
     const data = {
@@ -781,17 +746,13 @@ async function upsertServiceCatalog(serviceList) {
 
 async function main() {
   if (allowProduction) {
-    const onlyNewServices = services.filter((item) => newServiceSlugs.has(item.slug));
-    await upsertServiceCatalog(onlyNewServices);
     for (const service of services) {
       await prisma.pujaService.updateMany({
         where: { slug: service.slug },
-        data: { category: service.category }
+        data: { image: service.image }
       });
     }
-    console.log(
-      `Safely upserted ${onlyNewServices.length} new puja services and synced categories for ${services.length} services.`
-    );
+    console.log(`Safely synced service images for ${services.length} services by slug.`);
     return;
   }
 
