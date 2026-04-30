@@ -295,7 +295,7 @@ const servicesRaw = [
     duration: "2.5 - 3.5 hours",
     languages: "Hindi,Sanskrit,Marathi",
     specialization: "Mangal Dosha Remedies,Marriage Harmony",
-    image: "/images/services/mangal-bhat-puja.jpg"
+    image: "/images/services/mangal-bhat-puja.png"
   },
   {
     title: "Engagement Puja",
