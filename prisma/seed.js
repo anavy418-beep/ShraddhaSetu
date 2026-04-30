@@ -487,7 +487,7 @@ const servicesRaw = [
     duration: "1 - 2 hours",
     languages: "Hindi,Sanskrit",
     specialization: "Holi Rituals,Festival Traditions",
-    image: "/images/services/holika-puja.jpg"
+    image: "/images/services/holika-puja.avif"
   },
   {
     title: "Kuber Upasana Puja",
@@ -562,7 +562,8 @@ const serviceImageBySlug = {
   "pind-daan-puja": "/images/services/pind-daan-puja.webp",
   "ganesh-chaturthi-puja": "/images/services/ganesh-chaturthi-puja.webp",
   "office-opening-puja": "/images/services/office-opening-puja.png",
-  "vehicle-puja": "/images/services/vehicle-puja.webp"
+  "vehicle-puja": "/images/services/vehicle-puja.webp",
+  "holika-puja": "/images/services/holika-puja.avif"
 };
 
 const services = servicesRaw.map((service) => ({
