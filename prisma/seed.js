@@ -451,7 +451,7 @@ const servicesRaw = [
     duration: "1.5 - 2.5 hours",
     languages: "Hindi,Sanskrit",
     specialization: "Krishna Upasana,Festival Rituals",
-    image: "/images/services/govardhan-puja.jpg"
+    image: "/images/services/govardhan-puja.avif"
   },
   {
     title: "Shuddhikaran Puja",
