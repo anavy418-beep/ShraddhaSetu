@@ -199,7 +199,7 @@ const servicesRaw = [
     duration: "2 - 3 hours",
     languages: "Hindi,Sanskrit,English",
     specialization: "Vastu Puja,Construction Rituals",
-    image: "/images/services/bhoomi-puja.jpg"
+    image: "/images/services/bhoomi-puja.webp"
   },
   {
     title: "Sunderkand Path",
@@ -557,10 +557,14 @@ const serviceCategoryBySlug = {
   "shuddhikaran-puja": "Dosha Nivaran & Shanti"
 };
 
+const serviceImageBySlug = {
+  "bhoomi-puja": "/images/services/bhoomi-puja.webp"
+};
+
 const services = servicesRaw.map((service) => ({
   ...service,
   category: serviceCategoryBySlug[service.slug] || service.category,
-  image: `/images/services/${service.slug}.jpg`
+  image: serviceImageBySlug[service.slug] || `/images/services/${service.slug}.jpg`
 }));
 
 const products = [
