@@ -355,7 +355,7 @@ const servicesRaw = [
     duration: "2 - 3 hours",
     languages: "Hindi,Sanskrit,Bengali",
     specialization: "Durga Sadhana,Festival Rituals",
-    image: "/images/services/durga-puja.jpg"
+    image: "/images/services/durga-puja.webp"
   },
   {
     title: "Mahamrityunjay Jaap",
