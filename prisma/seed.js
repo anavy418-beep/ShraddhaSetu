@@ -391,7 +391,7 @@ const servicesRaw = [
     duration: "2 - 3 hours",
     languages: "Hindi,Sanskrit,Marathi",
     specialization: "Maternity Sanskar,Family Rituals",
-    image: "/images/services/godh-bharai-ceremony.jpg"
+    image: "/images/services/godh-bharai-ceremony.webp"
   },
   {
     title: "Hanuman Janmotsav Puja",
