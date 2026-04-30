@@ -187,7 +187,7 @@ const servicesRaw = [
     duration: "3 - 4 hours",
     languages: "Hindi,Sanskrit",
     specialization: "Pitru Karmas,Tarpan Vidhi",
-    image: "/images/services/pind-daan-puja.jpg"
+    image: "/images/services/pind-daan-puja.webp"
   },
   {
     title: "Bhoomi Puja",
@@ -558,7 +558,8 @@ const serviceCategoryBySlug = {
 };
 
 const serviceImageBySlug = {
-  "bhoomi-puja": "/images/services/bhoomi-puja.webp"
+  "bhoomi-puja": "/images/services/bhoomi-puja.webp",
+  "pind-daan-puja": "/images/services/pind-daan-puja.webp"
 };
 
 const services = servicesRaw.map((service) => ({
