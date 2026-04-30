@@ -511,7 +511,7 @@ const servicesRaw = [
     duration: "45 - 90 minutes",
     languages: "Hindi,Sanskrit,English",
     specialization: "Vahana Puja,Safety Blessings",
-    image: "/images/services/vehicle-puja.jpg"
+    image: "/images/services/vehicle-puja.webp"
   }
 ];
 
@@ -561,7 +561,8 @@ const serviceImageBySlug = {
   "bhoomi-puja": "/images/services/bhoomi-puja.webp",
   "pind-daan-puja": "/images/services/pind-daan-puja.webp",
   "ganesh-chaturthi-puja": "/images/services/ganesh-chaturthi-puja.webp",
-  "office-opening-puja": "/images/services/office-opening-puja.png"
+  "office-opening-puja": "/images/services/office-opening-puja.png",
+  "vehicle-puja": "/images/services/vehicle-puja.webp"
 };
 
 const services = servicesRaw.map((service) => ({
