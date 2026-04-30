@@ -307,7 +307,7 @@ const servicesRaw = [
     duration: "2 - 3 hours",
     languages: "Hindi,Sanskrit,English",
     specialization: "Pre-Wedding Sanskar,Family Rituals",
-    image: "/images/services/engagement-puja.jpg"
+    image: "/images/services/engagement-puja.webp"
   },
   {
     title: "Varshika Shraddha Puja",
