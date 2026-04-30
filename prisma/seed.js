@@ -343,7 +343,7 @@ const servicesRaw = [
     duration: "3 - 4 hours",
     languages: "Hindi,Sanskrit",
     specialization: "Shiv Puran Path,Shiva Bhakti",
-    image: "/images/services/shiv-puran-puja.jpg"
+    image: "/images/services/shiv-puran-puja.avif"
   },
   {
     title: "Durga Puja",
