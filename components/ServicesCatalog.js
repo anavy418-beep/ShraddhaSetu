@@ -3,6 +3,19 @@
 import { useMemo, useState } from "react";
 import PujaCard from "@/components/PujaCard";
 
+const POPULAR_PUJA_SLUG_ORDER = [
+  "griha-pravesh-puja",
+  "satyanarayan-puja",
+  "marriage-puja",
+  "bhoomi-puja",
+  "rudrabhishek",
+  "navagraha-shanti-puja",
+  "pind-daan-puja",
+  "diwali-puja",
+  "ganesh-chaturthi-puja",
+  "office-opening-puja"
+];
+
 export default function ServicesCatalog({ search = "", services = [], categories = [] }) {
   const [activeCategory, setActiveCategory] = useState("All");
 
@@ -18,6 +31,23 @@ export default function ServicesCatalog({ search = "", services = [], categories
       return categoryCheck && searchCheck;
     });
   }, [activeCategory, search, services]);
+
+  const popularSlugRank = useMemo(
+    () => new Map(POPULAR_PUJA_SLUG_ORDER.map((slug, index) => [slug, index])),
+    []
+  );
+
+  const popularPujas = useMemo(() => {
+    if (activeCategory !== "All") return [];
+    return filteredPujas
+      .filter((puja) => popularSlugRank.has(puja.slug))
+      .sort((a, b) => popularSlugRank.get(a.slug) - popularSlugRank.get(b.slug));
+  }, [activeCategory, filteredPujas, popularSlugRank]);
+
+  const otherPujas = useMemo(() => {
+    if (activeCategory !== "All") return filteredPujas;
+    return filteredPujas.filter((puja) => !popularSlugRank.has(puja.slug));
+  }, [activeCategory, filteredPujas, popularSlugRank]);
 
   return (
     <section className="section">
@@ -45,11 +75,55 @@ export default function ServicesCatalog({ search = "", services = [], categories
             </button>
           ))}
         </div>
-        <div className="card-grid">
-          {filteredPujas.map((puja) => (
-            <PujaCard key={puja.id} puja={puja} />
-          ))}
-        </div>
+        {activeCategory === "All" ? (
+          <>
+            {!!popularPujas.length && (
+              <>
+                <h3
+                  style={{
+                    margin: "4px 0 14px",
+                    color: "var(--deep-brown)",
+                    fontSize: "1.1rem",
+                    fontWeight: 700
+                  }}
+                >
+                  Most Popular Pujas
+                </h3>
+                <div className="card-grid" style={{ marginBottom: 24 }}>
+                  {popularPujas.map((puja) => (
+                    <PujaCard key={puja.id} puja={puja} />
+                  ))}
+                </div>
+              </>
+            )}
+
+            {!!otherPujas.length && (
+              <>
+                <h3
+                  style={{
+                    margin: "0 0 14px",
+                    color: "var(--deep-brown)",
+                    fontSize: "1.1rem",
+                    fontWeight: 700
+                  }}
+                >
+                  All Other Puja Services
+                </h3>
+                <div className="card-grid">
+                  {otherPujas.map((puja) => (
+                    <PujaCard key={puja.id} puja={puja} />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
+        ) : (
+          <div className="card-grid">
+            {filteredPujas.map((puja) => (
+              <PujaCard key={puja.id} puja={puja} />
+            ))}
+          </div>
+        )}
         {!filteredPujas.length && <p>No pujas found for this filter.</p>}
       </div>
     </section>
