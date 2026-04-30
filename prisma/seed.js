@@ -463,7 +463,7 @@ const servicesRaw = [
     duration: "2 - 3 hours",
     languages: "Hindi,Sanskrit,English",
     specialization: "Space Purification,Vastu Rituals",
-    image: "/images/services/shuddhikaran-puja.jpg"
+    image: "/images/services/shuddhikaran-puja.webp"
   },
   {
     title: "Ram Navami Puja",
