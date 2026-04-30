@@ -403,7 +403,7 @@ const servicesRaw = [
     duration: "1.5 - 2.5 hours",
     languages: "Hindi,Sanskrit",
     specialization: "Hanuman Bhakti,Festival Rituals",
-    image: "/images/services/hanuman-janmotsav-puja.jpg"
+    image: "/images/services/hanuman-janmotsav-puja.webp"
   },
   {
     title: "Marriage Anniversary Puja",
