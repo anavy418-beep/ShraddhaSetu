@@ -163,7 +163,7 @@ const servicesRaw = [
     duration: "2.5 - 3.5 hours",
     languages: "Hindi,Sanskrit,English",
     specialization: "Business Inauguration,Vastu Shanti",
-    image: "/images/services/office-opening-puja.jpg"
+    image: "/images/services/office-opening-puja.png"
   },
   {
     title: "Navratri Puja",
@@ -560,7 +560,8 @@ const serviceCategoryBySlug = {
 const serviceImageBySlug = {
   "bhoomi-puja": "/images/services/bhoomi-puja.webp",
   "pind-daan-puja": "/images/services/pind-daan-puja.webp",
-  "ganesh-chaturthi-puja": "/images/services/ganesh-chaturthi-puja.webp"
+  "ganesh-chaturthi-puja": "/images/services/ganesh-chaturthi-puja.webp",
+  "office-opening-puja": "/images/services/office-opening-puja.png"
 };
 
 const services = servicesRaw.map((service) => ({
