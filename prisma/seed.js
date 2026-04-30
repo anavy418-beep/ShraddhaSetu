@@ -127,7 +127,7 @@ const servicesRaw = [
     duration: "2 - 3 hours",
     languages: "Hindi,Marathi,Sanskrit",
     specialization: "Ganpati Sthapana,Festival Rituals",
-    image: "/images/services/ganesh-chaturthi-puja.jpg"
+    image: "/images/services/ganesh-chaturthi-puja.webp"
   },
   {
     title: "Saraswati Puja",
@@ -559,7 +559,8 @@ const serviceCategoryBySlug = {
 
 const serviceImageBySlug = {
   "bhoomi-puja": "/images/services/bhoomi-puja.webp",
-  "pind-daan-puja": "/images/services/pind-daan-puja.webp"
+  "pind-daan-puja": "/images/services/pind-daan-puja.webp",
+  "ganesh-chaturthi-puja": "/images/services/ganesh-chaturthi-puja.webp"
 };
 
 const services = servicesRaw.map((service) => ({
