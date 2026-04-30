@@ -415,7 +415,7 @@ const servicesRaw = [
     duration: "1.5 - 2.5 hours",
     languages: "Hindi,Sanskrit,English",
     specialization: "Couple Blessings,Family Rituals",
-    image: "/images/services/marriage-anniversary-puja.jpg"
+    image: "/images/services/marriage-anniversary-puja.png"
   },
   {
     title: "Annaprashan Puja",
