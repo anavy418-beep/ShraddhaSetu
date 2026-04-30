@@ -367,7 +367,7 @@ const servicesRaw = [
     duration: "3 - 5 hours",
     languages: "Hindi,Sanskrit",
     specialization: "Shiva Mantra Jaap,Healing Rituals",
-    image: "/images/services/mahamrityunjay-jaap.jpg"
+    image: "/images/services/mahamrityunjay-jaap.webp"
   },
   {
     title: "Vishwakarma Puja",
