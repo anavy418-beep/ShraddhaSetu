@@ -27,7 +27,7 @@ export default async function CitiesPage() {
           )}
           <div className="card-grid">
             {cities.map((city) => (
-              <CityCard key={city.id} city={city.name} slug={city.slug} />
+              <CityCard key={city.id} city={city.name} state={city.state} slug={city.slug} />
             ))}
           </div>
         </div>

@@ -79,7 +79,7 @@ export default async function HomePage() {
           <p className="section-subtitle">Serving metro cities and sacred destinations across India.</p>
           <div className="card-grid">
             {cities.map((city) => (
-              <CityCard city={city.name} slug={city.slug} key={city.id} />
+              <CityCard city={city.name} state={city.state} slug={city.slug} key={city.id} />
             ))}
           </div>
         </div>

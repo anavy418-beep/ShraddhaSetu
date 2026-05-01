@@ -25,21 +25,67 @@ const prisma = new PrismaClient({
   })
 });
 
-const cityNames = [
-  "Delhi",
-  "Mumbai",
-  "Bangalore",
-  "Pune",
-  "Hyderabad",
-  "Chennai",
-  "Kolkata",
-  "Jaipur",
-  "Varanasi",
-  "Ujjain",
-  "Haridwar",
-  "Patna",
-  "Lucknow",
-  "Ahmedabad"
+const cityCatalog = [
+  { name: "Delhi", state: "Delhi" },
+  { name: "New Delhi", state: "Delhi" },
+  { name: "Mumbai", state: "Maharashtra" },
+  { name: "Pune", state: "Maharashtra" },
+  { name: "Nagpur", state: "Maharashtra" },
+  { name: "Nashik", state: "Maharashtra" },
+  { name: "Thane", state: "Maharashtra" },
+  { name: "Bangalore", state: "Karnataka" },
+  { name: "Mysore", state: "Karnataka" },
+  { name: "Hyderabad", state: "Telangana" },
+  { name: "Chennai", state: "Tamil Nadu" },
+  { name: "Coimbatore", state: "Tamil Nadu" },
+  { name: "Kolkata", state: "West Bengal" },
+  { name: "Howrah", state: "West Bengal" },
+  { name: "Ahmedabad", state: "Gujarat" },
+  { name: "Surat", state: "Gujarat" },
+  { name: "Vadodara", state: "Gujarat" },
+  { name: "Rajkot", state: "Gujarat" },
+  { name: "Jaipur", state: "Rajasthan" },
+  { name: "Jodhpur", state: "Rajasthan" },
+  { name: "Udaipur", state: "Rajasthan" },
+  { name: "Lucknow", state: "Uttar Pradesh" },
+  { name: "Kanpur", state: "Uttar Pradesh" },
+  { name: "Varanasi", state: "Uttar Pradesh" },
+  { name: "Prayagraj", state: "Uttar Pradesh" },
+  { name: "Ayodhya", state: "Uttar Pradesh" },
+  { name: "Noida", state: "Uttar Pradesh" },
+  { name: "Ghaziabad", state: "Uttar Pradesh" },
+  { name: "Patna", state: "Bihar" },
+  { name: "Gaya", state: "Bihar" },
+  { name: "Muzaffarpur", state: "Bihar" },
+  { name: "Ranchi", state: "Jharkhand" },
+  { name: "Jamshedpur", state: "Jharkhand" },
+  { name: "Bhubaneswar", state: "Odisha" },
+  { name: "Cuttack", state: "Odisha" },
+  { name: "Indore", state: "Madhya Pradesh" },
+  { name: "Bhopal", state: "Madhya Pradesh" },
+  { name: "Ujjain", state: "Madhya Pradesh" },
+  { name: "Gwalior", state: "Madhya Pradesh" },
+  { name: "Chandigarh", state: "Chandigarh" },
+  { name: "Mohali", state: "Punjab" },
+  { name: "Ludhiana", state: "Punjab" },
+  { name: "Amritsar", state: "Punjab" },
+  { name: "Gurugram", state: "Haryana" },
+  { name: "Faridabad", state: "Haryana" },
+  { name: "Panipat", state: "Haryana" },
+  { name: "Dehradun", state: "Uttarakhand" },
+  { name: "Haridwar", state: "Uttarakhand" },
+  { name: "Rishikesh", state: "Uttarakhand" },
+  { name: "Raipur", state: "Chhattisgarh" },
+  { name: "Bilaspur", state: "Chhattisgarh" },
+  { name: "Guwahati", state: "Assam" },
+  { name: "Siliguri", state: "West Bengal" },
+  { name: "Kochi", state: "Kerala" },
+  { name: "Thiruvananthapuram", state: "Kerala" },
+  { name: "Kozhikode", state: "Kerala" },
+  { name: "Vijayawada", state: "Andhra Pradesh" },
+  { name: "Visakhapatnam", state: "Andhra Pradesh" },
+  { name: "Tirupati", state: "Andhra Pradesh" },
+  { name: "Goa", state: "Goa" }
 ];
 
 const servicesRaw = [
@@ -704,6 +750,33 @@ function citySlug(name) {
   return name.toLowerCase().replace(/\s+/g, "-");
 }
 
+function cityDescription(name, state) {
+  return `Book verified pandits for puja, havan and sanskar in ${name}, ${state}.`;
+}
+
+async function upsertCityCatalog(cityList) {
+  const createdCities = {};
+  for (const city of cityList) {
+    const slug = citySlug(city.name);
+    const data = {
+      name: city.name,
+      slug,
+      state: city.state,
+      isActive: true
+    };
+    const savedCity = await prisma.city.upsert({
+      where: { slug },
+      create: data,
+      update: data
+    });
+    createdCities[city.name] = {
+      ...savedCity,
+      description: city.description || cityDescription(city.name, city.state)
+    };
+  }
+  return createdCities;
+}
+
 async function upsertServiceCatalog(serviceList) {
   for (const service of serviceList) {
     const data = {
@@ -729,13 +802,8 @@ async function upsertServiceCatalog(serviceList) {
 
 async function main() {
   if (allowProduction) {
-    for (const service of services) {
-      await prisma.pujaService.updateMany({
-        where: { slug: service.slug },
-        data: { image: service.image }
-      });
-    }
-    console.log(`Safely synced service images for ${services.length} services by slug.`);
+    const createdCities = await upsertCityCatalog(cityCatalog);
+    console.log(`Safely synced ${Object.keys(createdCities).length} cities by slug.`);
     return;
   }
 
@@ -753,16 +821,7 @@ async function main() {
   await prisma.blogCategory.deleteMany();
   await prisma.city.deleteMany();
 
-  const createdCities = {};
-  for (const name of cityNames) {
-    const city = await prisma.city.create({
-      data: {
-        name,
-        slug: citySlug(name)
-      }
-    });
-    createdCities[name] = city;
-  }
+  const createdCities = await upsertCityCatalog(cityCatalog);
 
   await upsertServiceCatalog(services);
 
