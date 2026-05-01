@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 const initialForm = {
@@ -11,6 +12,14 @@ const initialForm = {
   language: "English"
 };
 
+function InfoRow({ label, value }) {
+  return (
+    <p style={{ margin: 0, color: "#5a4332" }}>
+      <strong style={{ color: "#3f2a1d" }}>{label}:</strong> {value || "N/A"}
+    </p>
+  );
+}
+
 export default function KundliForm() {
   const [form, setForm] = useState(initialForm);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,15 +30,28 @@ export default function KundliForm() {
   const hasResult = Boolean(result);
 
   const summaryText = useMemo(() => {
-    if (!result?.summary) {
-      return "No summary provided.";
+    if (!result?.prediction) {
+      return "Detailed prediction is not available right now.";
     }
-    return result.summary;
+    return result.prediction;
+  }, [result]);
+
+  const remedies = useMemo(() => {
+    if (!Array.isArray(result?.remedies) || result.remedies.length === 0) {
+      return ["Consult a verified pandit for personalized puja recommendations based on your full chart."];
+    }
+    return result.remedies;
   }, [result]);
 
   const setValue = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
+
+  function handlePrint() {
+    if (typeof window !== "undefined") {
+      window.print();
+    }
+  }
 
   async function handleGenerate(event) {
     event.preventDefault();
@@ -50,7 +72,7 @@ export default function KundliForm() {
 
       setResult(data.result || null);
       if (data.mode === "demo") {
-        setApiMessage(data.warning || "If API key is not configured, show demo Kundli preview.");
+        setApiMessage(data.warning || "API key is not configured. Showing professional demo Kundli report.");
       } else {
         setApiMessage("Live Kundli generated successfully.");
       }
@@ -66,8 +88,14 @@ export default function KundliForm() {
   return (
     <section className="section">
       <div className="container">
-        <div className="card">
+        <div className="card kundli-print-hide">
           <div className="card-body">
+            <h2 style={{ marginTop: 0, color: "#5f1c1f" }}>Generate Kundli Report</h2>
+            <p style={{ marginTop: 0, color: "#6f5b4d" }}>
+              Fill your birth details to generate a structured Kundli report with panchang, graha positions, dosha insights,
+              and suggested pujas.
+            </p>
+
             <form onSubmit={handleGenerate}>
               <div className="form-grid">
                 <input
@@ -108,10 +136,16 @@ export default function KundliForm() {
               </div>
               <div className="row" style={{ marginTop: 14 }}>
                 <button className="btn btn-primary" type="submit" disabled={isLoading}>
-                  {isLoading ? "Generating Kundli..." : "Generate Kundli"}
+                  {isLoading ? "Generating Kundli Report..." : "Generate Kundli"}
                 </button>
               </div>
             </form>
+
+            {isLoading && (
+              <p style={{ marginTop: 14, color: "#7a4a13", background: "#fff3dc", padding: "10px 12px", borderRadius: 10 }}>
+                Calculating chart details, panchang, and recommended pujas...
+              </p>
+            )}
 
             {error && (
               <p style={{ marginTop: 14, color: "#991b1b", background: "#fee2e2", padding: "10px 12px", borderRadius: 10 }}>
@@ -125,39 +159,76 @@ export default function KundliForm() {
               </p>
             )}
 
-            {!hasResult && !error && (
+            {!hasResult && !error && !isLoading && (
               <div className="card" style={{ marginTop: 16 }}>
                 <div className="card-body">
-                  <h3 style={{ marginTop: 0 }}>Result Preview</h3>
-                  <p>
-                    Fill the form and generate Kundli. If API key is not configured, a demo Kundli preview will be shown
-                    here.
+                  <h3 style={{ marginTop: 0 }}>Professional Kundli Preview</h3>
+                  <p style={{ marginBottom: 0 }}>
+                    Your report will include user details, basic panchang, rashi, nakshatra, lagna, planet positions,
+                    houses, mangal dosha status, prediction summary, and remedies with direct booking suggestions.
                   </p>
                 </div>
               </div>
             )}
+          </div>
+        </div>
 
-            {hasResult && (
-              <div className="card" style={{ marginTop: 16 }}>
+        {hasResult && (
+          <div className="card kundli-report" style={{ marginTop: 18 }}>
+            <div className="card-body">
+              <div className="row kundli-print-hide" style={{ justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                <h3 style={{ margin: 0, color: "#5f1c1f" }}>Kundli Report</h3>
+                <button className="btn btn-outline" type="button" onClick={handlePrint}>
+                  Download / Print Kundli
+                </button>
+              </div>
+
+              <div className="card" style={{ marginBottom: 14 }}>
                 <div className="card-body">
-                  <h3 style={{ marginTop: 0 }}>Kundli Result</h3>
-                  <div className="form-grid">
-                    <p>
-                      <strong>Rashi:</strong> {result.rashi || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Nakshatra:</strong> {result.nakshatra || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Lagna:</strong> {result.lagna || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Mangal Dosha:</strong> {result.mangalDosha || "Not provided"}
-                    </p>
+                  <h4 style={{ marginTop: 0 }}>User Details</h4>
+                  <div className="form-grid" style={{ gap: 10 }}>
+                    <InfoRow label="Full Name" value={result.userDetails?.fullName} />
+                    <InfoRow label="Gender" value={result.userDetails?.gender} />
+                    <InfoRow label="Date of Birth" value={result.userDetails?.dateLabel || result.userDetails?.dateOfBirth} />
+                    <InfoRow label="Time of Birth" value={result.userDetails?.timeOfBirth} />
+                    <InfoRow label="Birth Place / City" value={result.userDetails?.birthPlace} />
+                    <InfoRow label="Language" value={result.userDetails?.language} />
                   </div>
+                </div>
+              </div>
 
-                  <h4 style={{ marginTop: 16 }}>Planet Positions</h4>
-                  {result.planets?.length ? (
+              <div className="card" style={{ marginBottom: 14 }}>
+                <div className="card-body">
+                  <h4 style={{ marginTop: 0 }}>Basic Panchang Details</h4>
+                  <div className="form-grid" style={{ gap: 10 }}>
+                    <InfoRow label="Tithi" value={result.panchang?.tithi} />
+                    <InfoRow label="Nakshatra" value={result.panchang?.nakshatra} />
+                    <InfoRow label="Yoga" value={result.panchang?.yoga} />
+                    <InfoRow label="Karana" value={result.panchang?.karana} />
+                    <InfoRow label="Sunrise" value={result.panchang?.sunrise} />
+                    <InfoRow label="Sunset" value={result.panchang?.sunset} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="card" style={{ marginBottom: 14 }}>
+                <div className="card-body">
+                  <h4 style={{ marginTop: 0 }}>Core Kundli Indicators</h4>
+                  <div className="form-grid" style={{ gap: 10 }}>
+                    <InfoRow label="Rashi" value={result.rashi} />
+                    <InfoRow label="Nakshatra" value={result.nakshatra} />
+                    <InfoRow label="Lagna / Ascendant" value={result.lagna} />
+                    <InfoRow label="Tithi" value={result.tithi} />
+                    <InfoRow label="Yoga" value={result.yoga} />
+                    <InfoRow label="Karana" value={result.karana} />
+                  </div>
+                </div>
+              </div>
+
+              <div className="card" style={{ marginBottom: 14 }}>
+                <div className="card-body">
+                  <h4 style={{ marginTop: 0 }}>Planet Positions</h4>
+                  {result.planetPositions?.length ? (
                     <div style={{ overflowX: "auto" }}>
                       <table style={{ width: "100%", borderCollapse: "collapse" }}>
                         <thead>
@@ -170,12 +241,12 @@ export default function KundliForm() {
                           </tr>
                         </thead>
                         <tbody>
-                          {result.planets.map((planet) => (
-                            <tr key={`${planet.name}-${planet.house}`}>
+                          {result.planetPositions.map((planet) => (
+                            <tr key={`${planet.name}-${planet.house || planet.degree}`}>
                               <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{planet.name}</td>
                               <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{planet.sign}</td>
                               <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{planet.house || "N/A"}</td>
-                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{planet.degree}</td>
+                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{planet.degree || "N/A"}</td>
                               <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>
                                 {planet.retrograde ? "Yes" : "No"}
                               </td>
@@ -185,16 +256,20 @@ export default function KundliForm() {
                       </table>
                     </div>
                   ) : (
-                    <p>Planet positions are not provided by the selected API.</p>
+                    <p style={{ marginBottom: 0 }}>Planet positions are not provided by the selected API.</p>
                   )}
+                </div>
+              </div>
 
-                  <h4 style={{ marginTop: 16 }}>Houses</h4>
+              <div className="card" style={{ marginBottom: 14 }}>
+                <div className="card-body">
+                  <h4 style={{ marginTop: 0 }}>Houses / Bhav</h4>
                   {result.houses?.length ? (
                     <div style={{ overflowX: "auto" }}>
                       <table style={{ width: "100%", borderCollapse: "collapse" }}>
                         <thead>
                           <tr>
-                            <th style={{ textAlign: "left", padding: "8px 6px" }}>House</th>
+                            <th style={{ textAlign: "left", padding: "8px 6px" }}>Bhav</th>
                             <th style={{ textAlign: "left", padding: "8px 6px" }}>Sign</th>
                             <th style={{ textAlign: "left", padding: "8px 6px" }}>Lord</th>
                             <th style={{ textAlign: "left", padding: "8px 6px" }}>Occupants</th>
@@ -202,34 +277,100 @@ export default function KundliForm() {
                         </thead>
                         <tbody>
                           {result.houses.map((house) => (
-                            <tr key={`house-${house.house}`}>
+                            <tr key={`house-${house.house}-${house.sign}`}>
                               <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{house.house}</td>
                               <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{house.sign}</td>
                               <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{house.lord}</td>
-                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>
-                                {house.occupants || "N/A"}
-                              </td>
+                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{house.occupants || "N/A"}</td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
                   ) : (
-                    <p>House details are not provided by the selected API.</p>
+                    <p style={{ marginBottom: 0 }}>House details are not provided by the selected API.</p>
                   )}
-
-                  <div className="card" style={{ marginTop: 16 }}>
-                    <div className="card-body">
-                      <h4 style={{ marginTop: 0 }}>Summary</h4>
-                      <p>{summaryText}</p>
-                    </div>
-                  </div>
                 </div>
               </div>
-            )}
+
+              <div className="card" style={{ marginBottom: 14 }}>
+                <div className="card-body">
+                  <h4 style={{ marginTop: 0 }}>Mangal Dosha</h4>
+                  <p style={{ marginTop: 0, marginBottom: 8 }}>
+                    <strong>Status:</strong> {result.mangalDosha?.status || "Not provided"}
+                  </p>
+                  <p style={{ margin: 0 }}>{result.mangalDosha?.details || "Dosha details not available."}</p>
+                </div>
+              </div>
+
+              <div className="card" style={{ marginBottom: 14 }}>
+                <div className="card-body">
+                  <h4 style={{ marginTop: 0 }}>Short Prediction</h4>
+                  <p style={{ marginBottom: 0 }}>{summaryText}</p>
+                </div>
+              </div>
+
+              <div className="card" style={{ marginBottom: 14 }}>
+                <div className="card-body">
+                  <h4 style={{ marginTop: 0 }}>Remedies / Suggested Puja</h4>
+                  <ul style={{ marginTop: 0, paddingLeft: 18, color: "#5a4332" }}>
+                    {remedies.map((remedy) => (
+                      <li key={remedy} style={{ marginBottom: 8 }}>
+                        {remedy}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="row kundli-print-hide" style={{ marginTop: 8 }}>
+                    {result.recommendedPujas?.map((puja) => (
+                      <Link key={puja.slug} href={`/booking?puja=${puja.slug}`} className="btn btn-primary">
+                        Book Recommended Puja
+                      </Link>
+                    ))}
+                  </div>
+
+                  {result.recommendedPujas?.length > 0 && (
+                    <div style={{ marginTop: 10, color: "#6f5b4d" }}>
+                      {result.recommendedPujas.map((puja) => (
+                        <p key={`${puja.slug}-reason`} style={{ margin: "4px 0" }}>
+                          <strong>{puja.title}:</strong> {puja.reason}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
+
+      <style jsx global>{`
+        @media print {
+          .kundli-print-hide {
+            display: none !important;
+          }
+
+          .kundli-report {
+            border: 1px solid #d9c3a0 !important;
+            box-shadow: none !important;
+            background: #fff !important;
+          }
+
+          .kundli-report .card {
+            border: 1px solid #e6d6be !important;
+            box-shadow: none !important;
+            break-inside: avoid;
+          }
+
+          .page-header,
+          .nav-wrap,
+          .footer,
+          .wa-fab {
+            display: none !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

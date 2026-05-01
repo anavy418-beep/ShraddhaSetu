@@ -30,6 +30,33 @@ const SUPPORTED_PROVIDERS = {
   }
 };
 
+const DEFAULT_FALLBACK_COORDS = {
+  latitude: 25.7585,
+  longitude: 84.1489
+};
+
+const CITY_COORDINATE_MAP = {
+  delhi: { latitude: 28.6139, longitude: 77.209 },
+  "new delhi": { latitude: 28.6139, longitude: 77.209 },
+  mumbai: { latitude: 19.076, longitude: 72.8777 },
+  pune: { latitude: 18.5204, longitude: 73.8567 },
+  bangalore: { latitude: 12.9716, longitude: 77.5946 },
+  bengaluru: { latitude: 12.9716, longitude: 77.5946 },
+  hyderabad: { latitude: 17.385, longitude: 78.4867 },
+  chennai: { latitude: 13.0827, longitude: 80.2707 },
+  kolkata: { latitude: 22.5726, longitude: 88.3639 },
+  varanasi: { latitude: 25.3176, longitude: 82.9739 },
+  ballia: { latitude: 25.7585, longitude: 84.1489 },
+  patna: { latitude: 25.5941, longitude: 85.1376 },
+  lucknow: { latitude: 26.8467, longitude: 80.9462 },
+  jaipur: { latitude: 26.9124, longitude: 75.7873 },
+  ahmedabad: { latitude: 23.0225, longitude: 72.5714 },
+  surat: { latitude: 21.1702, longitude: 72.8311 },
+  ujjain: { latitude: 23.1765, longitude: 75.7885 },
+  haridwar: { latitude: 29.9457, longitude: 78.1642 },
+  gaya: { latitude: 24.7955, longitude: 85.0002 }
+};
+
 function parseDateParts(value) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
   if (!match) {
@@ -58,78 +85,148 @@ function parseNumeric(value) {
   return Number.isFinite(number) ? number : null;
 }
 
-const DEFAULT_FALLBACK_COORDS = {
-  latitude: 25.7585,
-  longitude: 84.1489
-};
+function firstText(...values) {
+  for (const value of values) {
+    if (value === null || value === undefined) {
+      continue;
+    }
+    const text = String(value).trim();
+    if (text) {
+      return text;
+    }
+  }
+  return "";
+}
 
-const CITY_COORDINATE_MAP = {
-  delhi: { latitude: 28.6139, longitude: 77.209 },
-  "new delhi": { latitude: 28.6139, longitude: 77.209 },
-  mumbai: { latitude: 19.076, longitude: 72.8777 },
-  pune: { latitude: 18.5204, longitude: 73.8567 },
-  bangalore: { latitude: 12.9716, longitude: 77.5946 },
-  bengaluru: { latitude: 12.9716, longitude: 77.5946 },
-  hyderabad: { latitude: 17.385, longitude: 78.4867 },
-  chennai: { latitude: 13.0827, longitude: 80.2707 },
-  kolkata: { latitude: 22.5726, longitude: 88.3639 },
-  ahmedabad: { latitude: 23.0225, longitude: 72.5714 },
-  varanasi: { latitude: 25.3176, longitude: 82.9739 },
-  lucknow: { latitude: 26.8467, longitude: 80.9462 },
-  patna: { latitude: 25.5941, longitude: 85.1376 },
-  jaipur: { latitude: 26.9124, longitude: 75.7873 },
-  haridwar: { latitude: 29.9457, longitude: 78.1642 },
-  ujjain: { latitude: 23.1765, longitude: 75.7885 },
-  ballia: { latitude: 25.7585, longitude: 84.1489 }
-};
+function boolFromUnknown(value) {
+  if (typeof value === "boolean") {
+    return value;
+  }
+  if (typeof value === "number") {
+    return value > 0;
+  }
+  const text = String(value || "").toLowerCase();
+  return ["yes", "true", "present", "detected", "high", "active", "manglik"].some((token) => text.includes(token));
+}
+
+function normalizeCityKey(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/\./g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 function resolveCoordinates(birthPlace, latitude, longitude) {
   if (latitude !== null && longitude !== null) {
     return { latitude, longitude };
   }
-
-  const lookupKey = String(birthPlace || "").trim().toLowerCase();
-  if (lookupKey && CITY_COORDINATE_MAP[lookupKey]) {
-    return CITY_COORDINATE_MAP[lookupKey];
+  const cityKey = normalizeCityKey(birthPlace);
+  if (cityKey && CITY_COORDINATE_MAP[cityKey]) {
+    return CITY_COORDINATE_MAP[cityKey];
   }
-
   return DEFAULT_FALLBACK_COORDS;
 }
 
-function demoResult(payload) {
+function toDateLabel(dateValue) {
+  if (!dateValue) {
+    return "";
+  }
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) {
+    return String(dateValue);
+  }
+  return date.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+}
+
+function stringHash(input) {
+  let hash = 0;
+  for (let index = 0; index < input.length; index += 1) {
+    hash = (hash * 31 + input.charCodeAt(index)) % 2147483647;
+  }
+  return Math.abs(hash);
+}
+
+function buildRecommendedPujas(flags) {
+  const suggestions = [];
+
+  if (flags.hasMangalDosha) {
+    suggestions.push({
+      slug: "mangal-bhat-puja",
+      title: "Mangal Bhat Puja",
+      reason: "Suggested for balancing Mangal influence and improving relationship harmony."
+    });
+  }
+
+  if (flags.hasPitruDosha) {
+    suggestions.push({
+      slug: "pitru-dosh-shanti",
+      title: "Pitru Dosh Shanti",
+      reason: "Suggested for ancestral peace and reducing pitru-related obstacles."
+    });
+  }
+
+  if (flags.hasHealthConcern) {
+    suggestions.push({
+      slug: "mahamrityunjay-jaap",
+      title: "Mahamrityunjay Jaap",
+      reason: "Suggested for health strength, healing vibrations, and inner resilience."
+    });
+  }
+
+  if (flags.hasGrahaImbalance) {
+    suggestions.push({
+      slug: "navagraha-shanti-puja",
+      title: "Navagraha Shanti Puja",
+      reason: "Suggested to harmonize planetary energies and reduce graha imbalance."
+    });
+  }
+
+  if (flags.shouldAddProsperity || suggestions.length === 0) {
+    suggestions.push({
+      slug: "satyanarayan-puja",
+      title: "Satyanarayan Puja",
+      reason: "Suggested for overall prosperity, peace, and positive household energy."
+    });
+  }
+
+  return suggestions;
+}
+
+function detectSignals(summaryText, mangalText, planets) {
+  const mergedText = `${summaryText} ${mangalText}`.toLowerCase();
+  const retrogradeCount = planets.filter((planet) => planet.retrograde).length;
+
+  const hasMangalDosha = boolFromUnknown(mangalText) || mergedText.includes("mangal dosha") || mergedText.includes("manglik");
+  const hasPitruDosha = mergedText.includes("pitru") || mergedText.includes("ancestor") || mergedText.includes("ancestral");
+  const hasHealthConcern =
+    mergedText.includes("health") ||
+    mergedText.includes("stress") ||
+    mergedText.includes("fatigue") ||
+    mergedText.includes("disease") ||
+    mergedText.includes("anxiety");
+  const hasGrahaImbalance =
+    mergedText.includes("graha") ||
+    mergedText.includes("planetary imbalance") ||
+    mergedText.includes("planetary") ||
+    retrogradeCount >= 4;
+  const shouldAddProsperity =
+    mergedText.includes("prosper") ||
+    mergedText.includes("wealth") ||
+    mergedText.includes("growth") ||
+    mergedText.includes("career") ||
+    (!hasMangalDosha && !hasPitruDosha && !hasHealthConcern && !hasGrahaImbalance);
+
   return {
-    fullName: payload.fullName,
-    gender: payload.gender,
-    birthDetails: {
-      dateOfBirth: payload.dateOfBirth,
-      timeOfBirth: payload.timeOfBirth,
-      birthPlace: payload.birthPlace,
-      latitude: payload.latitude,
-      longitude: payload.longitude,
-      language: payload.language
-    },
-    rashi: "Taurus",
-    nakshatra: "Rohini",
-    lagna: "Cancer",
-    mangalDosha: "No significant Mangal Dosha observed in demo preview.",
-    planets: [
-      { name: "Sun", sign: "Aries", house: 10, degree: "12.40", retrograde: false },
-      { name: "Moon", sign: "Taurus", house: 11, degree: "03.12", retrograde: false },
-      { name: "Mars", sign: "Gemini", house: 12, degree: "17.89", retrograde: false },
-      { name: "Mercury", sign: "Aries", house: 10, degree: "21.05", retrograde: false },
-      { name: "Jupiter", sign: "Pisces", house: 9, degree: "08.17", retrograde: false },
-      { name: "Venus", sign: "Pisces", house: 9, degree: "27.91", retrograde: false },
-      { name: "Saturn", sign: "Aquarius", house: 8, degree: "15.63", retrograde: true },
-      { name: "Rahu", sign: "Virgo", house: 3, degree: "11.39", retrograde: true },
-      { name: "Ketu", sign: "Pisces", house: 9, degree: "11.39", retrograde: true }
-    ],
-    houses: Array.from({ length: 12 }, (_, index) => ({
-      house: index + 1,
-      sign: ["Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces", "Aries", "Taurus", "Gemini"][index],
-      lord: ["Moon", "Sun", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Saturn", "Jupiter", "Mars", "Venus", "Mercury"][index]
-    })),
-    summary:
-      "Demo preview: Strong dharma and finance houses indicate stable growth. Emotional balance and disciplined planning will help in career and relationship decisions."
+    hasMangalDosha,
+    hasPitruDosha,
+    hasHealthConcern,
+    hasGrahaImbalance,
+    shouldAddProsperity
   };
 }
 
@@ -144,8 +241,7 @@ function normalizePlanetList(raw) {
     degree: String(item.degree ?? item.normDegree ?? item.fullDegree ?? item.longitude ?? "N/A"),
     retrograde: Boolean(
       item.isRetro || item.is_retro || item.retrograde || item.isRetrograde || String(item.retro || "").toLowerCase() === "true"
-    ),
-    nakshatra: item.nakshatra || item.nakshatra_name || null
+    )
   }));
 }
 
@@ -154,11 +250,30 @@ function normalizeHouses(raw) {
     return [];
   }
   return raw.map((item, index) => ({
-    house: Number(item.house ?? item.house_number ?? index + 1) || index + 1,
+    house: Number(item.house ?? item.house_number ?? item.house_no ?? index + 1) || index + 1,
     sign: item.sign || item.rashi || item.zodiac_sign || "N/A",
     lord: item.lord || item.rashi_lord || item.house_lord || "N/A",
-    occupants: Array.isArray(item.occupants) ? item.occupants.join(", ") : item.occupants || ""
+    occupants: Array.isArray(item.occupants) ? item.occupants.join(", ") : item.occupants || "N/A"
   }));
+}
+
+function normalizePanchang(raw, fallbackNakshatra) {
+  const panchangRaw =
+    raw?.data?.panchang ||
+    raw?.data?.basic_panchang ||
+    raw?.responseData?.data?.[0]?.panchang ||
+    raw?.panchang ||
+    {};
+
+  return {
+    tithi: firstText(panchangRaw.tithi, raw?.tithi, "Not provided"),
+    nakshatra: firstText(panchangRaw.nakshatra, raw?.nakshatra, fallbackNakshatra, "Not provided"),
+    yoga: firstText(panchangRaw.yoga, raw?.yog, raw?.yoga, "Not provided"),
+    karana: firstText(panchangRaw.karana, raw?.karan, raw?.karana, "Not provided"),
+    sunrise: firstText(panchangRaw.sunrise, raw?.sunrise, "Not provided"),
+    sunset: firstText(panchangRaw.sunset, raw?.sunset, "Not provided"),
+    weekday: firstText(panchangRaw.weekday, raw?.weekday, "Not provided")
+  };
 }
 
 function normalizeKundliResult(raw, payload) {
@@ -179,41 +294,87 @@ function normalizeKundliResult(raw, payload) {
     [];
 
   const astroSummary = raw?.responseData?.data?.[0]?.astrodata || raw?.data?.astrodata || raw?.astrodata || {};
+  const planets = normalizePlanetList(planetsRaw);
+  const houses = normalizeHouses(housesRaw);
+
+  const rashi = firstText(astroSummary.sign, raw?.rashi, raw?.moon_sign, "Not provided");
+  const nakshatra = firstText(astroSummary.nakshatra, raw?.nakshatra, "Not provided");
+  const lagna = firstText(
+    astroSummary.ascendant,
+    astroSummary.lagna,
+    raw?.lagna,
+    raw?.ascendant,
+    planets.find((item) => String(item?.name || "").toLowerCase() === "ascendant")?.sign,
+    "Not provided"
+  );
+
+  const panchang = normalizePanchang(raw, nakshatra);
+  const mangalText = firstText(
+    raw?.mangal_dosha?.description,
+    raw?.mangalDosha?.description,
+    raw?.manglik_dosh,
+    raw?.dosha?.mangal,
+    "Not clearly indicated"
+  );
+
+  const prediction = firstText(
+    raw?.summary,
+    raw?.prediction,
+    raw?.short_prediction,
+    raw?.responseData?.data?.[0]?.summary,
+    "Prediction summary unavailable from provider."
+  );
+
+  const signals = detectSignals(prediction, mangalText, planets);
+  const remedies = [];
+
+  if (signals.hasMangalDosha) {
+    remedies.push("Observe Hanuman worship on Tuesdays and consider Mangal Bhat Puja for relationship balance.");
+  }
+  if (signals.hasPitruDosha) {
+    remedies.push("Perform Pitru tarpan and Pitru Dosh Shanti with proper sankalp for ancestral blessings.");
+  }
+  if (signals.hasHealthConcern) {
+    remedies.push("Practice daily Mahamrityunjay mantra jaap and maintain sattvic discipline for health support.");
+  }
+  if (signals.hasGrahaImbalance) {
+    remedies.push("Navagraha mantra chanting and Navagraha Shanti Puja can help stabilize planetary influences.");
+  }
+  if (remedies.length === 0) {
+    remedies.push("Regular Gayatri mantra, diya lighting, and monthly Satyanarayan Puja are advised for steady progress.");
+  }
 
   return {
-    fullName: payload.fullName,
-    gender: payload.gender,
-    birthDetails: {
+    userDetails: {
+      fullName: payload.fullName,
+      gender: payload.gender,
       dateOfBirth: payload.dateOfBirth,
+      dateLabel: toDateLabel(payload.dateOfBirth),
       timeOfBirth: payload.timeOfBirth,
       birthPlace: payload.birthPlace,
+      language: payload.language,
       latitude: payload.latitude,
-      longitude: payload.longitude,
-      language: payload.language
+      longitude: payload.longitude
     },
-    rashi: astroSummary.sign || raw?.rashi || raw?.moon_sign || "N/A",
-    nakshatra: astroSummary.nakshatra || raw?.nakshatra || "N/A",
-    lagna:
-      astroSummary.ascendant ||
-      astroSummary.lagna ||
-      raw?.lagna ||
-      raw?.ascendant ||
-      planetsRaw.find((item) => String(item?.name || "").toLowerCase() === "ascendant")?.sign ||
-      "N/A",
-    mangalDosha:
-      raw?.mangal_dosha?.description ||
-      raw?.mangalDosha?.description ||
-      raw?.manglik_dosh ||
-      raw?.dosha?.mangal ||
-      "Not provided by selected API.",
-    planets: normalizePlanetList(planetsRaw),
-    houses: normalizeHouses(housesRaw),
-    summary:
-      raw?.summary ||
-      raw?.prediction ||
-      raw?.short_prediction ||
-      raw?.responseData?.data?.[0]?.summary ||
-      "Detailed API summary not provided. Refer to planetary and house placements."
+    panchang,
+    rashi,
+    nakshatra,
+    lagna,
+    tithi: panchang.tithi,
+    yoga: panchang.yoga,
+    karana: panchang.karana,
+    planetPositions: planets,
+    houses,
+    mangalDosha: {
+      status: signals.hasMangalDosha ? "Present" : "Not Significant",
+      details: mangalText
+    },
+    pitruDosha: {
+      status: signals.hasPitruDosha ? "Present" : "Not Indicated"
+    },
+    prediction,
+    remedies,
+    recommendedPujas: buildRecommendedPujas(signals)
   };
 }
 
@@ -254,6 +415,158 @@ function buildProviderRequestPayload(provider, payload) {
   };
 }
 
+function buildDemoReport(payload) {
+  const fingerprint = stringHash(
+    `${payload.fullName}|${payload.gender}|${payload.dateOfBirth}|${payload.timeOfBirth}|${payload.birthPlace}|${payload.language}`
+  );
+
+  const rashis = [
+    "Aries",
+    "Taurus",
+    "Gemini",
+    "Cancer",
+    "Leo",
+    "Virgo",
+    "Libra",
+    "Scorpio",
+    "Sagittarius",
+    "Capricorn",
+    "Aquarius",
+    "Pisces"
+  ];
+
+  const nakshatras = [
+    "Ashwini",
+    "Bharani",
+    "Krittika",
+    "Rohini",
+    "Mrigashira",
+    "Punarvasu",
+    "Pushya",
+    "Magha",
+    "Hasta",
+    "Swati",
+    "Anuradha",
+    "Revati"
+  ];
+
+  const tithis = ["Pratipada", "Dwitiya", "Tritiya", "Panchami", "Saptami", "Dashami", "Ekadashi", "Trayodashi", "Purnima"];
+  const yogas = ["Shubha", "Siddhi", "Dhriti", "Ayushman", "Harshana", "Saubhagya"];
+  const karanas = ["Bava", "Balava", "Kaulava", "Taitila", "Garija", "Vanija", "Vishti"];
+
+  const rashi = rashis[fingerprint % rashis.length];
+  const nakshatra = nakshatras[(fingerprint >> 2) % nakshatras.length];
+  const lagna = rashis[(fingerprint >> 4) % rashis.length];
+  const tithi = tithis[(fingerprint >> 1) % tithis.length];
+  const yoga = yogas[(fingerprint >> 3) % yogas.length];
+  const karana = karanas[(fingerprint >> 5) % karanas.length];
+
+  const planets = [
+    "Sun",
+    "Moon",
+    "Mars",
+    "Mercury",
+    "Jupiter",
+    "Venus",
+    "Saturn",
+    "Rahu",
+    "Ketu"
+  ].map((name, index) => {
+    const sign = rashis[(fingerprint + index * 3) % rashis.length];
+    return {
+      name,
+      sign,
+      house: ((fingerprint + index) % 12) + 1,
+      degree: `${((fingerprint + index * 17) % 30).toString().padStart(2, "0")}.${((fingerprint + index * 7) % 60)
+        .toString()
+        .padStart(2, "0")}`,
+      retrograde: index > 4 && (fingerprint + index) % 4 === 0
+    };
+  });
+
+  const houses = Array.from({ length: 12 }, (_, index) => ({
+    house: index + 1,
+    sign: rashis[(fingerprint + index) % rashis.length],
+    lord: planets[(fingerprint + index) % planets.length].name,
+    occupants: "N/A"
+  }));
+
+  const hasMangalDosha = fingerprint % 3 === 0;
+  const hasPitruDosha = fingerprint % 5 === 0;
+  const hasHealthConcern = fingerprint % 4 === 0;
+  const hasGrahaImbalance = fingerprint % 2 === 0;
+
+  const prediction =
+    "Demo Kundli report based on entered birth details. This indicates good potential for steady growth through disciplined effort, with better results when spiritual routines and family harmony are maintained.";
+
+  const signals = {
+    hasMangalDosha,
+    hasPitruDosha,
+    hasHealthConcern,
+    hasGrahaImbalance,
+    shouldAddProsperity: true
+  };
+
+  const remedies = [
+    "Start Thursdays with Vishnu mantra and maintain a sattvic morning routine.",
+    "Offer diya and water to Surya daily for confidence and clarity.",
+    "Perform monthly family sankalp puja for harmony and progress."
+  ];
+
+  if (hasMangalDosha) {
+    remedies.unshift("Recite Hanuman Chalisa on Tuesdays and consider Mangal Bhat Puja.");
+  }
+  if (hasPitruDosha) {
+    remedies.unshift("Offer Pitru tarpan on Amavasya and schedule Pitru Dosh Shanti.");
+  }
+  if (hasHealthConcern) {
+    remedies.unshift("Add Mahamrityunjay mantra jaap for health strength and emotional calm.");
+  }
+
+  return {
+    userDetails: {
+      fullName: payload.fullName,
+      gender: payload.gender,
+      dateOfBirth: payload.dateOfBirth,
+      dateLabel: toDateLabel(payload.dateOfBirth),
+      timeOfBirth: payload.timeOfBirth,
+      birthPlace: payload.birthPlace,
+      language: payload.language,
+      latitude: payload.latitude,
+      longitude: payload.longitude
+    },
+    panchang: {
+      tithi,
+      nakshatra,
+      yoga,
+      karana,
+      sunrise: "06:02 AM",
+      sunset: "06:37 PM",
+      weekday: new Date(payload.dateOfBirth).toLocaleDateString("en-IN", { weekday: "long" })
+    },
+    rashi,
+    nakshatra,
+    lagna,
+    tithi,
+    yoga,
+    karana,
+    planetPositions: planets,
+    houses,
+    mangalDosha: {
+      status: hasMangalDosha ? "Present" : "Not Significant",
+      details: hasMangalDosha
+        ? "Demo signal shows Mangal influence in key houses. Consider corrective puja guidance."
+        : "No major Mangal affliction observed in demo profile."
+    },
+    pitruDosha: {
+      status: hasPitruDosha ? "Present" : "Not Indicated"
+    },
+    prediction,
+    remedies,
+    recommendedPujas: buildRecommendedPujas(signals)
+  };
+}
+
 async function callProvider(providerName, payload) {
   const provider = SUPPORTED_PROVIDERS[providerName] || SUPPORTED_PROVIDERS.freeastrologyapi;
   const apiKey = process.env.KUNDLI_API_KEY || "";
@@ -264,8 +577,8 @@ async function callProvider(providerName, payload) {
     return {
       mode: "demo",
       provider: providerName,
-      warning: "If API key is not configured, show demo Kundli preview.",
-      result: demoResult(payload)
+      warning: "Kundli API key is not configured. Showing professional demo Kundli report.",
+      result: buildDemoReport(payload)
     };
   }
 
@@ -319,6 +632,7 @@ function validateInput(body) {
   if (!parseTimeParts(timeOfBirth)) {
     return { error: "Time of birth must be in HH:MM format." };
   }
+
   const resolvedCoordinates = resolveCoordinates(birthPlace, latitude, longitude);
   if (
     resolvedCoordinates.latitude < -90 ||
@@ -326,7 +640,7 @@ function validateInput(body) {
     resolvedCoordinates.longitude < -180 ||
     resolvedCoordinates.longitude > 180
   ) {
-    return { error: "Latitude/longitude values are out of range." };
+    return { error: "Resolved coordinates are out of range." };
   }
 
   return {
@@ -352,16 +666,17 @@ export async function POST(request) {
     }
 
     const provider = (process.env.KUNDLI_API_PROVIDER || "freeastrologyapi").toLowerCase();
+
     try {
-      const result = await callProvider(provider, parsed.value);
-      return jsonOk(result);
+      const output = await callProvider(provider, parsed.value);
+      return jsonOk(output);
     } catch (providerError) {
       console.error(providerError);
       return jsonOk({
         mode: "demo",
         provider,
-        warning: "Live Kundli API is temporarily unavailable. Showing demo Kundli preview.",
-        result: demoResult(parsed.value)
+        warning: "Live Kundli API is temporarily unavailable. Showing professional demo Kundli report.",
+        result: buildDemoReport(parsed.value)
       });
     }
   } catch (error) {

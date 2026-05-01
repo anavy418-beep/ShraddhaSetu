@@ -184,7 +184,7 @@ Notes:
 - Keep `KUNDLI_API_KEY` only in server environments (never in client code).
 - If key/base URL is missing, `/api/kundli/generate` returns a demo Kundli preview.
 - If provider call fails, API gracefully falls back to demo output.
-- Users can enter birth city manually and provide latitude/longitude directly (no Google Maps dependency required).
+- Latitude/longitude fields are hidden from UI; backend resolves coordinates from common city mapping and falls back to Ballia (`25.7585`, `84.1489`) when city is unknown.
 
 ### Provider examples
 
