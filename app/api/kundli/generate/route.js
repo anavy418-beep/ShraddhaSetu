@@ -927,7 +927,7 @@ export async function POST(request) {
       return jsonError(parsed.error, 400);
     }
 
-    const provider = (process.env.KUNDLI_API_PROVIDER || "freeastrologyapi").toLowerCase();
+    const provider = (process.env.KUNDLI_API_PROVIDER || "prokerala").toLowerCase();
 
     try {
       const output = await callProvider(provider, parsed.value);
