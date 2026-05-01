@@ -202,18 +202,6 @@ const servicesRaw = [
     image: "/images/services/bhoomi-puja.webp"
   },
   {
-    title: "Sunderkand Path",
-    slug: "sunderkand-path",
-    category: "Path / Jaap",
-    description: "Powerful recitation of Sunderkand for courage, protection and positivity.",
-    longDescription: "Complete path with Hanuman aarti and sankalp for health, success and peace.",
-    priceFrom: 3100,
-    duration: "2 - 3 hours",
-    languages: "Hindi,Sanskrit",
-    specialization: "Ramayan Path,Hanuman Bhakti",
-    image: "/images/services/sunderkand-path.jpg"
-  },
-  {
     title: "Navagraha Shanti Puja",
     slug: "navagraha-shanti-puja",
     category: "Dosha Nivaran Puja",
@@ -308,18 +296,6 @@ const servicesRaw = [
     languages: "Hindi,Sanskrit,English",
     specialization: "Pre-Wedding Sanskar,Family Rituals",
     image: "/images/services/engagement-puja.webp"
-  },
-  {
-    title: "Varshika Shraddha Puja",
-    slug: "varshika-shraddha-puja",
-    category: "Mukti Karmas",
-    description: "Annual ancestral remembrance ritual for peace, blessings and gratitude.",
-    longDescription: "Traditional varshik shradh with tarpan, pind pradan and brahman bhojan guidance.",
-    priceFrom: 5300,
-    duration: "2.5 - 3.5 hours",
-    languages: "Hindi,Sanskrit",
-    specialization: "Annual Shradh,Pitru Tarpan",
-    image: "/images/services/varshika-shraddha-puja.jpg"
   },
   {
     title: "Dhanteras Puja",
@@ -538,7 +514,6 @@ const serviceCategoryBySlug = {
   "narayan-bali-puja": "Dosha Nivaran & Shanti",
   "pind-daan-puja": "Ancestor & Shraddha",
   "tripindi-shradh-puja": "Ancestor & Shraddha",
-  "varshika-shraddha-puja": "Ancestor & Shraddha",
   "ganesh-chaturthi-puja": "Festival Pujas",
   "navratri-puja": "Festival Pujas",
   "durga-puja": "Festival Pujas",
@@ -549,7 +524,6 @@ const serviceCategoryBySlug = {
   "saraswati-puja": "Festival Pujas",
   "govardhan-puja": "Festival Pujas",
   "hanuman-janmotsav-puja": "Festival Pujas",
-  "sunderkand-path": "Path / Jaap",
   "shiv-puran-puja": "Path / Jaap",
   "vishwakarma-puja": "Business & Prosperity",
   "kuber-upasana-puja": "Business & Prosperity",
