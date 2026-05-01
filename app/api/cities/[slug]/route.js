@@ -10,7 +10,12 @@ export async function GET(_request, { params }) {
     if (!city || !city.isActive) {
       return jsonError("City not found.", 404);
     }
-    return jsonOk({ city });
+    return jsonOk({
+      city: {
+        ...city,
+        description: `Book verified pandits for puja, havan and sanskar in ${city.name}, ${city.state || "India"}.`
+      }
+    });
   } catch (error) {
     console.error(error);
     return jsonError("Unable to fetch city.", 500);

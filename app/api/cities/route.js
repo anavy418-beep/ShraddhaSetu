@@ -9,7 +9,12 @@ export async function GET() {
       where: { isActive: true },
       orderBy: { name: "asc" }
     });
-    return jsonOk({ cities });
+    return jsonOk({
+      cities: cities.map((city) => ({
+        ...city,
+        description: `Book verified pandits for puja, havan and sanskar in ${city.name}, ${city.state || "India"}.`
+      }))
+    });
   } catch (error) {
     console.error(error);
     return jsonError("Unable to fetch cities.", 500);
