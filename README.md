@@ -23,6 +23,9 @@ Use `.env.example` as the template.
 - `WHATSAPP_API_URL` (optional)
 - `WHATSAPP_API_TOKEN` (optional)
 - `NEXT_PUBLIC_SITE_URL` (public base URL, used in metadata/sitemap/robots)
+- `KUNDLI_API_PROVIDER` (`freeastrologyapi`, `astrologyapi`, `prokerala`, `kundliapi`)
+- `KUNDLI_API_KEY` (server-side secret key for Kundli provider)
+- `KUNDLI_API_BASE_URL` (provider base URL or API gateway base)
 
 Example:
 
@@ -38,6 +41,9 @@ WHATSAPP_ADMIN_PHONE="919000000000"
 WHATSAPP_API_URL=""
 WHATSAPP_API_TOKEN=""
 NEXT_PUBLIC_SITE_URL="https://your-domain.vercel.app"
+KUNDLI_API_PROVIDER="freeastrologyapi"
+KUNDLI_API_KEY=""
+KUNDLI_API_BASE_URL=""
 ```
 
 ## Local Development
@@ -157,6 +163,101 @@ npm install
 npm run prisma:generate
 npm run build
 ```
+
+## Kundli API Setup
+
+ShraddhaSetu includes server-side Kundli generation endpoints:
+
+- `POST /api/kundli/generate`
+- `POST /api/kundli/match` (future-ready structure for compatibility matching)
+
+### Required Kundli env variables
+
+```bash
+KUNDLI_API_PROVIDER="freeastrologyapi"
+KUNDLI_API_KEY="your-server-side-key"
+KUNDLI_API_BASE_URL="https://json.freeastrologyapi.com"
+```
+
+Notes:
+
+- Keep `KUNDLI_API_KEY` only in server environments (never in client code).
+- If key/base URL is missing, `/api/kundli/generate` returns a demo Kundli preview.
+- If provider call fails, API gracefully falls back to demo output.
+- Users can enter birth city manually and provide latitude/longitude directly (no Google Maps dependency required).
+
+### Provider examples
+
+- FreeAstrologyAPI (classic JSON API):
+  - `KUNDLI_API_PROVIDER=freeastrologyapi`
+  - `KUNDLI_API_BASE_URL=https://json.freeastrologyapi.com`
+- Alternative providers:
+  - `KUNDLI_API_PROVIDER=astrologyapi` or `prokerala` or `kundliapi`
+  - Set `KUNDLI_API_BASE_URL` according to your provider/gateway endpoint.
+
+## Production SEO Checklist
+
+Use this checklist before and after every production deployment.
+
+1. Verify sitemap URL is reachable:
+
+```bash
+curl -I https://your-domain/sitemap.xml
+```
+
+Expected: `200 OK`
+
+2. Verify robots.txt is reachable:
+
+```bash
+curl -I https://your-domain/robots.txt
+```
+
+Expected: `200 OK`
+
+3. Verify robots.txt contains host + sitemap:
+
+- `Host: https://your-domain`
+- `Sitemap: https://your-domain/sitemap.xml`
+
+4. Confirm `NEXT_PUBLIC_SITE_URL` is set correctly in Vercel:
+
+- Must be your canonical production URL (no trailing slash), for example:
+  - `NEXT_PUBLIC_SITE_URL=https://shraddhasetu-six.vercel.app`
+- This value is used by:
+  - `app/sitemap.js`
+  - `app/robots.js`
+  - page metadata canonical base
+
+5. Confirm sitemap includes all key page types:
+
+- city pages: `/cities/<city-slug>`
+- puja pages: `/services/<puja-slug>`
+- city+puja pages: `/cities/<city-slug>/<puja-slug>`
+
+Quick manual checks:
+
+- open `https://your-domain/sitemap.xml`
+- search for:
+  - `/cities/mumbai`
+  - `/services/navratri-puja`
+  - `/cities/mumbai/navratri-puja`
+
+6. Google Search Console setup steps:
+
+1. Go to [Google Search Console](https://search.google.com/search-console).
+2. Add property:
+   - preferred: `Domain` property (covers all protocols/subdomains), or
+   - `URL prefix` property for your exact production URL.
+3. Verify ownership (DNS TXT for Domain property is recommended).
+4. Open `Sitemaps` and submit:
+   - `https://your-domain/sitemap.xml`
+5. Open `URL Inspection` and request indexing for:
+   - homepage
+   - one city page
+   - one puja page
+   - one city+puja page
+6. Monitor `Pages` and `Sitemaps` reports for crawl/index issues.
 
 ## Android App Readiness
 
