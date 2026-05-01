@@ -719,6 +719,34 @@ function ensureDisclaimer(prediction) {
   return text.includes(KUNDLI_DISCLAIMER) ? text : `${text}\n\n${KUNDLI_DISCLAIMER}`;
 }
 
+function toPublicKundliResponse(mode, report, warning = "") {
+  return {
+    mode,
+    ...(warning ? { warning } : {}),
+    ...report
+  };
+}
+
+function mergeHybridKundli(baseReport, aiOverlay) {
+  const base = baseReport || {};
+  const overlay = aiOverlay || {};
+
+  const mergedMangalSummary = firstText(overlay.doshaExplanation, base?.mangalDosha?.details, "Not clearly indicated.");
+  const mergedPrediction = ensureDisclaimer(firstText(overlay.prediction, base?.prediction));
+
+  return {
+    ...base,
+    prediction: mergedPrediction,
+    remedies: ensureArray(overlay.remedies).length ? ensureArray(overlay.remedies) : ensureArray(base.remedies),
+    mangalDosha: {
+      ...(base.mangalDosha || {}),
+      details: mergedMangalSummary,
+      summary: mergedMangalSummary
+    },
+    recommendedPujas: normalizeRecommendedPujas(overlay.recommendedPujas, base.recommendedPujas)
+  };
+}
+
 function normalizeRecommendedPujas(value, fallbackList) {
   const raw = ensureArray(value);
   if (raw.length === 0) {
@@ -879,7 +907,7 @@ async function callOpenAiKundli(payload, baseReport, hasRealAstroData) {
     return null;
   }
 
-  const model = (process.env.OPENAI_MODEL || "gpt-5.5").trim() || "gpt-5.5";
+  const model = (process.env.OPENAI_MODEL || "gpt-4o-mini").trim() || "gpt-4o-mini";
   const client = new OpenAI({ apiKey });
 
   const languageInstruction = payload.language.toLowerCase().startsWith("hi")
@@ -887,11 +915,11 @@ async function callOpenAiKundli(payload, baseReport, hasRealAstroData) {
     : "Respond entirely in English.";
 
   const systemPrompt =
-    "You are a respectful Vedic spiritual guide. Return JSON only. Do not include markdown or extra text. " +
-    "Use provided astrological values as base guidance. Do not claim mathematical astrology certainty when base data is demo.";
+    "You are a respectful Vedic astrology guide. Return JSON only without markdown. " +
+    "Use the supplied kundli calculation values. Generate only interpretation and guidance text.";
 
   const userPrompt = [
-    "Create a professional, spiritual, respectful Kundli report JSON for this user.",
+    "Based on the following kundli data, generate a professional Vedic astrology report JSON with prediction, remedies, dosha explanation and puja suggestions.",
     languageInstruction,
     hasRealAstroData
       ? "Base astrology data is from configured calculation APIs."
@@ -906,8 +934,15 @@ async function callOpenAiKundli(payload, baseReport, hasRealAstroData) {
     `Birth place: ${payload.birthPlace}`,
     `Language: ${payload.language}`,
     "",
-    "Base report JSON:",
-    JSON.stringify(baseReport)
+    "",
+    "Calculated Kundli Data:",
+    `Rashi: ${firstText(baseReport?.rashi, "Not available")}`,
+    `Nakshatra: ${firstText(baseReport?.nakshatra, "Not available")}`,
+    `Lagna: ${firstText(baseReport?.lagna, "Not available")}`,
+    `Panchang: ${JSON.stringify(baseReport?.panchang || {})}`,
+    `Planet Positions: ${JSON.stringify(baseReport?.planetPositions || [])}`,
+    `Mangal Dosha: ${JSON.stringify(baseReport?.mangalDosha || {})}`,
+    `Recommended base pujas: ${JSON.stringify(baseReport?.recommendedPujas || [])}`
   ].join("\n");
 
   const response = await client.responses.create({
@@ -919,67 +954,14 @@ async function callOpenAiKundli(payload, baseReport, hasRealAstroData) {
     text: {
       format: {
         type: "json_schema",
-        name: "kundli_report",
+        name: "kundli_explanation",
         strict: true,
         schema: {
           type: "object",
           additionalProperties: false,
           properties: {
-            userDetails: { type: "object", additionalProperties: true },
-            panchang: {
-              type: "object",
-              additionalProperties: false,
-              properties: {
-                tithi: { type: "string" },
-                nakshatra: { type: "string" },
-                yoga: { type: "string" },
-                karana: { type: "string" },
-                sunrise: { type: "string" },
-                sunset: { type: "string" }
-              },
-              required: ["tithi", "nakshatra", "yoga", "karana", "sunrise", "sunset"]
-            },
-            rashi: { type: "string" },
-            lagna: { type: "string" },
-            planetPositions: {
-              type: "array",
-              items: {
-                type: "object",
-                additionalProperties: false,
-                properties: {
-                  name: { type: "string" },
-                  sign: { type: "string" },
-                  house: { type: "number" },
-                  degree: { type: "string" },
-                  retrograde: { type: "boolean" }
-                },
-                required: ["name", "sign", "house", "degree", "retrograde"]
-              }
-            },
-            houses: {
-              type: "array",
-              items: {
-                type: "object",
-                additionalProperties: false,
-                properties: {
-                  house: { type: "number" },
-                  sign: { type: "string" },
-                  lord: { type: "string" },
-                  occupants: { type: "string" }
-                },
-                required: ["house", "sign", "lord", "occupants"]
-              }
-            },
-            mangalDosha: {
-              type: "object",
-              additionalProperties: false,
-              properties: {
-                present: { type: "boolean" },
-                summary: { type: "string" }
-              },
-              required: ["present", "summary"]
-            },
             prediction: { type: "string" },
+            doshaExplanation: { type: "string" },
             remedies: { type: "array", items: { type: "string" } },
             recommendedPujas: {
               type: "array",
@@ -996,14 +978,8 @@ async function callOpenAiKundli(payload, baseReport, hasRealAstroData) {
             }
           },
           required: [
-            "userDetails",
-            "panchang",
-            "rashi",
-            "lagna",
-            "planetPositions",
-            "houses",
-            "mangalDosha",
             "prediction",
+            "doshaExplanation",
             "remedies",
             "recommendedPujas"
           ]
@@ -1024,7 +1000,12 @@ async function callOpenAiKundli(payload, baseReport, hasRealAstroData) {
     throw new Error("OpenAI response was not valid JSON.");
   }
 
-  return normalizeAiKundliReport(parsed, payload, baseReport, hasRealAstroData);
+  return {
+    prediction: ensureDisclaimer(firstText(parsed?.prediction, baseReport?.prediction)),
+    doshaExplanation: firstText(parsed?.doshaExplanation, baseReport?.mangalDosha?.details),
+    remedies: ensureArray(parsed?.remedies),
+    recommendedPujas: normalizeRecommendedPujas(parsed?.recommendedPujas, baseReport?.recommendedPujas)
+  };
 }
 
 function toDemo(provider, payload, warning) {
@@ -1255,50 +1236,52 @@ export async function POST(request) {
       return jsonError(parsed.error, 400);
     }
 
-    const provider = (process.env.KUNDLI_API_PROVIDER || "prokerala").toLowerCase();
     const aiProvider = (process.env.KUNDLI_AI_PROVIDER || "openai").toLowerCase();
 
+    let prokeralaReport = null;
     try {
-      const baseOutput = await callProvider(provider, parsed.value);
-
-      if (aiProvider === "openai") {
-        try {
-          const hasRealAstroData = baseOutput.mode === "real";
-          const aiResult = await callOpenAiKundli(parsed.value, baseOutput.result, hasRealAstroData);
-
-          if (!aiResult) {
-            return jsonOk(
-              toDemo(
-                "openai",
-                parsed.value,
-                "OPENAI_API_KEY is missing. Showing professional demo Kundli report."
-              )
-            );
-          }
-
-          return jsonOk({
-            mode: "ai",
-            provider: "openai",
-            astrologySource: baseOutput.provider,
-            result: aiResult
-          });
-        } catch (openAiError) {
-          console.error(openAiError);
-          return jsonOk(
-            toDemo(
-              "openai",
-              parsed.value,
-              "AI Kundli generation is temporarily unavailable. Showing professional demo Kundli report."
-            )
-          );
-        }
-      }
-
-      return jsonOk(baseOutput);
+      prokeralaReport = await callProkeralaProvider(parsed.value);
     } catch (providerError) {
       console.error(providerError);
+    }
+
+    if (!prokeralaReport) {
+      const demoReport = buildDemoReport(parsed.value);
       return jsonOk(
-        toDemo(provider, parsed.value, "Live Kundli API is temporarily unavailable. Showing professional demo Kundli report.")
+        toPublicKundliResponse(
+          "demo",
+          demoReport,
+          "Prokerala calculation is unavailable. Showing professional demo Kundli report."
+        )
+      );
+    }
+
+    if (aiProvider !== "openai") {
+      return jsonOk(toPublicKundliResponse("real", prokeralaReport));
+    }
+
+    try {
+      const aiOverlay = await callOpenAiKundli(parsed.value, prokeralaReport, true);
+      if (!aiOverlay) {
+        return jsonOk(
+          toPublicKundliResponse(
+            "real",
+            prokeralaReport,
+            "OPENAI_API_KEY is missing. Showing real Prokerala Kundli data without AI explanation."
+          )
+        );
+      }
+
+      const hybridReport = mergeHybridKundli(prokeralaReport, aiOverlay);
+      return jsonOk(toPublicKundliResponse("hybrid", hybridReport));
+    } catch (openAiError) {
+      console.error(openAiError);
+      return jsonOk(
+        toPublicKundliResponse(
+          "real",
+          prokeralaReport,
+          "AI explanation is temporarily unavailable. Showing real Prokerala Kundli data."
+        )
       );
     }
   } catch (error) {

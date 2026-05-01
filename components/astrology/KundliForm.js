@@ -26,6 +26,7 @@ export default function KundliForm() {
   const [error, setError] = useState("");
   const [apiMessage, setApiMessage] = useState("");
   const [result, setResult] = useState(null);
+  const [mode, setMode] = useState("");
 
   const hasResult = Boolean(result);
 
@@ -58,6 +59,7 @@ export default function KundliForm() {
     setIsLoading(true);
     setError("");
     setApiMessage("");
+    setMode("");
 
     try {
       const response = await fetch("/api/kundli/generate", {
@@ -70,17 +72,21 @@ export default function KundliForm() {
         throw new Error(data.error || "Unable to generate kundli.");
       }
 
-      setResult(data.result || null);
+      setMode(data.mode || "");
+      setResult(data.result || data || null);
       if (data.mode === "demo") {
         setApiMessage(data.warning || "API key is not configured. Showing professional demo Kundli report.");
-      } else if (data.mode === "ai") {
-        setApiMessage("AI Kundli generated successfully.");
+      } else if (data.mode === "hybrid") {
+        setApiMessage("AI + Real Kundli generated successfully.");
+      } else if (data.mode === "real") {
+        setApiMessage(data.warning || "Real Kundli generated. AI explanation is currently unavailable.");
       } else {
         setApiMessage("Live Kundli generated successfully.");
       }
     } catch (requestError) {
       const message = requestError instanceof Error ? requestError.message : "Unable to generate kundli right now.";
       setError(message);
+      setMode("");
       setResult(null);
     } finally {
       setIsLoading(false);
@@ -179,7 +185,14 @@ export default function KundliForm() {
           <div className="card kundli-report" style={{ marginTop: 18 }}>
             <div className="card-body">
               <div className="row kundli-print-hide" style={{ justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                <h3 style={{ margin: 0, color: "#5f1c1f" }}>Kundli Report</h3>
+                <div className="row" style={{ alignItems: "center" }}>
+                  <h3 style={{ margin: 0, color: "#5f1c1f" }}>Kundli Report</h3>
+                  {mode === "hybrid" && (
+                    <span className="chip" style={{ marginLeft: 8, background: "#fff2cc", borderColor: "#e2c17d", color: "#7f1d1d" }}>
+                      AI + Real Kundli
+                    </span>
+                  )}
+                </div>
                 <button className="btn btn-outline" type="button" onClick={handlePrint}>
                   Download / Print Kundli
                 </button>
