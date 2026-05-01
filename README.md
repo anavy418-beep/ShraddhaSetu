@@ -23,9 +23,11 @@ Use `.env.example` as the template.
 - `WHATSAPP_API_URL` (optional)
 - `WHATSAPP_API_TOKEN` (optional)
 - `NEXT_PUBLIC_SITE_URL` (public base URL, used in metadata/sitemap/robots)
-- `KUNDLI_API_PROVIDER` (`freeastrologyapi`, `astrologyapi`, `prokerala`, `kundliapi`)
-- `KUNDLI_API_KEY` (server-side secret key for Kundli provider)
-- `KUNDLI_API_BASE_URL` (provider base URL or API gateway base)
+- `KUNDLI_API_PROVIDER` (`prokerala` recommended)
+- `PROKERALA_CLIENT_ID` (server-side Prokerala OAuth client id)
+- `PROKERALA_CLIENT_SECRET` (server-side Prokerala OAuth client secret)
+- `KUNDLI_API_BASE_URL` (optional override, default: `https://api.prokerala.com/v2`)
+- `KUNDLI_API_KEY` (optional, only for non-Prokerala providers)
 
 Example:
 
@@ -41,9 +43,11 @@ WHATSAPP_ADMIN_PHONE="919000000000"
 WHATSAPP_API_URL=""
 WHATSAPP_API_TOKEN=""
 NEXT_PUBLIC_SITE_URL="https://your-domain.vercel.app"
-KUNDLI_API_PROVIDER="freeastrologyapi"
+PROKERALA_CLIENT_ID=""
+PROKERALA_CLIENT_SECRET=""
+KUNDLI_API_PROVIDER="prokerala"
+KUNDLI_API_BASE_URL="https://api.prokerala.com/v2"
 KUNDLI_API_KEY=""
-KUNDLI_API_BASE_URL=""
 ```
 
 ## Local Development
@@ -174,26 +178,30 @@ ShraddhaSetu includes server-side Kundli generation endpoints:
 ### Required Kundli env variables
 
 ```bash
-KUNDLI_API_PROVIDER="freeastrologyapi"
-KUNDLI_API_KEY="your-server-side-key"
-KUNDLI_API_BASE_URL="https://json.freeastrologyapi.com"
+PROKERALA_CLIENT_ID="your-prokerala-client-id"
+PROKERALA_CLIENT_SECRET="your-prokerala-client-secret"
+KUNDLI_API_PROVIDER="prokerala"
+KUNDLI_API_BASE_URL="https://api.prokerala.com/v2"
 ```
 
 Notes:
 
-- Keep `KUNDLI_API_KEY` only in server environments (never in client code).
-- If key/base URL is missing, `/api/kundli/generate` returns a demo Kundli preview.
+- Keep `PROKERALA_CLIENT_ID` / `PROKERALA_CLIENT_SECRET` only in server environments (never in client code).
+- If Prokerala credentials are missing, `/api/kundli/generate` returns a demo Kundli preview.
 - If provider call fails, API gracefully falls back to demo output.
+- API response includes explicit `mode`: `real` (live provider response) or `demo` (fallback).
 - Latitude/longitude fields are hidden from UI; backend resolves coordinates from common city mapping and falls back to Ballia (`25.7585`, `84.1489`) when city is unknown.
 
-### Provider examples
+### Prokerala setup steps
 
-- FreeAstrologyAPI (classic JSON API):
-  - `KUNDLI_API_PROVIDER=freeastrologyapi`
-  - `KUNDLI_API_BASE_URL=https://json.freeastrologyapi.com`
-- Alternative providers:
-  - `KUNDLI_API_PROVIDER=astrologyapi` or `prokerala` or `kundliapi`
-  - Set `KUNDLI_API_BASE_URL` according to your provider/gateway endpoint.
+1. Create/login at [api.prokerala.com](https://api.prokerala.com/).
+2. Create an app in your Prokerala API dashboard.
+3. Copy `Client ID` and `Client Secret`.
+4. Add these in Vercel Project Settings -> Environment Variables:
+   - `PROKERALA_CLIENT_ID`
+   - `PROKERALA_CLIENT_SECRET`
+   - `KUNDLI_API_PROVIDER=prokerala`
+5. Redeploy the project.
 
 ## Production SEO Checklist
 
