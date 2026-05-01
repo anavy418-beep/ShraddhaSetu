@@ -73,6 +73,8 @@ export default function KundliForm() {
       setResult(data.result || null);
       if (data.mode === "demo") {
         setApiMessage(data.warning || "API key is not configured. Showing professional demo Kundli report.");
+      } else if (data.mode === "ai") {
+        setApiMessage("AI Kundli generated successfully.");
       } else {
         setApiMessage("Live Kundli generated successfully.");
       }
