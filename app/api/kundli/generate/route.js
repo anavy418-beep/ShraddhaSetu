@@ -58,6 +58,44 @@ function parseNumeric(value) {
   return Number.isFinite(number) ? number : null;
 }
 
+const DEFAULT_FALLBACK_COORDS = {
+  latitude: 25.7585,
+  longitude: 84.1489
+};
+
+const CITY_COORDINATE_MAP = {
+  delhi: { latitude: 28.6139, longitude: 77.209 },
+  "new delhi": { latitude: 28.6139, longitude: 77.209 },
+  mumbai: { latitude: 19.076, longitude: 72.8777 },
+  pune: { latitude: 18.5204, longitude: 73.8567 },
+  bangalore: { latitude: 12.9716, longitude: 77.5946 },
+  bengaluru: { latitude: 12.9716, longitude: 77.5946 },
+  hyderabad: { latitude: 17.385, longitude: 78.4867 },
+  chennai: { latitude: 13.0827, longitude: 80.2707 },
+  kolkata: { latitude: 22.5726, longitude: 88.3639 },
+  ahmedabad: { latitude: 23.0225, longitude: 72.5714 },
+  varanasi: { latitude: 25.3176, longitude: 82.9739 },
+  lucknow: { latitude: 26.8467, longitude: 80.9462 },
+  patna: { latitude: 25.5941, longitude: 85.1376 },
+  jaipur: { latitude: 26.9124, longitude: 75.7873 },
+  haridwar: { latitude: 29.9457, longitude: 78.1642 },
+  ujjain: { latitude: 23.1765, longitude: 75.7885 },
+  ballia: { latitude: 25.7585, longitude: 84.1489 }
+};
+
+function resolveCoordinates(birthPlace, latitude, longitude) {
+  if (latitude !== null && longitude !== null) {
+    return { latitude, longitude };
+  }
+
+  const lookupKey = String(birthPlace || "").trim().toLowerCase();
+  if (lookupKey && CITY_COORDINATE_MAP[lookupKey]) {
+    return CITY_COORDINATE_MAP[lookupKey];
+  }
+
+  return DEFAULT_FALLBACK_COORDS;
+}
+
 function demoResult(payload) {
   return {
     fullName: payload.fullName,
@@ -281,10 +319,13 @@ function validateInput(body) {
   if (!parseTimeParts(timeOfBirth)) {
     return { error: "Time of birth must be in HH:MM format." };
   }
-  if (latitude === null || longitude === null) {
-    return { error: "Latitude and longitude are required numeric values." };
-  }
-  if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+  const resolvedCoordinates = resolveCoordinates(birthPlace, latitude, longitude);
+  if (
+    resolvedCoordinates.latitude < -90 ||
+    resolvedCoordinates.latitude > 90 ||
+    resolvedCoordinates.longitude < -180 ||
+    resolvedCoordinates.longitude > 180
+  ) {
     return { error: "Latitude/longitude values are out of range." };
   }
 
@@ -295,8 +336,8 @@ function validateInput(body) {
       dateOfBirth,
       timeOfBirth,
       birthPlace,
-      latitude,
-      longitude,
+      latitude: resolvedCoordinates.latitude,
+      longitude: resolvedCoordinates.longitude,
       language
     }
   };

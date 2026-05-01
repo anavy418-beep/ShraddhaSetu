@@ -8,8 +8,6 @@ const initialForm = {
   dateOfBirth: "",
   timeOfBirth: "",
   birthPlace: "",
-  latitude: "",
-  longitude: "",
   language: "English"
 };
 
@@ -102,22 +100,6 @@ export default function KundliForm() {
                   placeholder="Birth place / city"
                   value={form.birthPlace}
                   onChange={(event) => setValue("birthPlace", event.target.value)}
-                />
-                <input
-                  required
-                  type="number"
-                  step="any"
-                  placeholder="Latitude"
-                  value={form.latitude}
-                  onChange={(event) => setValue("latitude", event.target.value)}
-                />
-                <input
-                  required
-                  type="number"
-                  step="any"
-                  placeholder="Longitude"
-                  value={form.longitude}
-                  onChange={(event) => setValue("longitude", event.target.value)}
                 />
                 <select value={form.language} onChange={(event) => setValue("language", event.target.value)}>
                   <option>English</option>
