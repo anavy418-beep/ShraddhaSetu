@@ -26,7 +26,14 @@ export default function ProductGrid({ products }) {
       <div className="card-grid">
         {products.map((product) => (
           <article key={product.id} className="card">
-            <img src={product.image} alt={product.name} style={{ width: "100%", height: 180, objectFit: "cover" }} />
+            <img
+              src={product.image || "/images/puja-placeholder.jpg"}
+              alt={product.name}
+              onError={(event) => {
+                event.currentTarget.src = "/images/puja-placeholder.jpg";
+              }}
+              style={{ width: "100%", height: 180, objectFit: "cover" }}
+            />
             <div className="card-body">
               <h3 style={{ marginTop: 0 }}>{product.name}</h3>
               <p style={{ color: "#6f5b4d" }}>{product.description}</p>

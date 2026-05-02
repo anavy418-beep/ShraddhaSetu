@@ -9,7 +9,12 @@ export async function GET() {
       where: { isActive: true },
       orderBy: { createdAt: "desc" }
     });
-    return jsonOk({ products });
+    return jsonOk({
+      products: products.map((product) => ({
+        ...product,
+        image: product.image || "/images/puja-placeholder.jpg"
+      }))
+    });
   } catch (error) {
     console.error(error);
     return jsonError("Unable to fetch products.", 500);

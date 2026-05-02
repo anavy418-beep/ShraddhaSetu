@@ -594,25 +594,76 @@ const services = servicesRaw.map((service) => ({
 
 const products = [
   {
-    name: "Griha Pravesh Samagri Kit",
-    slug: "griha-pravesh-samagri-kit",
-    description: "Complete kit with kalash, havan material, dhoop and essentials.",
-    price: 1999,
-    image: "https://images.unsplash.com/photo-1606342763041-22be2f0d20f7?auto=format&fit=crop&w=1200&q=80"
+    name: "Rudrabhishek Premium Kit",
+    slug: "rudrabhishek-premium-kit",
+    description: "Bilva patra, abhishek dravya, bhasma, flowers and temple-grade essentials.",
+    price: 2499,
+    image: "/images/products/rudrabhishek-premium-kit.jpg",
+    stock: 70,
+    isActive: true
   },
   {
     name: "Satyanarayan Puja Kit",
     slug: "satyanarayan-puja-kit",
-    description: "Curated items for katha, puja setup, and prasad preparation.",
+    description: "Curated katha samagri with kalash items, roli, chawal, panchamrit and prasad setup.",
     price: 1499,
-    image: "https://images.unsplash.com/photo-1580377968131-4db0832b0f67?auto=format&fit=crop&w=1200&q=80"
+    image: "/images/products/satyanarayan-puja-kit.jpg",
+    stock: 90,
+    isActive: true
   },
   {
-    name: "Rudrabhishek Premium Kit",
-    slug: "rudrabhishek-premium-kit",
-    description: "Bilva patra set, abhishek dravya and temple-grade ingredients.",
-    price: 2499,
-    image: "https://images.unsplash.com/photo-1605184861755-89f1f19f4a85?auto=format&fit=crop&w=1200&q=80"
+    name: "Griha Pravesh Samagri Kit",
+    slug: "griha-pravesh-samagri-kit",
+    description: "Complete home-entry kit with kalash, havan samagri, dhoop, coconut and sacred thread.",
+    price: 1999,
+    image: "/images/products/griha-pravesh-samagri-kit.jpg",
+    stock: 85,
+    isActive: true
+  },
+  {
+    name: "Diwali Puja Kit",
+    slug: "diwali-puja-kit",
+    description: "Lakshmi-Ganesh puja essentials including diya set, batti, kumkum and festive samagri.",
+    price: 1299,
+    image: "/images/products/diwali-puja-kit.jpg",
+    stock: 120,
+    isActive: true
+  },
+  {
+    name: "Navagraha Shanti Kit",
+    slug: "navagraha-shanti-kit",
+    description: "Nine-graha focused kit with navdhanya, havan items, flowers and mantra essentials.",
+    price: 2199,
+    image: "/images/products/navagraha-shanti-kit.jpg",
+    stock: 60,
+    isActive: true
+  },
+  {
+    name: "Ganesh Puja Kit",
+    slug: "ganesh-puja-kit",
+    description: "Daily and festival Ganesh puja kit with durva, modak bhog setup and sankalp samagri.",
+    price: 1099,
+    image: "/images/products/ganesh-puja-kit.jpg",
+    stock: 140,
+    isActive: true
+  },
+  {
+    name: "Lakshmi Puja Kit",
+    slug: "lakshmi-puja-kit",
+    description: "Prosperity puja pack with lotus items, coin set, diya essentials and Lakshmi archana samagri.",
+    price: 1399,
+    image: "/images/products/lakshmi-puja-kit.jpg",
+    stock: 110,
+    isActive: true
+  },
+  {
+    name: "Havan Samagri Kit",
+    slug: "havan-samagri-kit",
+    description: "General-purpose havan kit for home rituals with wood sticks, herbs, ghee cup and mantra guide.",
+    price: 999,
+    image: "/images/products/havan-samagri-kit.jpg",
+    stock: 180,
+    isActive: true
   }
 ];
 
@@ -800,10 +851,31 @@ async function upsertServiceCatalog(serviceList) {
   }
 }
 
+async function upsertProductCatalog(productList) {
+  for (const product of productList) {
+    const data = {
+      name: product.name,
+      slug: product.slug,
+      description: product.description,
+      image: product.image,
+      price: product.price,
+      stock: product.stock ?? 100,
+      isActive: product.isActive ?? true
+    };
+
+    await prisma.product.upsert({
+      where: { slug: product.slug },
+      create: data,
+      update: data
+    });
+  }
+}
+
 async function main() {
   if (allowProduction) {
     const createdCities = await upsertCityCatalog(cityCatalog);
-    console.log(`Safely synced ${Object.keys(createdCities).length} cities by slug.`);
+    await upsertProductCatalog(products);
+    console.log(`Safely synced ${Object.keys(createdCities).length} cities and ${products.length} products by slug.`);
     return;
   }
 
@@ -825,9 +897,7 @@ async function main() {
 
   await upsertServiceCatalog(services);
 
-  for (const product of products) {
-    await prisma.product.create({ data: product });
-  }
+  await upsertProductCatalog(products);
 
   const createdCategories = {};
   for (const category of blogCategories) {
