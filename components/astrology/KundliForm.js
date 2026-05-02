@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Autocomplete, useJsApiLoader } from "@react-google-maps/api";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const initialForm = {
   fullName: "",
@@ -15,7 +14,9 @@ const initialForm = {
   longitude: undefined
 };
 
-const GOOGLE_MAPS_LIBRARIES = ["places"];
+const PHOTON_API_URL = "https://photon.komoot.io/api/";
+const PHOTON_MIN_QUERY_LENGTH = 2;
+const PHOTON_MAX_SUGGESTIONS = 6;
 
 function InfoRow({ label, value }) {
   return (
@@ -32,14 +33,11 @@ export default function KundliForm() {
   const [apiMessage, setApiMessage] = useState("");
   const [result, setResult] = useState(null);
   const [mode, setMode] = useState("");
-  const autocompleteRef = useRef(null);
-  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
-
-  const { isLoaded: isPlacesLoaded } = useJsApiLoader({
-    id: "google-places-kundli",
-    googleMapsApiKey,
-    libraries: GOOGLE_MAPS_LIBRARIES
-  });
+  const [placeSuggestions, setPlaceSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSearchingPlace, setIsSearchingPlace] = useState(false);
+  const suppressNextLookupRef = useRef(false);
+  const placeSearchAbortRef = useRef(null);
 
   const hasResult = Boolean(result);
 
@@ -70,23 +68,91 @@ export default function KundliForm() {
     }));
   };
 
-  const handlePlaceChanged = () => {
-    const place = autocompleteRef.current?.getPlace();
-    if (!place) {
-      return;
-    }
+  const onBirthPlaceInput = (value) => {
+    suppressNextLookupRef.current = false;
+    setBirthPlace(value);
+    setShowSuggestions(true);
+  };
 
-    const formattedAddress = place.formatted_address || place.name || "";
-    const lat = place.geometry?.location?.lat?.();
-    const lng = place.geometry?.location?.lng?.();
-
+  const selectPhotonSuggestion = (suggestion) => {
+    suppressNextLookupRef.current = true;
     setForm((prev) => ({
       ...prev,
-      birthPlace: formattedAddress || prev.birthPlace,
-      latitude: typeof lat === "number" ? lat : undefined,
-      longitude: typeof lng === "number" ? lng : undefined
+      birthPlace: suggestion.name,
+      latitude: suggestion.lat,
+      longitude: suggestion.lon
     }));
+    setShowSuggestions(false);
   };
+
+  useEffect(() => {
+    const query = form.birthPlace.trim();
+
+    if (suppressNextLookupRef.current) {
+      suppressNextLookupRef.current = false;
+      return undefined;
+    }
+
+    if (query.length < PHOTON_MIN_QUERY_LENGTH) {
+      setPlaceSuggestions([]);
+      setIsSearchingPlace(false);
+      return undefined;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      placeSearchAbortRef.current?.abort();
+      const controller = new AbortController();
+      placeSearchAbortRef.current = controller;
+      setIsSearchingPlace(true);
+
+      try {
+        const url = `${PHOTON_API_URL}?q=${encodeURIComponent(query)}&limit=${PHOTON_MAX_SUGGESTIONS}`;
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) {
+          throw new Error("Unable to fetch location suggestions.");
+        }
+
+        const data = await response.json();
+        const features = Array.isArray(data?.features) ? data.features : [];
+        const suggestions = features
+          .map((feature) => {
+            const properties = feature?.properties || {};
+            const coordinates = feature?.geometry?.coordinates || [];
+            const lon = Number(coordinates?.[0]);
+            const lat = Number(coordinates?.[1]);
+            const name = String(properties.name || properties.city || properties.state || properties.country || "").trim();
+            const city = String(properties.city || properties.state || properties.county || "").trim();
+            const country = String(properties.country || "").trim();
+
+            if (!name || !Number.isFinite(lat) || !Number.isFinite(lon)) {
+              return null;
+            }
+
+            return {
+              id: `${feature?.properties?.osm_id || ""}-${lat}-${lon}-${name}`,
+              name,
+              city,
+              country,
+              lat,
+              lon
+            };
+          })
+          .filter(Boolean);
+
+        setPlaceSuggestions(suggestions);
+      } catch (lookupError) {
+        if (lookupError.name !== "AbortError") {
+          setPlaceSuggestions([]);
+        }
+      } finally {
+        setIsSearchingPlace(false);
+      }
+    }, 250);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [form.birthPlace]);
 
   function handlePrint() {
     if (typeof window !== "undefined") {
@@ -176,25 +242,65 @@ export default function KundliForm() {
                   value={form.timeOfBirth}
                   onChange={(event) => setValue("timeOfBirth", event.target.value)}
                 />
-                {isPlacesLoaded && googleMapsApiKey ? (
-                  <Autocomplete onLoad={(instance) => (autocompleteRef.current = instance)} onPlaceChanged={handlePlaceChanged}>
-                    <input
-                      required
-                      type="text"
-                      placeholder="Birth place / city"
-                      value={form.birthPlace}
-                      onChange={(event) => setBirthPlace(event.target.value)}
-                    />
-                  </Autocomplete>
-                ) : (
+                <div style={{ position: "relative" }}>
                   <input
                     required
                     type="text"
                     placeholder="Birth place / city"
                     value={form.birthPlace}
-                    onChange={(event) => setBirthPlace(event.target.value)}
+                    onChange={(event) => onBirthPlaceInput(event.target.value)}
+                    onFocus={() => setShowSuggestions(true)}
+                    onBlur={() => {
+                      setTimeout(() => setShowSuggestions(false), 120);
+                    }}
                   />
-                )}
+                  {showSuggestions && (placeSuggestions.length > 0 || isSearchingPlace) && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "calc(100% + 6px)",
+                        left: 0,
+                        right: 0,
+                        background: "#fffdf8",
+                        border: "1px solid #e3d2b9",
+                        borderRadius: 10,
+                        boxShadow: "0 8px 24px rgba(63,42,29,0.12)",
+                        zIndex: 20,
+                        maxHeight: 220,
+                        overflowY: "auto"
+                      }}
+                    >
+                      {isSearchingPlace && (
+                        <div style={{ padding: "10px 12px", color: "#7f1d1d", fontSize: "0.92rem" }}>Searching places...</div>
+                      )}
+                      {!isSearchingPlace &&
+                        placeSuggestions.map((suggestion) => (
+                          <button
+                            type="button"
+                            key={suggestion.id}
+                            onClick={() => selectPhotonSuggestion(suggestion)}
+                            style={{
+                              width: "100%",
+                              textAlign: "left",
+                              padding: "10px 12px",
+                              border: 0,
+                              borderBottom: "1px solid #efe2cc",
+                              background: "transparent",
+                              cursor: "pointer",
+                              color: "#4a3426"
+                            }}
+                          >
+                            <strong>{suggestion.name}</strong>
+                            <span style={{ color: "#7a6859", marginLeft: 6 }}>
+                              {suggestion.city || suggestion.country
+                                ? `${suggestion.city ? `${suggestion.city}, ` : ""}${suggestion.country}`
+                                : ""}
+                            </span>
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                </div>
                 <select value={form.language} onChange={(event) => setValue("language", event.target.value)}>
                   <option>English</option>
                   <option>Hindi</option>
