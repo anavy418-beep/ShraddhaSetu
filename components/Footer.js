@@ -18,9 +18,9 @@ export default async function Footer() {
           <h4>Quick Links</h4>
           <Link href="/">Home</Link>
           <Link href="/services">All Puja Services</Link>
+          <Link href="/booking">Book Now</Link>
           <Link href="/e-puja">E-Puja</Link>
           <Link href="/panchang">Panchang</Link>
-          <Link href="/shop">Shop</Link>
         </section>
         <section>
           <h4>Puja Services</h4>
@@ -41,7 +41,7 @@ export default async function Footer() {
         <section>
           <h4>Blog & Policies</h4>
           <Link href="/blog">Festive Puja Guide</Link>
-          <Link href="/blog/category/festivals">Festival Insights</Link>
+          <Link href="/blog/category/astrology">Astrology Insights</Link>
           <Link href="/contact">Contact Us</Link>
           <Link href="/privacy-policy">Privacy Policy</Link>
           <Link href="/refund-policy">Refund Policy</Link>

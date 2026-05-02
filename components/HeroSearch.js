@@ -38,8 +38,8 @@ export default function HeroSearch({ popularPujas = [] }) {
         ))}
       </div>
       <div className="row" style={{ marginTop: 22 }}>
-        <button className="btn btn-primary" onClick={() => router.push("/services")}>
-          Find a Pandit
+        <button className="btn btn-primary" onClick={() => router.push("/booking")}>
+          Book a Pandit
         </button>
         <button className="btn btn-outline" onClick={() => router.push("/services")}>
           Explore Pujas

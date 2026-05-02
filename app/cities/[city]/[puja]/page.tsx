@@ -71,8 +71,8 @@ export default async function CityPujaPage({ params }: PageProps) {
                 <strong>Description:</strong> {puja.description}
               </p>
               <div className="row" style={{ marginTop: 12 }}>
-                <Link className="btn btn-primary" href={`/services/${puja.slug}`}>
-                  View Service
+                <Link className="btn btn-primary" href={`/booking?puja=${puja.slug}&city=${cityRecord.slug}`}>
+                  Book in {cityRecord.name}
                 </Link>
                 <Link className="btn btn-outline" href={`/cities/${cityRecord.slug}`}>
                   Back to {cityRecord.name}

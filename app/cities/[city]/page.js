@@ -52,8 +52,8 @@ export default async function CityDetailPage({ params }) {
                     <Link className="btn btn-outline" href={`/cities/${cityRecord.slug}/${puja.slug}`}>
                       View in {cityRecord.name}
                     </Link>
-                    <Link className="btn btn-primary" href={`/services/${puja.slug}`}>
-                      View Service
+                    <Link className="btn btn-primary" href={`/booking?puja=${puja.slug}&city=${cityRecord.slug}`}>
+                      Book Now
                     </Link>
                   </div>
                 </div>

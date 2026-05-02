@@ -9,7 +9,10 @@ const navItems = [
   { label: "Cities", href: "/cities" },
   { label: "E-Puja", href: "/e-puja" },
   { label: "Panchang", href: "/panchang" },
-  { label: "Shop", href: "/shop" }
+  { label: "Astrology", href: "/astrology" },
+  { label: "Kundali", href: "/astrology/kundali" },
+  { label: "Shop", href: "/shop" },
+  { label: "Book Now", href: "/booking" }
 ];
 
 export default function Navbar() {

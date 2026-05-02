@@ -62,6 +62,9 @@ export default async function ServiceDetailPage({ params }) {
                 ))}
               </div>
               <div className="row" style={{ marginTop: 18 }}>
+                <Link className="btn btn-primary" href={`/booking?puja=${puja.slug}`}>
+                  Book This Puja
+                </Link>
                 <Link className="btn btn-outline" href="/services">
                   Back to Services
                 </Link>
