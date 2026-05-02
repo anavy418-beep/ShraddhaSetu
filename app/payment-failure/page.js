@@ -21,8 +21,8 @@ export default async function PaymentFailurePage({ searchParams }) {
               </p>
             )}
             <div className="row">
-              <Link href={bookingId ? `/booking?bookingId=${bookingId}` : "/checkout"} className="btn btn-primary">
-                Retry Payment
+              <Link href="/services" className="btn btn-primary">
+                Explore Services
               </Link>
               <Link href="/cart" className="btn btn-outline">
                 Back to Cart

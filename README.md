@@ -23,14 +23,6 @@ Use `.env.example` as the template.
 - `WHATSAPP_API_URL` (optional)
 - `WHATSAPP_API_TOKEN` (optional)
 - `NEXT_PUBLIC_SITE_URL` (public base URL, used in metadata/sitemap/robots)
-- `KUNDLI_API_PROVIDER` (`prokerala` recommended)
-- `PROKERALA_CLIENT_ID` (server-side Prokerala OAuth client id)
-- `PROKERALA_CLIENT_SECRET` (server-side Prokerala OAuth client secret)
-- `KUNDLI_API_BASE_URL` (optional override, default: `https://api.prokerala.com/v2`)
-- `KUNDLI_API_KEY` (optional, only for non-Prokerala providers)
-- `OPENAI_API_KEY` (server-side key for AI Kundli interpretation)
-- `KUNDLI_AI_PROVIDER` (`openai`)
-- `OPENAI_MODEL` (example: `gpt-4o-mini`)
 
 Example:
 
@@ -46,14 +38,6 @@ WHATSAPP_ADMIN_PHONE="919000000000"
 WHATSAPP_API_URL=""
 WHATSAPP_API_TOKEN=""
 NEXT_PUBLIC_SITE_URL="https://your-domain.vercel.app"
-PROKERALA_CLIENT_ID=""
-PROKERALA_CLIENT_SECRET=""
-KUNDLI_API_PROVIDER="prokerala"
-KUNDLI_API_BASE_URL="https://api.prokerala.com/v2"
-KUNDLI_API_KEY=""
-OPENAI_API_KEY=""
-KUNDLI_AI_PROVIDER="openai"
-OPENAI_MODEL="gpt-4o-mini"
 ```
 
 ## Local Development
@@ -173,57 +157,6 @@ npm install
 npm run prisma:generate
 npm run build
 ```
-
-## Kundli API Setup
-
-ShraddhaSetu includes server-side Kundli generation endpoints:
-
-- `POST /api/kundli/generate`
-- `POST /api/kundli/match` (future-ready structure for compatibility matching)
-
-### Required Kundli env variables
-
-```bash
-PROKERALA_CLIENT_ID="your-prokerala-client-id"
-PROKERALA_CLIENT_SECRET="your-prokerala-client-secret"
-KUNDLI_API_PROVIDER="prokerala"
-KUNDLI_API_BASE_URL="https://api.prokerala.com/v2"
-OPENAI_API_KEY="your-openai-api-key"
-KUNDLI_AI_PROVIDER="openai"
-OPENAI_MODEL="gpt-4o-mini"
-```
-
-Notes:
-
-- Keep `PROKERALA_CLIENT_ID` / `PROKERALA_CLIENT_SECRET` only in server environments (never in client code).
-- Keep `OPENAI_API_KEY` only in server environments (never in client code).
-- If Prokerala call fails, `/api/kundli/generate` returns a demo Kundli preview.
-- If OpenAI key is missing or AI call fails, API returns real Prokerala Kundli data without AI explanation.
-- API response includes explicit `mode`: `hybrid` (Prokerala + AI), `real` (Prokerala only), or `demo` (fallback).
-- Latitude/longitude fields are hidden from UI; backend resolves coordinates from common city mapping and falls back to Ballia (`25.7585`, `84.1489`) when city is unknown.
-
-### Prokerala setup steps
-
-1. Create/login at [api.prokerala.com](https://api.prokerala.com/).
-2. Create an app in your Prokerala API dashboard.
-3. Copy `Client ID` and `Client Secret`.
-4. Add these in Vercel Project Settings -> Environment Variables:
-   - `PROKERALA_CLIENT_ID`
-   - `PROKERALA_CLIENT_SECRET`
-   - `KUNDLI_API_PROVIDER=prokerala`
-   - `OPENAI_API_KEY`
-   - `KUNDLI_AI_PROVIDER=openai`
-   - `OPENAI_MODEL=gpt-4o-mini`
-5. Redeploy the project.
-
-### OpenAI key setup steps
-
-1. Open [OpenAI API keys](https://platform.openai.com/api-keys) and create a secret key.
-2. In Vercel Project Settings -> Environment Variables, set:
-   - `OPENAI_API_KEY`
-   - `KUNDLI_AI_PROVIDER=openai`
-   - `OPENAI_MODEL=gpt-4o-mini`
-3. Redeploy.
 
 ## Production SEO Checklist
 

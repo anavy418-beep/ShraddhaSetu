@@ -43,8 +43,8 @@ export default async function EPujaPage() {
                 <input type="file" />
               </div>
               <div className="row" style={{ marginTop: 14 }}>
-                <Link href="/booking" className="btn btn-primary">
-                  Continue to Booking
+                <Link href="/services" className="btn btn-primary">
+                  Explore Puja Services
                 </Link>
                 <Link href="/user-dashboard" className="btn btn-outline">
                   Save Request

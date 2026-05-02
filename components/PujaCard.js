@@ -21,11 +21,8 @@ export default function PujaCard({ puja }) {
           <Link className="btn btn-outline" href={`/services/${puja.slug}`}>
             View Details
           </Link>
-          <Link className="btn btn-primary" href={`/booking?puja=${puja.slug}`}>
-            Book Now
-          </Link>
           <Link className="btn btn-outline" href={`/cities/delhi/${puja.slug}`}>
-            Book in Delhi
+            View in Delhi
           </Link>
         </div>
       </div>
