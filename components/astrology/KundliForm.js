@@ -10,8 +10,8 @@ const initialForm = {
   timeOfBirth: "",
   birthPlace: "",
   language: "English",
-  latitude: undefined,
-  longitude: undefined
+  latitude: "",
+  longitude: ""
 };
 
 const PHOTON_API_URL = "https://photon.komoot.io/api/";
@@ -63,8 +63,8 @@ export default function KundliForm() {
     setForm((prev) => ({
       ...prev,
       birthPlace: value,
-      latitude: undefined,
-      longitude: undefined
+      latitude: "",
+      longitude: ""
     }));
   };
 
@@ -76,13 +76,14 @@ export default function KundliForm() {
 
   const selectPhotonSuggestion = (suggestion) => {
     suppressNextLookupRef.current = true;
+    setPlaceSuggestions([]);
+    setShowSuggestions(false);
     setForm((prev) => ({
       ...prev,
-      birthPlace: suggestion.name,
+      birthPlace: suggestion.label,
       latitude: suggestion.lat,
       longitude: suggestion.lon
     }));
-    setShowSuggestions(false);
   };
 
   useEffect(() => {
@@ -121,18 +122,24 @@ export default function KundliForm() {
             const lon = Number(coordinates?.[0]);
             const lat = Number(coordinates?.[1]);
             const name = String(properties.name || properties.city || properties.state || properties.country || "").trim();
-            const city = String(properties.city || properties.state || properties.county || "").trim();
+            const city = String(properties.city || "").trim();
+            const county = String(properties.county || "").trim();
+            const state = String(properties.state || "").trim();
             const country = String(properties.country || "").trim();
+            const secondary = city || county || state;
 
             if (!name || !Number.isFinite(lat) || !Number.isFinite(lon)) {
               return null;
             }
 
+            const label = [name, secondary, country].filter(Boolean).join(", ");
+
             return {
               id: `${feature?.properties?.osm_id || ""}-${lat}-${lon}-${name}`,
               name,
-              city,
+              city: secondary,
               country,
+              label,
               lat,
               lon
             };
