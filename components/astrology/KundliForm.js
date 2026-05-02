@@ -74,18 +74,6 @@ export default function KundliForm() {
     setShowSuggestions(true);
   };
 
-  const selectPhotonSuggestion = (suggestion) => {
-    suppressNextLookupRef.current = true;
-    setPlaceSuggestions([]);
-    setShowSuggestions(false);
-    setForm((prev) => ({
-      ...prev,
-      birthPlace: suggestion.label,
-      latitude: suggestion.lat,
-      longitude: suggestion.lon
-    }));
-  };
-
   useEffect(() => {
     const query = form.birthPlace.trim();
 
@@ -117,32 +105,19 @@ export default function KundliForm() {
         const features = Array.isArray(data?.features) ? data.features : [];
         const suggestions = features
           .map((feature) => {
-            const properties = feature?.properties || {};
-            const coordinates = feature?.geometry?.coordinates || [];
-            const lon = Number(coordinates?.[0]);
-            const lat = Number(coordinates?.[1]);
-            const name = String(properties.name || properties.city || properties.state || properties.country || "").trim();
-            const city = String(properties.city || "").trim();
-            const county = String(properties.county || "").trim();
-            const state = String(properties.state || "").trim();
-            const country = String(properties.country || "").trim();
-            const secondary = city || county || state;
+            const props = feature?.properties || {};
+            const [lng, lat] = feature?.geometry?.coordinates || [];
+            const numericLat = Number(lat);
+            const numericLng = Number(lng);
+            const label = [props.name, props.city || props.county || props.state, props.country]
+              .filter(Boolean)
+              .join(", ");
 
-            if (!name || !Number.isFinite(lat) || !Number.isFinite(lon)) {
+            if (!label || !Number.isFinite(numericLat) || !Number.isFinite(numericLng)) {
               return null;
             }
 
-            const label = [name, secondary, country].filter(Boolean).join(", ");
-
-            return {
-              id: `${feature?.properties?.osm_id || ""}-${lat}-${lon}-${name}`,
-              name,
-              city: secondary,
-              country,
-              label,
-              lat,
-              lon
-            };
+            return { label, lat: numericLat, lng: numericLng };
           })
           .filter(Boolean);
 
@@ -254,11 +229,11 @@ export default function KundliForm() {
                     required
                     type="text"
                     placeholder="Birth place / city"
-                    value={form.birthPlace}
+                    value={form.birthPlace || ""}
                     onChange={(event) => onBirthPlaceInput(event.target.value)}
                     onFocus={() => setShowSuggestions(true)}
                     onBlur={() => {
-                      setTimeout(() => setShowSuggestions(false), 120);
+                      setTimeout(() => setShowSuggestions(false), 150);
                     }}
                   />
                   {showSuggestions && (placeSuggestions.length > 0 || isSearchingPlace) && (
@@ -281,11 +256,21 @@ export default function KundliForm() {
                         <div style={{ padding: "10px 12px", color: "#7f1d1d", fontSize: "0.92rem" }}>Searching places...</div>
                       )}
                       {!isSearchingPlace &&
-                        placeSuggestions.map((suggestion) => (
+                        placeSuggestions.map((suggestion, index) => (
                           <button
                             type="button"
-                            key={suggestion.id}
-                            onClick={() => selectPhotonSuggestion(suggestion)}
+                            key={`${suggestion.label}-${index}`}
+                            onMouseDown={(event) => {
+                              event.preventDefault();
+                              setForm((prev) => ({
+                                ...prev,
+                                birthPlace: suggestion.label,
+                                latitude: suggestion.lat,
+                                longitude: suggestion.lng
+                              }));
+                              setPlaceSuggestions([]);
+                              setShowSuggestions(false);
+                            }}
                             style={{
                               width: "100%",
                               textAlign: "left",
@@ -297,12 +282,7 @@ export default function KundliForm() {
                               color: "#4a3426"
                             }}
                           >
-                            <strong>{suggestion.name}</strong>
-                            <span style={{ color: "#7a6859", marginLeft: 6 }}>
-                              {suggestion.city || suggestion.country
-                                ? `${suggestion.city ? `${suggestion.city}, ` : ""}${suggestion.country}`
-                                : ""}
-                            </span>
+                            {suggestion.label}
                           </button>
                         ))}
                     </div>
