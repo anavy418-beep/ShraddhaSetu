@@ -142,7 +142,7 @@ export default function KundliForm() {
     }
   }
 
-  async function handleGenerate(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     setIsLoading(true);
     setError("");
@@ -155,6 +155,7 @@ export default function KundliForm() {
         delete payload.latitude;
         delete payload.longitude;
       }
+      console.log("Submitting Kundli form", payload);
 
       const response = await fetch("/api/kundli/generate", {
         method: "POST",
@@ -162,6 +163,7 @@ export default function KundliForm() {
         body: JSON.stringify(payload)
       });
       const data = await response.json();
+      console.log("Kundli API response", data);
       if (!response.ok) {
         throw new Error(data.error || "Unable to generate kundli.");
       }
@@ -198,7 +200,7 @@ export default function KundliForm() {
               and suggested pujas.
             </p>
 
-            <form onSubmit={handleGenerate}>
+            <form onSubmit={handleSubmit}>
               <div className="form-grid">
                 <input
                   required

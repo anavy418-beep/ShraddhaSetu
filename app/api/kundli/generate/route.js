@@ -719,10 +719,11 @@ function ensureDisclaimer(prediction) {
   return text.includes(KUNDLI_DISCLAIMER) ? text : `${text}\n\n${KUNDLI_DISCLAIMER}`;
 }
 
-function toPublicKundliResponse(mode, report, warning = "") {
+function toPublicKundliResponse(mode, report, warning = "", warningReason = "") {
   return {
     mode,
     ...(warning ? { warning } : {}),
+    ...(warningReason ? { warningReason } : {}),
     ...report
   };
 }
@@ -1230,6 +1231,12 @@ function validateInput(body) {
 
 export async function POST(request) {
   try {
+    console.log("Kundli generate API hit");
+    console.log("Has Prokerala env", {
+      hasClientId: !!process.env.PROKERALA_CLIENT_ID,
+      hasClientSecret: !!process.env.PROKERALA_CLIENT_SECRET
+    });
+
     const body = await request.json();
     const parsed = validateInput(body);
     if (parsed.error) {
@@ -1238,20 +1245,29 @@ export async function POST(request) {
 
     const aiProvider = (process.env.KUNDLI_AI_PROVIDER || "openai").toLowerCase();
 
+    const hasProkeralaEnv =
+      Boolean((process.env.PROKERALA_CLIENT_ID || "").trim()) &&
+      Boolean((process.env.PROKERALA_CLIENT_SECRET || "").trim());
+
     let prokeralaReport = null;
+    let prokeralaWarningReason = "";
     try {
       prokeralaReport = await callProkeralaProvider(parsed.value);
     } catch (providerError) {
       console.error(providerError);
+      const message = providerError instanceof Error ? providerError.message.toLowerCase() : "";
+      prokeralaWarningReason = message.includes("token") ? "token_error" : "prokerala_error";
     }
 
     if (!prokeralaReport) {
       const demoReport = buildDemoReport(parsed.value);
+      const warningReason = hasProkeralaEnv ? prokeralaWarningReason || "prokerala_error" : "missing_env";
       return jsonOk(
         toPublicKundliResponse(
           "demo",
           demoReport,
-          "Prokerala calculation is unavailable. Showing professional demo Kundli report."
+          "Prokerala calculation is unavailable. Showing professional demo Kundli report.",
+          warningReason
         )
       );
     }
@@ -1267,7 +1283,8 @@ export async function POST(request) {
           toPublicKundliResponse(
             "real",
             prokeralaReport,
-            "OPENAI_API_KEY is missing. Showing real Prokerala Kundli data without AI explanation."
+            "OPENAI_API_KEY is missing. Showing real Prokerala Kundli data without AI explanation.",
+            "missing_env"
           )
         );
       }
@@ -1280,7 +1297,8 @@ export async function POST(request) {
         toPublicKundliResponse(
           "real",
           prokeralaReport,
-          "AI explanation is temporarily unavailable. Showing real Prokerala Kundli data."
+          "AI explanation is temporarily unavailable. Showing real Prokerala Kundli data.",
+          "openai_error"
         )
       );
     }
