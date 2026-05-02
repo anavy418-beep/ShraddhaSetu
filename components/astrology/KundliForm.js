@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { Autocomplete, useJsApiLoader } from "@react-google-maps/api";
+import { useMemo, useRef, useState } from "react";
 
 const initialForm = {
   fullName: "",
@@ -9,8 +10,12 @@ const initialForm = {
   dateOfBirth: "",
   timeOfBirth: "",
   birthPlace: "",
-  language: "English"
+  language: "English",
+  latitude: undefined,
+  longitude: undefined
 };
+
+const GOOGLE_MAPS_LIBRARIES = ["places"];
 
 function InfoRow({ label, value }) {
   return (
@@ -27,6 +32,14 @@ export default function KundliForm() {
   const [apiMessage, setApiMessage] = useState("");
   const [result, setResult] = useState(null);
   const [mode, setMode] = useState("");
+  const autocompleteRef = useRef(null);
+  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+
+  const { isLoaded: isPlacesLoaded } = useJsApiLoader({
+    id: "google-places-kundli",
+    googleMapsApiKey,
+    libraries: GOOGLE_MAPS_LIBRARIES
+  });
 
   const hasResult = Boolean(result);
 
@@ -48,6 +61,33 @@ export default function KundliForm() {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
+  const setBirthPlace = (value) => {
+    setForm((prev) => ({
+      ...prev,
+      birthPlace: value,
+      latitude: undefined,
+      longitude: undefined
+    }));
+  };
+
+  const handlePlaceChanged = () => {
+    const place = autocompleteRef.current?.getPlace();
+    if (!place) {
+      return;
+    }
+
+    const formattedAddress = place.formatted_address || place.name || "";
+    const lat = place.geometry?.location?.lat?.();
+    const lng = place.geometry?.location?.lng?.();
+
+    setForm((prev) => ({
+      ...prev,
+      birthPlace: formattedAddress || prev.birthPlace,
+      latitude: typeof lat === "number" ? lat : undefined,
+      longitude: typeof lng === "number" ? lng : undefined
+    }));
+  };
+
   function handlePrint() {
     if (typeof window !== "undefined") {
       window.print();
@@ -62,10 +102,16 @@ export default function KundliForm() {
     setMode("");
 
     try {
+      const payload = { ...form };
+      if (typeof payload.latitude !== "number" || typeof payload.longitude !== "number") {
+        delete payload.latitude;
+        delete payload.longitude;
+      }
+
       const response = await fetch("/api/kundli/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
+        body: JSON.stringify(payload)
       });
       const data = await response.json();
       if (!response.ok) {
@@ -130,13 +176,25 @@ export default function KundliForm() {
                   value={form.timeOfBirth}
                   onChange={(event) => setValue("timeOfBirth", event.target.value)}
                 />
-                <input
-                  required
-                  type="text"
-                  placeholder="Birth place / city"
-                  value={form.birthPlace}
-                  onChange={(event) => setValue("birthPlace", event.target.value)}
-                />
+                {isPlacesLoaded && googleMapsApiKey ? (
+                  <Autocomplete onLoad={(instance) => (autocompleteRef.current = instance)} onPlaceChanged={handlePlaceChanged}>
+                    <input
+                      required
+                      type="text"
+                      placeholder="Birth place / city"
+                      value={form.birthPlace}
+                      onChange={(event) => setBirthPlace(event.target.value)}
+                    />
+                  </Autocomplete>
+                ) : (
+                  <input
+                    required
+                    type="text"
+                    placeholder="Birth place / city"
+                    value={form.birthPlace}
+                    onChange={(event) => setBirthPlace(event.target.value)}
+                  />
+                )}
                 <select value={form.language} onChange={(event) => setValue("language", event.target.value)}>
                   <option>English</option>
                   <option>Hindi</option>

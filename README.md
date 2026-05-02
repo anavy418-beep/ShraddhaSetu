@@ -23,6 +23,7 @@ Use `.env.example` as the template.
 - `WHATSAPP_API_URL` (optional)
 - `WHATSAPP_API_TOKEN` (optional)
 - `NEXT_PUBLIC_SITE_URL` (public base URL, used in metadata/sitemap/robots)
+- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (for Kundli birth-place autocomplete)
 
 Example:
 
@@ -38,6 +39,7 @@ WHATSAPP_ADMIN_PHONE="919000000000"
 WHATSAPP_API_URL=""
 WHATSAPP_API_TOKEN=""
 NEXT_PUBLIC_SITE_URL="https://your-domain.vercel.app"
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=""
 ```
 
 ## Local Development
@@ -127,6 +129,7 @@ In Project Settings -> Environment Variables, set:
 - `RAZORPAY_KEY_ID`
 - `RAZORPAY_KEY_SECRET`
 - `NEXT_PUBLIC_SITE_URL` (your production domain)
+- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (Google Places API key)
 
 Apply these to Production (and Preview if needed).
 
