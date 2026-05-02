@@ -1,6 +1,6 @@
 # ShraddhaSetu
 
-Production-ready Next.js booking platform for pandit/pooja services with role-based auth, booking lifecycle, admin workflows, cart/checkout, Razorpay payment flow, WhatsApp notifications, and SEO routes.
+Production-ready Next.js booking platform for pandit/pooja services with role-based auth, booking lifecycle, admin workflows, Razorpay payment flow, WhatsApp notifications, and SEO routes.
 
 ## Stack
 

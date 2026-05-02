@@ -24,8 +24,8 @@ export default async function PaymentFailurePage({ searchParams }) {
               <Link href="/services" className="btn btn-primary">
                 Explore Services
               </Link>
-              <Link href="/cart" className="btn btn-outline">
-                Back to Cart
+              <Link href="/" className="btn btn-outline">
+                Back to Home
               </Link>
             </div>
           </div>

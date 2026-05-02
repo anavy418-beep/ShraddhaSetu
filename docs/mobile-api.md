@@ -26,16 +26,10 @@ All mobile endpoints are under `/api/mobile/*` and map to the same production bu
   - `{ serviceSlug, citySlug, date, time, language, address, packageName, packagePrice, customerName?, customerPhone?, customerEmail?, notes? }`
 - `GET /api/mobile/bookings/my`
 
-## Orders
-
-- `POST /api/mobile/orders/checkout`
-  - Body: `{ address, paymentMethod }`
-- `GET /api/mobile/orders/my`
-
 ## Payments (shared)
 
 - `POST /api/payments/create-order`
-  - Body: `{ entityType: "BOOKING" | "ORDER", entityId, paymentOption?: "ADVANCE" | "FULL", paymentMethod? }`
+  - Body: `{ entityType: "BOOKING", entityId, paymentOption?: "ADVANCE" | "FULL", paymentMethod? }`
 - `POST /api/payments/verify`
   - Body: `{ paymentId, status, razorpayOrderId?, razorpayPaymentId?, razorpaySignature? }`
 - `POST /api/payments/webhook`

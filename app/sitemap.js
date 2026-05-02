@@ -33,7 +33,6 @@ export default async function sitemap() {
     "/astrology",
     "/astrology/kundali",
     "/astrology/match-making",
-    "/shop",
     "/login",
     "/register",
     "/pandits",

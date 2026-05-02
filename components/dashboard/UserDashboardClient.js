@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 export default function UserDashboardClient() {
   const [user, setUser] = useState(null);
   const [bookings, setBookings] = useState([]);
-  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -13,10 +12,11 @@ export default function UserDashboardClient() {
   const loadData = async () => {
     setLoading(true);
     setError("");
-    const [meRes, bookingsRes, ordersRes] = await Promise.all([fetch("/api/auth/me"), fetch("/api/bookings/my"), fetch("/api/orders/my")]);
-    const [meData, bookingsData, ordersData] = await Promise.all([meRes.json(), bookingsRes.json(), ordersRes.json()]);
+    const [meRes, bookingsRes] = await Promise.all([fetch("/api/auth/me"), fetch("/api/bookings/my")]);
+    const [meData, bookingsData] = await Promise.all([meRes.json(), bookingsRes.json()]);
     if (!meRes.ok || !meData.user) {
       setError("Please login as user to access dashboard.");
+      setLoading(false);
       return;
     }
     setUser(meData.user);
@@ -24,9 +24,6 @@ export default function UserDashboardClient() {
       setBookings(bookingsData.bookings || []);
     } else {
       setError(bookingsData.error || "Unable to fetch bookings.");
-    }
-    if (ordersRes.ok) {
-      setOrders(ordersData.orders || []);
     }
     setLoading(false);
   };
@@ -113,45 +110,6 @@ export default function UserDashboardClient() {
                 {!bookings.length && (
                   <tr>
                     <td colSpan={8}>No bookings yet. Start by booking a puja from the services page.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div className="card" style={{ marginTop: 16 }}>
-        <div className="card-body">
-          <h2 style={{ marginTop: 0 }}>My Orders</h2>
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Total</th>
-                  <th>Paid</th>
-                  <th>Status</th>
-                  <th>Payment</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.id}>
-                    <td>{order.orderId}</td>
-                    <td>Rs {order.totalAmount.toLocaleString("en-IN")}</td>
-                    <td>Rs {(order.amountPaid || 0).toLocaleString("en-IN")}</td>
-                    <td>
-                      <span className={`status ${order.status}`}>{order.status}</span>
-                    </td>
-                    <td>
-                      <span className={`status ${order.paymentStatus}`}>{order.paymentStatus}</span>
-                    </td>
-                  </tr>
-                ))}
-                {!orders.length && (
-                  <tr>
-                    <td colSpan={5}>No orders yet. Add a puja samagri kit to cart to begin.</td>
                   </tr>
                 )}
               </tbody>
