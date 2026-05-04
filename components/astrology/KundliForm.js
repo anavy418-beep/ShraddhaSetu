@@ -171,13 +171,11 @@ export default function KundliForm() {
       setMode(data.mode || "");
       setResult(data.result || data || null);
       if (data.mode === "demo") {
-        setApiMessage(data.warning || "API key is not configured. Showing professional demo Kundli report.");
-      } else if (data.mode === "hybrid") {
-        setApiMessage("AI + Real Kundli generated successfully.");
-      } else if (data.mode === "real") {
-        setApiMessage(data.warning || "Real Kundli generated. AI explanation is currently unavailable.");
+        setApiMessage(data.warning || "AI Kundli generation is temporarily unavailable. Showing demo Kundli report.");
+      } else if (data.mode === "ai") {
+        setApiMessage("AI Kundli generated successfully.");
       } else {
-        setApiMessage("Live Kundli generated successfully.");
+        setApiMessage(data.warning || "AI Kundli generated successfully.");
       }
     } catch (requestError) {
       const message = requestError instanceof Error ? requestError.message : "Unable to generate kundli right now.";
@@ -340,9 +338,9 @@ export default function KundliForm() {
               <div className="row kundli-print-hide" style={{ justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
                 <div className="row" style={{ alignItems: "center" }}>
                   <h3 style={{ margin: 0, color: "#5f1c1f" }}>Kundli Report</h3>
-                  {mode === "hybrid" && (
+                  {mode === "ai" && (
                     <span className="chip" style={{ marginLeft: 8, background: "#fff2cc", borderColor: "#e2c17d", color: "#7f1d1d" }}>
-                      AI + Real Kundli
+                      AI Kundli
                     </span>
                   )}
                 </div>
@@ -501,7 +499,7 @@ export default function KundliForm() {
                     <div style={{ marginTop: 10, color: "#6f5b4d" }}>
                       {result.recommendedPujas.map((puja) => (
                         <p key={`${puja.slug}-reason`} style={{ margin: "4px 0" }}>
-                          <strong>{puja.title}:</strong> {puja.reason}
+                          <strong>{puja.title || puja.name}:</strong> {puja.reason}
                         </p>
                       ))}
                     </div>
