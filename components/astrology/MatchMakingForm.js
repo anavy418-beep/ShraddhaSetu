@@ -121,7 +121,9 @@ function PlaceInput({
 
 export default function MatchMakingForm() {
   const [form, setForm] = useState(initialForm);
-  const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [report, setReport] = useState(null);
   const [activeField, setActiveField] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSearchingPlace, setIsSearchingPlace] = useState(false);
@@ -210,9 +212,50 @@ export default function MatchMakingForm() {
     setShowSuggestions(false);
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    setSubmitted(true);
+    setIsLoading(true);
+    setSubmitError("");
+
+    try {
+      const payload = {
+        boy: {
+          name: form?.boy?.name || "",
+          dateOfBirth: form?.boy?.dateOfBirth || "",
+          timeOfBirth: form?.boy?.timeOfBirth || "",
+          birthPlace: form?.boy?.birthPlace || "",
+          latitude: form?.boy?.latitude || "",
+          longitude: form?.boy?.longitude || ""
+        },
+        girl: {
+          name: form?.girl?.name || "",
+          dateOfBirth: form?.girl?.dateOfBirth || "",
+          timeOfBirth: form?.girl?.timeOfBirth || "",
+          birthPlace: form?.girl?.birthPlace || "",
+          latitude: form?.girl?.latitude || "",
+          longitude: form?.girl?.longitude || ""
+        }
+      };
+
+      const response = await fetch("/api/match-making/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      console.log("Match Making API Response:", data);
+
+      if (!response?.ok) {
+        throw new Error(data?.error || "Unable to generate compatibility report.");
+      }
+
+      setReport(data || null);
+    } catch (error) {
+      setReport(null);
+      setSubmitError(error instanceof Error ? error.message : "Unable to generate compatibility report.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -301,16 +344,92 @@ export default function MatchMakingForm() {
             </p>
           )}
 
-          <button className="btn btn-primary" style={{ marginTop: 14 }} type="submit">
-            Check Compatibility
+          <button className="btn btn-primary" style={{ marginTop: 14 }} type="submit" disabled={isLoading}>
+            {isLoading ? "Checking..." : "Check Compatibility"}
           </button>
         </form>
 
+        {submitError && (
+          <p style={{ marginTop: 12, color: "#991b1b", background: "#fee2e2", padding: "10px 12px", borderRadius: 10 }}>
+            {submitError}
+          </p>
+        )}
+
         <div className="card" style={{ marginTop: 16 }}>
           <div className="card-body">
-            <h3 style={{ marginTop: 0 }}>Result Placeholder</h3>
-            <p>Guna score, dosha summary and compatibility notes will be shown here.</p>
-            {submitted && <p style={{ marginBottom: 0, color: "#5a4332" }}>Match making request submitted successfully.</p>}
+            <h3 style={{ marginTop: 0 }}>Compatibility Report</h3>
+            {!report && <p>Guna score, dosha summary and compatibility notes will be shown here.</p>}
+
+            {report && (
+              <div>
+                <p style={{ margin: "6px 0", color: "#5a4332" }}>
+                  <strong>Total Compatibility Score:</strong> {report?.score ?? "N/A"}
+                </p>
+                <p style={{ margin: "6px 0", color: "#5a4332" }}>
+                  <strong>Guna Score:</strong> {report?.gunaScore || "N/A"}
+                </p>
+                <p style={{ margin: "6px 0", color: "#5a4332" }}>
+                  <strong>Compatibility Level:</strong> {report?.compatibilityLevel || "N/A"}
+                </p>
+                <p style={{ margin: "6px 0", color: "#5a4332" }}>
+                  <strong>Summary:</strong> {report?.summary || "Not available"}
+                </p>
+
+                <div style={{ marginTop: 10 }}>
+                  <h4 style={{ margin: "8px 0" }}>Manglik Status</h4>
+                  <p style={{ margin: "4px 0", color: "#5a4332" }}>
+                    <strong>Boy:</strong> {report?.manglikStatus?.boy || "Not available"}
+                  </p>
+                  <p style={{ margin: "4px 0", color: "#5a4332" }}>
+                    <strong>Girl:</strong> {report?.manglikStatus?.girl || "Not available"}
+                  </p>
+                  <p style={{ margin: "4px 0", color: "#5a4332" }}>
+                    <strong>Result:</strong> {report?.manglikStatus?.result || "Not available"}
+                  </p>
+                </div>
+
+                <div style={{ marginTop: 10 }}>
+                  <h4 style={{ margin: "8px 0" }}>Dosha Summary</h4>
+                  <ul style={{ marginTop: 0, paddingLeft: 18, color: "#5a4332" }}>
+                    {(report?.doshaSummary || []).map((item, index) => (
+                      <li key={`dosha-${index}`}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{ marginTop: 10 }}>
+                  <h4 style={{ margin: "8px 0" }}>Strengths</h4>
+                  <ul style={{ marginTop: 0, paddingLeft: 18, color: "#5a4332" }}>
+                    {(report?.strengths || []).map((item, index) => (
+                      <li key={`strength-${index}`}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{ marginTop: 10 }}>
+                  <h4 style={{ margin: "8px 0" }}>Concerns</h4>
+                  <ul style={{ marginTop: 0, paddingLeft: 18, color: "#5a4332" }}>
+                    {(report?.concerns || []).map((item, index) => (
+                      <li key={`concern-${index}`}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{ marginTop: 10 }}>
+                  <h4 style={{ margin: "8px 0" }}>Recommendations</h4>
+                  <ul style={{ marginTop: 0, paddingLeft: 18, color: "#5a4332" }}>
+                    {(report?.recommendations || []).map((item, index) => (
+                      <li key={`recommendation-${index}`}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{ marginTop: 10 }}>
+                  <h4 style={{ margin: "8px 0" }}>Marriage Advice</h4>
+                  <p style={{ margin: 0, color: "#5a4332" }}>{report?.marriageAdvice || "Not available"}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
