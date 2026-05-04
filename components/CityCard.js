@@ -11,6 +11,7 @@ export default function CityCard({ city }) {
   const stats = city?.stats || {};
   const pujaConducted = stats?.pujaConducted ?? 0;
   const pandits = stats?.pandits ?? 0;
+  console.log("City Image:", cityName, cityImage);
 
   return (
     <article className="card">
