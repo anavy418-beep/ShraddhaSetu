@@ -227,11 +227,26 @@ function toDateLabel(dateValue) {
 }
 
 function toPublicKundliResponse(mode, report, warning = "", warningReason = "") {
+  const kundli = report?.kundli || report || {};
+  const planets = Array.isArray(report?.planets)
+    ? report.planets
+    : Array.isArray(kundli?.planetPositions)
+      ? kundli.planetPositions
+      : [];
+  const chart = Array.isArray(report?.chart)
+    ? report.chart
+    : Array.isArray(kundli?.houses)
+      ? kundli.houses
+      : [];
+
   return {
     mode,
+    kundli,
+    planets,
+    chart,
     ...(warning ? { warning } : {}),
     ...(warningReason ? { warningReason } : {}),
-    ...report
+    ...kundli
   };
 }
 

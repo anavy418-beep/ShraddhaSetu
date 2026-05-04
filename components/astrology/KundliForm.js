@@ -39,21 +39,45 @@ export default function KundliForm() {
   const suppressNextLookupRef = useRef(false);
   const placeSearchAbortRef = useRef(null);
 
-  const hasResult = Boolean(result);
+  const responseData = result || null;
+  const kundliData = responseData?.kundli || responseData || null;
+  const planets = Array.isArray(responseData?.planets)
+    ? responseData.planets
+    : Array.isArray(kundliData?.planetPositions)
+      ? kundliData.planetPositions
+      : [];
+  const chart = Array.isArray(responseData?.chart)
+    ? responseData.chart
+    : Array.isArray(kundliData?.houses)
+      ? kundliData.houses
+      : [];
+
+  const hasResult = Boolean(kundliData);
 
   const summaryText = useMemo(() => {
-    if (!result?.prediction) {
+    const prediction = kundliData?.prediction;
+    if (!prediction) {
       return "Detailed prediction is not available right now.";
     }
-    return result.prediction;
-  }, [result]);
+    if (typeof prediction === "string") {
+      return prediction;
+    }
+    return [
+      `Personality: ${prediction.personality || "Not provided"}`,
+      `Career: ${prediction.career || "Not provided"}`,
+      `Finance: ${prediction.finance || "Not provided"}`,
+      `Marriage: ${prediction.marriage || "Not provided"}`,
+      `Health: ${prediction.health || "Not provided"}`,
+      `Spiritual: ${prediction.spiritual || "Not provided"}`
+    ].join(" ");
+  }, [kundliData]);
 
   const remedies = useMemo(() => {
-    if (!Array.isArray(result?.remedies) || result.remedies.length === 0) {
+    if (!Array.isArray(kundliData?.remedies) || kundliData.remedies.length === 0) {
       return ["Consult a verified pandit for personalized puja recommendations based on your full chart."];
     }
-    return result.remedies;
-  }, [result]);
+    return kundliData.remedies;
+  }, [kundliData]);
 
   const setValue = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -163,13 +187,13 @@ export default function KundliForm() {
         body: JSON.stringify(payload)
       });
       const data = await response.json();
-      console.log("Kundli API response", data);
+      console.log("Kundli API Response:", data);
       if (!response.ok) {
         throw new Error(data.error || "Unable to generate kundli.");
       }
 
       setMode(data.mode || "");
-      setResult(data.result || data || null);
+      setResult(data || null);
       if (data.mode === "demo") {
         setApiMessage(data.warning || "AI Kundli generation is temporarily unavailable. Showing demo Kundli report.");
       } else if (data.mode === "ai") {
@@ -318,6 +342,10 @@ export default function KundliForm() {
               </p>
             )}
 
+            {(mode === "demo" || !kundliData) && !isLoading && (
+              <p style={{ marginTop: 10, color: "#6f5b4d" }}>Demo Kundli loaded</p>
+            )}
+
             {!hasResult && !error && !isLoading && (
               <div className="card" style={{ marginTop: 16 }}>
                 <div className="card-body">
@@ -332,7 +360,7 @@ export default function KundliForm() {
           </div>
         </div>
 
-        {hasResult && (
+        {hasResult && kundliData && (
           <div className="card kundli-report" style={{ marginTop: 18 }}>
             <div className="card-body">
               <div className="row kundli-print-hide" style={{ justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
@@ -353,12 +381,15 @@ export default function KundliForm() {
                 <div className="card-body">
                   <h4 style={{ marginTop: 0 }}>User Details</h4>
                   <div className="form-grid" style={{ gap: 10 }}>
-                    <InfoRow label="Full Name" value={result.userDetails?.fullName} />
-                    <InfoRow label="Gender" value={result.userDetails?.gender} />
-                    <InfoRow label="Date of Birth" value={result.userDetails?.dateLabel || result.userDetails?.dateOfBirth} />
-                    <InfoRow label="Time of Birth" value={result.userDetails?.timeOfBirth} />
-                    <InfoRow label="Birth Place / City" value={result.userDetails?.birthPlace} />
-                    <InfoRow label="Language" value={result.userDetails?.language} />
+                    <InfoRow label="Full Name" value={kundliData?.userDetails?.fullName || kundliData?.userDetails?.name} />
+                    <InfoRow label="Gender" value={kundliData?.userDetails?.gender} />
+                    <InfoRow
+                      label="Date of Birth"
+                      value={kundliData?.userDetails?.dateLabel || kundliData?.userDetails?.dateOfBirth}
+                    />
+                    <InfoRow label="Time of Birth" value={kundliData?.userDetails?.timeOfBirth} />
+                    <InfoRow label="Birth Place / City" value={kundliData?.userDetails?.birthPlace} />
+                    <InfoRow label="Language" value={kundliData?.userDetails?.language} />
                   </div>
                 </div>
               </div>
@@ -367,12 +398,12 @@ export default function KundliForm() {
                 <div className="card-body">
                   <h4 style={{ marginTop: 0 }}>Basic Panchang Details</h4>
                   <div className="form-grid" style={{ gap: 10 }}>
-                    <InfoRow label="Tithi" value={result.panchang?.tithi} />
-                    <InfoRow label="Nakshatra" value={result.panchang?.nakshatra} />
-                    <InfoRow label="Yoga" value={result.panchang?.yoga} />
-                    <InfoRow label="Karana" value={result.panchang?.karana} />
-                    <InfoRow label="Sunrise" value={result.panchang?.sunrise} />
-                    <InfoRow label="Sunset" value={result.panchang?.sunset} />
+                    <InfoRow label="Tithi" value={kundliData?.panchang?.tithi} />
+                    <InfoRow label="Nakshatra" value={kundliData?.panchang?.nakshatra} />
+                    <InfoRow label="Yoga" value={kundliData?.panchang?.yoga} />
+                    <InfoRow label="Karana" value={kundliData?.panchang?.karana} />
+                    <InfoRow label="Sunrise" value={kundliData?.panchang?.sunrise} />
+                    <InfoRow label="Sunset" value={kundliData?.panchang?.sunset} />
                   </div>
                 </div>
               </div>
@@ -381,12 +412,12 @@ export default function KundliForm() {
                 <div className="card-body">
                   <h4 style={{ marginTop: 0 }}>Core Kundli Indicators</h4>
                   <div className="form-grid" style={{ gap: 10 }}>
-                    <InfoRow label="Rashi" value={result.rashi} />
-                    <InfoRow label="Nakshatra" value={result.nakshatra} />
-                    <InfoRow label="Lagna / Ascendant" value={result.lagna} />
-                    <InfoRow label="Tithi" value={result.tithi} />
-                    <InfoRow label="Yoga" value={result.yoga} />
-                    <InfoRow label="Karana" value={result.karana} />
+                    <InfoRow label="Rashi" value={kundliData?.rashi} />
+                    <InfoRow label="Nakshatra" value={kundliData?.nakshatra} />
+                    <InfoRow label="Lagna / Ascendant" value={kundliData?.lagna} />
+                    <InfoRow label="Tithi" value={kundliData?.tithi} />
+                    <InfoRow label="Yoga" value={kundliData?.yoga} />
+                    <InfoRow label="Karana" value={kundliData?.karana} />
                   </div>
                 </div>
               </div>
@@ -394,7 +425,7 @@ export default function KundliForm() {
               <div className="card" style={{ marginBottom: 14 }}>
                 <div className="card-body">
                   <h4 style={{ marginTop: 0 }}>Planet Positions</h4>
-                  {result.planetPositions?.length ? (
+                  {planets.length ? (
                     <div style={{ overflowX: "auto" }}>
                       <table style={{ width: "100%", borderCollapse: "collapse" }}>
                         <thead>
@@ -407,14 +438,14 @@ export default function KundliForm() {
                           </tr>
                         </thead>
                         <tbody>
-                          {result.planetPositions.map((planet) => (
-                            <tr key={`${planet.name}-${planet.house || planet.degree}`}>
-                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{planet.name}</td>
-                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{planet.sign}</td>
-                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{planet.house || "N/A"}</td>
-                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{planet.degree || "N/A"}</td>
+                          {(planets || []).map((planet, index) => (
+                            <tr key={`${planet?.name || planet?.planet || "planet"}-${planet?.house || planet?.degree || index}`}>
+                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{planet?.name || planet?.planet}</td>
+                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{planet?.sign || "N/A"}</td>
+                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{planet?.house || "N/A"}</td>
+                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{planet?.degree || "N/A"}</td>
                               <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>
-                                {planet.retrograde ? "Yes" : "No"}
+                                {planet?.retrograde ? "Yes" : "No"}
                               </td>
                             </tr>
                           ))}
@@ -430,7 +461,7 @@ export default function KundliForm() {
               <div className="card" style={{ marginBottom: 14 }}>
                 <div className="card-body">
                   <h4 style={{ marginTop: 0 }}>Houses / Bhav</h4>
-                  {result.houses?.length ? (
+                  {chart.length ? (
                     <div style={{ overflowX: "auto" }}>
                       <table style={{ width: "100%", borderCollapse: "collapse" }}>
                         <thead>
@@ -442,12 +473,12 @@ export default function KundliForm() {
                           </tr>
                         </thead>
                         <tbody>
-                          {result.houses.map((house) => (
-                            <tr key={`house-${house.house}-${house.sign}`}>
-                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{house.house}</td>
-                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{house.sign}</td>
-                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{house.lord}</td>
-                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{house.occupants || "N/A"}</td>
+                          {(chart || []).map((house, index) => (
+                            <tr key={`house-${house?.house || index + 1}-${house?.sign || "unknown"}`}>
+                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{house?.house || index + 1}</td>
+                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{house?.sign || "N/A"}</td>
+                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{house?.lord || "N/A"}</td>
+                              <td style={{ padding: "8px 6px", borderTop: "1px solid #ead7bc" }}>{house?.occupants || "N/A"}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -463,9 +494,9 @@ export default function KundliForm() {
                 <div className="card-body">
                   <h4 style={{ marginTop: 0 }}>Mangal Dosha</h4>
                   <p style={{ marginTop: 0, marginBottom: 8 }}>
-                    <strong>Status:</strong> {result.mangalDosha?.status || "Not provided"}
+                    <strong>Status:</strong> {kundliData?.mangalDosha?.status || "Not provided"}
                   </p>
-                  <p style={{ margin: 0 }}>{result.mangalDosha?.details || "Dosha details not available."}</p>
+                  <p style={{ margin: 0 }}>{kundliData?.mangalDosha?.details || "Dosha details not available."}</p>
                 </div>
               </div>
 
@@ -488,17 +519,17 @@ export default function KundliForm() {
                   </ul>
 
                   <div className="row kundli-print-hide" style={{ marginTop: 8 }}>
-                    {result.recommendedPujas?.map((puja) => (
-                      <Link key={puja.slug} href={`/booking?puja=${puja.slug}`} className="btn btn-primary">
+                    {(kundliData?.recommendedPujas || []).map((puja, index) => (
+                      <Link key={puja?.slug || puja?.name || index} href={`/booking?puja=${puja?.slug || ""}`} className="btn btn-primary">
                         Book Recommended Puja
                       </Link>
                     ))}
                   </div>
 
-                  {result.recommendedPujas?.length > 0 && (
+                  {(kundliData?.recommendedPujas || []).length > 0 && (
                     <div style={{ marginTop: 10, color: "#6f5b4d" }}>
-                      {result.recommendedPujas.map((puja) => (
-                        <p key={`${puja.slug}-reason`} style={{ margin: "4px 0" }}>
+                      {(kundliData?.recommendedPujas || []).map((puja, index) => (
+                        <p key={`${puja.slug || puja.name || index}-reason`} style={{ margin: "4px 0" }}>
                           <strong>{puja.title || puja.name}:</strong> {puja.reason}
                         </p>
                       ))}

@@ -1,4 +1,5 @@
 import KundliForm from "@/components/astrology/KundliForm";
+import KundliErrorBoundary from "@/components/astrology/KundliErrorBoundary";
 
 export const metadata = {
   title: "Kundali | ShraddhaSetu",
@@ -14,7 +15,9 @@ export default function KundaliPage() {
           <p>Enter birth details to generate your Kundli with API-backed astrology data.</p>
         </div>
       </section>
-      <KundliForm />
+      <KundliErrorBoundary>
+        <KundliForm />
+      </KundliErrorBoundary>
     </>
   );
 }
