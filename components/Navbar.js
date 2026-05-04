@@ -9,8 +9,6 @@ const navItems = [
   { label: "Cities", href: "/cities" },
   { label: "E-Puja", href: "/e-puja" },
   { label: "Panchang", href: "/panchang" },
-  { label: "Astrology", href: "/astrology" },
-  { label: "Kundali", href: "/astrology/kundali" },
   { label: "Book Now", href: "/booking" }
 ];
 
