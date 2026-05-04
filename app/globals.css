@@ -99,6 +99,30 @@ a {
   box-shadow: 0 18px 34px rgba(75, 48, 28, 0.12);
 }
 
+.city-card-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+
+.city-card-image {
+  transition: transform 0.35s ease;
+  transform-origin: center;
+}
+
+.card:hover .city-card-image {
+  transform: scale(1.05);
+}
+
+.city-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(38, 24, 14, 0.12) 30%, rgba(38, 24, 14, 0.78) 100%);
+  pointer-events: none;
+}
+
 .card-body {
   padding: 16px;
 }

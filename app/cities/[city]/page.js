@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getServices } from "@/lib/queries";
+import { toCityCardData } from "@/lib/cityCardData";
 
 export const dynamic = "force-dynamic";
 
@@ -19,8 +20,9 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function CityDetailPage({ params }) {
+export default async function CityDetailPage({ params, searchParams }) {
   const { city } = await params;
+  const query = await searchParams;
   const [cityRecord, services] = await Promise.all([
     prisma.city.findUnique({ where: { slug: city } }),
     getServices()
@@ -30,12 +32,29 @@ export default async function CityDetailPage({ params }) {
     notFound();
   }
 
+  const cityData = toCityCardData(cityRecord);
+  const heroImageFromQuery = typeof query?.image === "string" ? query.image : "";
+  const safeHeroImage = heroImageFromQuery.startsWith("/images/cities/") ? heroImageFromQuery : cityData.image;
+  const heroTempleName = typeof query?.temple === "string" ? query.temple : cityData.templeName;
+
   return (
     <>
-      <section className="page-header">
+      <section
+        className="page-header"
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          backgroundImage: `linear-gradient(180deg, rgba(28,16,10,0.18), rgba(28,16,10,0.62)), url('${safeHeroImage}')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center"
+        }}
+      >
         <div className="container">
-          <h1>Book a Pandit in {cityRecord.name}</h1>
-          <p>Available puja services in {cityRecord.name} with verified and experienced pandits.</p>
+          <h1 style={{ color: "#fff9ef", textShadow: "0 3px 16px rgba(30, 18, 10, 0.6)" }}>Book a Pandit in {cityRecord.name}</h1>
+          <p style={{ color: "#fff3dd", maxWidth: 780 }}>
+            Available puja services in {cityRecord.name} with verified and experienced pandits.
+          </p>
+          <p style={{ color: "#f5d59c", fontWeight: 600, marginBottom: 0 }}>{heroTempleName}</p>
         </div>
       </section>
 
