@@ -363,14 +363,14 @@ a {
 .hero h1 {
   margin: 0;
   font-size: clamp(2rem, 5vw, 3.2rem);
-  color: #5f1c1f;
-  text-shadow: 0 3px 10px rgba(255, 245, 227, 0.42);
+  color: #fff7e6;
+  text-shadow: 0 3px 12px rgba(80, 20, 10, 0.45);
 }
 
 .hero p {
   font-size: 1.1rem;
-  color: #5e4030;
-  text-shadow: 0 2px 8px rgba(255, 245, 227, 0.3);
+  color: #fff1d6;
+  text-shadow: 0 2px 8px rgba(70, 20, 10, 0.35);
   max-width: 760px;
 }
 
