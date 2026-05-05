@@ -8,6 +8,8 @@
   --muted: #6f5b4d;
   --card: #fffdf8;
   --line: #eadcc8;
+  --pattern-maroon: rgba(127, 29, 29, 0.16);
+  --pattern-gold: rgba(212, 147, 59, 0.14);
 }
 
 * {
@@ -19,8 +21,55 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Segoe UI", "Noto Sans", sans-serif;
-  background: radial-gradient(circle at top, #fff8ee, #f8efe0 55%, #f2e4d2);
+  background:
+    radial-gradient(circle at 12% 16%, rgba(127, 29, 29, 0.1), transparent 26%),
+    radial-gradient(circle at 88% 10%, rgba(212, 147, 59, 0.12), transparent 24%),
+    radial-gradient(circle at top, #fff8ee, #f8efe0 55%, #f2e4d2);
   color: var(--text);
+}
+
+body {
+  position: relative;
+  min-height: 100vh;
+  isolation: isolate;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.18;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 52px,
+      var(--pattern-gold) 52px 53px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0 66px,
+      var(--pattern-maroon) 66px 67px
+    );
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.16;
+  background:
+    radial-gradient(circle at -6% -10%, transparent 0 170px, rgba(127, 29, 29, 0.14) 170px 172px, transparent 172px 224px, rgba(212, 147, 59, 0.12) 224px 226px, transparent 226px),
+    radial-gradient(circle at 106% 112%, transparent 0 180px, rgba(127, 29, 29, 0.14) 180px 182px, transparent 182px 242px, rgba(212, 147, 59, 0.12) 242px 244px, transparent 244px),
+    radial-gradient(circle at 50% 102%, transparent 0 120px, rgba(127, 29, 29, 0.08) 120px 121px, transparent 121px 170px, rgba(212, 147, 59, 0.08) 170px 171px, transparent 171px);
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
 }
 
 a {
