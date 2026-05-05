@@ -21,6 +21,9 @@ export async function POST(request) {
     const address = body.address;
     const packageName = body.packageName;
     const packagePrice = Number(body.packagePrice || 0);
+    const pujaMode = body.pujaMode || "AT_HOME";
+    const ePujaPackage = body.ePujaPackage || null;
+    const ePujaDetails = body.ePujaDetails || null;
     const customerName = body.customerName?.trim() || user.name || "Customer";
     const customerPhone = body.customerPhone?.trim() || user.phone || "N/A";
 
@@ -39,6 +42,15 @@ export async function POST(request) {
       return jsonError("Invalid booking date or time.", 400);
     }
 
+    const notesPayload = [
+      body.notes || null,
+      `Puja Mode: ${pujaMode}`,
+      ePujaPackage ? `E-Puja Package: ${ePujaPackage}` : null,
+      ePujaDetails ? `E-Puja Details: ${JSON.stringify(ePujaDetails)}` : null
+    ]
+      .filter(Boolean)
+      .join(" | ");
+
     const booking = await prisma.booking.create({
       data: {
         bookingId: await generateBookingId(),
@@ -53,7 +65,7 @@ export async function POST(request) {
         amount: pujaService.priceFrom + packagePrice,
         status: BookingStatus.pending,
         paymentStatus: PaymentStatus.unpaid,
-        notes: body.notes || null
+        notes: notesPayload || null
       },
       include: {
         pujaService: true,

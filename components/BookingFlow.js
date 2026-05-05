@@ -6,23 +6,44 @@ import { openRazorpayCheckout } from "@/lib/razorpay-client";
 
 const steps = ["Select Puja", "Schedule", "Customer Details", "Choose Package", "Payment & Confirm"];
 
-const packageOptions = [
+const standardPackageOptions = [
   { id: "standard", name: "Standard", price: 0, note: "Pandit visit + core puja vidhi" },
   { id: "premium", name: "Premium", price: 1500, note: "Includes expanded ritual guidance and support" },
   { id: "temple", name: "Temple Ritual", price: 3000, note: "Extended jaap and additional sankalp support" }
 ];
 
-export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
+const ePujaPackageOptions = [
+  { id: "basic", name: "Basic E-Puja", price: 499, note: "Online sankalp and digital confirmation." },
+  {
+    id: "standard",
+    name: "Standard E-Puja",
+    price: 999,
+    note: "Live video puja, sankalp by pandit and WhatsApp coordination."
+  },
+  {
+    id: "premium",
+    name: "Premium E-Puja",
+    price: 1499,
+    note: "Live video puja, prasad delivery support and priority scheduling."
+  }
+];
+
+const isValidEPujaPackage = (packageId) => ePujaPackageOptions.some((item) => item.id === packageId);
+const isValidStandardPackage = (packageId) => standardPackageOptions.some((item) => item.id === packageId);
+
+export default function BookingFlow({ initialPuja = "", initialCity = "", initialMode = "", initialPackage = "" }) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [services, setServices] = useState([]);
   const [cities, setCities] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [form, setForm] = useState({
     puja: "",
     city: "",
+    pujaMode: "AT_HOME",
     date: "",
     time: "",
     language: "Hindi",
@@ -31,6 +52,12 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
     email: "",
     address: "",
     packageId: "standard",
+    devoteeName: "",
+    gotra: "",
+    sankalpPurpose: "",
+    whatsappNumber: "",
+    prasadDeliveryRequired: "NO",
+    deliveryAddress: "",
     paymentMode: "UPI",
     paymentOption: "ADVANCE"
   });
@@ -41,21 +68,41 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
       const [servicesData, citiesData] = await Promise.all([servicesRes.json(), citiesRes.json()]);
       const allServices = servicesData.services || [];
       const allCities = citiesData.cities || [];
+      const requestedMode = initialMode === "e-puja" ? "ONLINE_E_PUJA" : "AT_HOME";
+      const requestedPackage =
+        requestedMode === "ONLINE_E_PUJA" && isValidEPujaPackage(initialPackage) ? initialPackage : "standard";
       setServices(allServices);
       setCities(allCities);
       setForm((prev) => ({
         ...prev,
         puja: initialPuja || allServices[0]?.slug || "",
-        city: initialCity || allCities[0]?.slug || ""
+        city: initialCity || allCities[0]?.slug || "",
+        pujaMode: requestedMode,
+        packageId: requestedPackage
       }));
     }
     loadData().catch(() => setError("Unable to load booking options right now."));
-  }, [initialPuja, initialCity]);
+  }, [initialPuja, initialCity, initialMode, initialPackage]);
 
   const chosenPuja = useMemo(() => services.find((item) => item.slug === form.puja) || services[0], [form.puja, services]);
+  const isOnlineEPuja = form.pujaMode === "ONLINE_E_PUJA";
+  const activePackageOptions = isOnlineEPuja ? ePujaPackageOptions : standardPackageOptions;
+
+  useEffect(() => {
+    setForm((prev) => {
+      if (prev.pujaMode === "ONLINE_E_PUJA" && !isValidEPujaPackage(prev.packageId)) {
+        return { ...prev, packageId: isValidEPujaPackage(initialPackage) ? initialPackage : "standard" };
+      }
+      if (prev.pujaMode !== "ONLINE_E_PUJA" && !isValidStandardPackage(prev.packageId)) {
+        return { ...prev, packageId: "standard" };
+      }
+      return prev;
+    });
+  }, [form.pujaMode, form.packageId, initialPackage]);
+
   const chosenPackage = useMemo(
-    () => packageOptions.find((item) => item.id === form.packageId) || packageOptions[0],
-    [form.packageId]
+    () => activePackageOptions.find((item) => item.id === form.packageId) || activePackageOptions[0],
+    [activePackageOptions, form.packageId]
   );
   const totalAmount = (chosenPuja?.priceFrom || 0) + chosenPackage.price;
   const advanceAmount = Math.min(totalAmount, Math.max(501, Math.round(totalAmount * 0.3)));
@@ -69,7 +116,41 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
   const confirmBooking = async () => {
     setIsSubmitting(true);
     setError("");
+    setSuccessMessage("");
     try {
+      const bookingAddress = isOnlineEPuja
+        ? form.prasadDeliveryRequired === "YES"
+          ? form.deliveryAddress || "Online E-Puja"
+          : "Online E-Puja"
+        : form.address;
+
+      const ePujaDetails = isOnlineEPuja
+        ? {
+            devoteeName: form.devoteeName || form.fullName,
+            gotra: form.gotra,
+            sankalpPurpose: form.sankalpPurpose,
+            preferredDate: form.date,
+            preferredTime: form.time,
+            whatsappNumber: form.whatsappNumber || form.phone,
+            email: form.email,
+            prasadDeliveryRequired: form.prasadDeliveryRequired === "YES",
+            deliveryAddress: form.prasadDeliveryRequired === "YES" ? form.deliveryAddress : ""
+          }
+        : null;
+
+      const notes = isOnlineEPuja
+        ? [
+            `Mode: Online E-Puja`,
+            `Devotee: ${ePujaDetails?.devoteeName || "N/A"}`,
+            `Gotra: ${ePujaDetails?.gotra || "N/A"}`,
+            `Sankalp: ${ePujaDetails?.sankalpPurpose || "N/A"}`,
+            `WhatsApp: ${ePujaDetails?.whatsappNumber || "N/A"}`,
+            `Email: ${ePujaDetails?.email || "N/A"}`,
+            `Prasad Delivery: ${ePujaDetails?.prasadDeliveryRequired ? "Yes" : "No"}`,
+            `Delivery Address: ${ePujaDetails?.deliveryAddress || "N/A"}`
+          ].join(" | ")
+        : `Booked by ${form.fullName || "Customer"} | Phone: ${form.phone || "N/A"} | Email: ${form.email || "N/A"}`;
+
       const bookingRes = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,19 +160,23 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
           date: form.date,
           time: form.time,
           language: form.language,
-          address: form.address,
+          address: bookingAddress,
           packageName: chosenPackage.name,
           packagePrice: chosenPackage.price,
-          customerName: form.fullName,
-          customerPhone: form.phone,
+          customerName: isOnlineEPuja ? form.devoteeName || form.fullName : form.fullName,
+          customerPhone: isOnlineEPuja ? form.whatsappNumber || form.phone : form.phone,
           customerEmail: form.email,
-          notes: `Booked by ${form.fullName || "Customer"} | Phone: ${form.phone || "N/A"} | Email: ${form.email || "N/A"}`
+          pujaMode: form.pujaMode,
+          ePujaPackage: isOnlineEPuja ? form.packageId : null,
+          ePujaDetails,
+          notes
         })
       });
       const bookingData = await bookingRes.json();
       if (!bookingRes.ok) {
         throw new Error(bookingData.error || "Booking failed.");
       }
+      setSuccessMessage("Booking created successfully. Opening payment gateway...");
 
       const paymentOrderRes = await fetch("/api/payments/create-order", {
         method: "POST",
@@ -152,6 +237,7 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
         return;
       }
       setError(message);
+      setSuccessMessage("");
     } finally {
       setIsSubmitting(false);
     }
@@ -194,6 +280,11 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
             {error && (
               <p style={{ color: "#991b1b", background: "#fee2e2", padding: "10px 12px", borderRadius: 10 }}>{error}</p>
             )}
+            {successMessage && (
+              <p style={{ color: "#166534", background: "#dcfce7", padding: "10px 12px", borderRadius: 10 }}>
+                {successMessage}
+              </p>
+            )}
             {step === 1 && (
               <>
                 <h2>Select Puja</h2>
@@ -213,6 +304,11 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
               <>
                 <h2>Select city, date and time</h2>
                 <div className="form-grid">
+                  <select value={form.pujaMode} onChange={(event) => setValue("pujaMode", event.target.value)}>
+                    <option value="AT_HOME">At Home</option>
+                    <option value="AT_TEMPLE">At Temple</option>
+                    <option value="ONLINE_E_PUJA">Online E-Puja</option>
+                  </select>
                   <select value={form.city} onChange={(event) => setValue("city", event.target.value)}>
                     {cities.map((city) => (
                       <option key={city.id} value={city.slug}>
@@ -234,32 +330,95 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
             {step === 3 && (
               <>
                 <h2>Enter customer details</h2>
-                <div className="form-grid">
-                  <input
-                    type="text"
-                    placeholder="Full name"
-                    value={form.fullName}
-                    onChange={(event) => setValue("fullName", event.target.value)}
-                  />
-                  <input
-                    type="tel"
-                    placeholder="Phone number"
-                    value={form.phone}
-                    onChange={(event) => setValue("phone", event.target.value)}
-                  />
-                  <input
-                    type="email"
-                    placeholder="Email address"
-                    value={form.email}
-                    onChange={(event) => setValue("email", event.target.value)}
-                  />
-                  <textarea
-                    placeholder="Puja location / address"
-                    rows={4}
-                    value={form.address}
-                    onChange={(event) => setValue("address", event.target.value)}
-                  />
-                </div>
+                {!isOnlineEPuja ? (
+                  <div className="form-grid">
+                    <input
+                      type="text"
+                      placeholder="Full name"
+                      value={form.fullName}
+                      onChange={(event) => setValue("fullName", event.target.value)}
+                    />
+                    <input
+                      type="tel"
+                      placeholder="Phone number"
+                      value={form.phone}
+                      onChange={(event) => setValue("phone", event.target.value)}
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email address"
+                      value={form.email}
+                      onChange={(event) => setValue("email", event.target.value)}
+                    />
+                    <textarea
+                      placeholder="Puja location / address"
+                      rows={4}
+                      value={form.address}
+                      onChange={(event) => setValue("address", event.target.value)}
+                    />
+                  </div>
+                ) : (
+                  <div className="form-grid">
+                    <input
+                      type="text"
+                      placeholder="Primary contact name"
+                      value={form.fullName}
+                      onChange={(event) => setValue("fullName", event.target.value)}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Devotee name"
+                      value={form.devoteeName}
+                      onChange={(event) => setValue("devoteeName", event.target.value)}
+                    />
+                    <input type="text" placeholder="Gotra" value={form.gotra} onChange={(event) => setValue("gotra", event.target.value)} />
+                    <input
+                      type="text"
+                      placeholder="Sankalp purpose"
+                      value={form.sankalpPurpose}
+                      onChange={(event) => setValue("sankalpPurpose", event.target.value)}
+                    />
+                    <input
+                      type="date"
+                      placeholder="Preferred date"
+                      value={form.date}
+                      onChange={(event) => setValue("date", event.target.value)}
+                    />
+                    <input
+                      type="time"
+                      placeholder="Preferred time"
+                      value={form.time}
+                      onChange={(event) => setValue("time", event.target.value)}
+                    />
+                    <input
+                      type="tel"
+                      placeholder="WhatsApp number"
+                      value={form.whatsappNumber}
+                      onChange={(event) => setValue("whatsappNumber", event.target.value)}
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email address"
+                      value={form.email}
+                      onChange={(event) => setValue("email", event.target.value)}
+                    />
+                    <select
+                      value={form.prasadDeliveryRequired}
+                      onChange={(event) => setValue("prasadDeliveryRequired", event.target.value)}
+                    >
+                      <option value="NO">Prasad Delivery Required? No</option>
+                      <option value="YES">Prasad Delivery Required? Yes</option>
+                    </select>
+                    {form.prasadDeliveryRequired === "YES" ? (
+                      <textarea
+                        placeholder="Delivery address"
+                        rows={4}
+                        value={form.deliveryAddress}
+                        onChange={(event) => setValue("deliveryAddress", event.target.value)}
+                      />
+                    ) : null}
+                  </div>
+                )}
               </>
             )}
 
@@ -267,7 +426,7 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
               <>
                 <h2>Choose package</h2>
                 <div className="card-grid">
-                  {packageOptions.map((option) => (
+                  {activePackageOptions.map((option) => (
                     <article key={option.id} className="card">
                       <div className="card-body">
                         <h3 style={{ marginTop: 0 }}>{option.name}</h3>
@@ -318,8 +477,35 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
                       <strong>Language:</strong> {form.language}
                     </p>
                     <p>
+                      <strong>Puja Mode:</strong>{" "}
+                      {form.pujaMode === "ONLINE_E_PUJA"
+                        ? "Online E-Puja"
+                        : form.pujaMode === "AT_TEMPLE"
+                          ? "At Temple"
+                          : "At Home"}
+                    </p>
+                    <p>
                       <strong>Package:</strong> {chosenPackage.name}
                     </p>
+                    {isOnlineEPuja ? (
+                      <>
+                        <p>
+                          <strong>Devotee Name:</strong> {form.devoteeName || form.fullName || "N/A"}
+                        </p>
+                        <p>
+                          <strong>Gotra:</strong> {form.gotra || "N/A"}
+                        </p>
+                        <p>
+                          <strong>Sankalp Purpose:</strong> {form.sankalpPurpose || "N/A"}
+                        </p>
+                        <p>
+                          <strong>WhatsApp:</strong> {form.whatsappNumber || "N/A"}
+                        </p>
+                        <p>
+                          <strong>Prasad Delivery:</strong> {form.prasadDeliveryRequired === "YES" ? "Yes" : "No"}
+                        </p>
+                      </>
+                    ) : null}
                     <p>
                       <strong>Total:</strong> Rs {totalAmount.toLocaleString("en-IN")}
                     </p>
@@ -344,7 +530,7 @@ export default function BookingFlow({ initialPuja = "", initialCity = "" }) {
               )}
               {step === 5 && (
                 <button className="btn btn-primary" onClick={confirmBooking} disabled={isSubmitting}>
-                  {isSubmitting ? "Processing..." : "Pay and Confirm Booking"}
+                  {isSubmitting ? "Processing..." : isOnlineEPuja ? "Pay and Confirm E-Puja Booking" : "Pay and Confirm Booking"}
                 </button>
               )}
             </div>

@@ -23,18 +23,27 @@ const howItWorksSteps = [
   }
 ];
 
+const processSteps = [
+  "Step 1: Choose E-Puja package",
+  "Step 2: Fill Sankalp and devotee details",
+  "Step 3: Confirm booking",
+  "Step 4: Receive WhatsApp/Email confirmation",
+  "Step 5: Join live puja",
+  "Step 6: Receive prasad if selected"
+];
+
 const packages = [
   {
     key: "basic",
     title: "Basic E-Puja",
-    price: "₹499",
+    price: "Rs 499",
     features: ["Online sankalp", "Digital confirmation", "Suitable for simple puja"],
     href: "/booking?mode=e-puja&package=basic"
   },
   {
     key: "standard",
     title: "Standard E-Puja",
-    price: "₹999",
+    price: "Rs 999",
     features: ["Live video puja", "Sankalp by pandit", "WhatsApp coordination"],
     href: "/booking?mode=e-puja&package=standard",
     recommended: true
@@ -42,7 +51,7 @@ const packages = [
   {
     key: "premium",
     title: "Premium E-Puja",
-    price: "₹1499",
+    price: "Rs 1499",
     features: ["Live video puja", "Sankalp by pandit", "Prasad delivery support", "Priority scheduling"],
     href: "/booking?mode=e-puja&package=premium"
   }
@@ -94,7 +103,6 @@ const faqItems = [
 ];
 
 export default function EPujaPage() {
-
   return (
     <>
       <section className="page-header">
@@ -125,6 +133,23 @@ export default function EPujaPage() {
                 </div>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <h2 className="section-title">Complete E-Puja Booking Process</h2>
+          <div className="card">
+            <div className="card-body">
+              <div className="card-grid">
+                {processSteps.map((item) => (
+                  <div className="epuja-detail-item" key={item}>
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>

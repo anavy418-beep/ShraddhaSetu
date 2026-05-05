@@ -10,6 +10,8 @@ export default async function BookingPage({ searchParams }) {
   const params = await searchParams;
   const initialPuja = params?.puja || "";
   const initialCity = params?.city || "";
+  const initialMode = params?.mode || "";
+  const initialPackage = params?.package || "";
 
   return (
     <>
@@ -19,7 +21,12 @@ export default async function BookingPage({ searchParams }) {
           <p>Complete your booking in 5 steps with transparent pricing.</p>
         </div>
       </section>
-      <BookingFlow initialPuja={initialPuja} initialCity={initialCity} />
+      <BookingFlow
+        initialPuja={initialPuja}
+        initialCity={initialCity}
+        initialMode={initialMode}
+        initialPackage={initialPackage}
+      />
     </>
   );
 }
