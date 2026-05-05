@@ -77,12 +77,13 @@ export default async function HomePage() {
           <h2 className="section-title">Book a Pandit Online in Your City</h2>
           <p className="section-subtitle">Book experienced Pandits for all pujas in top cities near you.</p>
           <div className="home-city-grid">
-            {(Array.isArray(cities) ? cities : []).slice(0, 12).map((city) => (
+            {(Array.isArray(cities) ? cities : []).map((city) => (
               <Link key={city.id} href={`/cities/${city.slug}`} className="home-city-tile">
                 <img
                   src={city.image}
                   alt={`${city.name} - ${city.templeName || "Temple"}`}
                   className="home-city-tile-image"
+                  loading="lazy"
                 />
                 <div className="home-city-tile-overlay" />
                 <h3 className="home-city-tile-title">{city.name}</h3>
