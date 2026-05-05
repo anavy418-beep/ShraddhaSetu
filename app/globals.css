@@ -329,9 +329,9 @@ a {
   position: relative;
   overflow: hidden;
   padding: 74px 0 62px;
-  background-color: #f5d3a7;
+  background-color: #f4c37b;
   background-image:
-    linear-gradient(90deg, rgba(255, 244, 218, 0.72), rgba(232, 147, 57, 0.52)),
+    linear-gradient(90deg, rgba(255, 238, 202, 0.58), rgba(232, 137, 32, 0.48)),
     url("/images/hero/devotional-orange-pattern.jpg");
   background-size: cover;
   background-position: center;
@@ -343,8 +343,8 @@ a {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(circle at 18% 18%, rgba(255, 229, 178, 0.16), transparent 46%),
-    radial-gradient(circle at 82% 26%, rgba(127, 29, 29, 0.1), transparent 50%);
+  background: radial-gradient(circle at 18% 18%, rgba(255, 233, 188, 0.08), transparent 46%),
+    radial-gradient(circle at 82% 26%, rgba(127, 29, 29, 0.06), transparent 52%);
 }
 
 .hero::after {
@@ -352,7 +352,7 @@ a {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(68, 27, 10, 0.06) 0%, rgba(68, 27, 10, 0.14) 100%);
+  background: linear-gradient(180deg, rgba(68, 27, 10, 0.04) 0%, rgba(68, 27, 10, 0.1) 100%);
 }
 
 .hero-content {
