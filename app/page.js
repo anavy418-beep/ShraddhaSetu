@@ -78,8 +78,8 @@ export default async function HomePage() {
           <h2 className="section-title">Book a Pandit Online in Your City</h2>
           <p className="section-subtitle">Serving metro cities and sacred destinations across India.</p>
           <div className="card-grid">
-            {cities.map((city) => (
-              <CityCard city={city.name} state={city.state} slug={city.slug} key={city.id} />
+            {(Array.isArray(cities) ? cities : []).map((city) => (
+              <CityCard city={city} key={city.id} />
             ))}
           </div>
         </div>
