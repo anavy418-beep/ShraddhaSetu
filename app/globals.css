@@ -373,7 +373,8 @@ a {
 }
 
 .hero-logo-image {
-  width: min(680px, 92vw);
+  width: min(520px, 60vw);
+  max-width: 100%;
   height: auto;
   display: block;
   object-fit: contain;
@@ -789,7 +790,7 @@ td {
 
 @media (max-width: 760px) {
   .hero-logo-image {
-    width: min(420px, 92vw);
+    width: min(420px, 88vw);
   }
 
   .home-city-grid {
