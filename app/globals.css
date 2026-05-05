@@ -364,7 +364,8 @@ a {
   margin: 0;
   font-size: clamp(2rem, 5vw, 3.2rem);
   color: #7a161b;
-  text-shadow: 0 2px 8px rgba(255, 235, 200, 0.35);
+  -webkit-text-stroke: 1.5px #f3d38a;
+  text-shadow: 0 3px 10px rgba(80, 20, 10, 0.18);
 }
 
 .hero p {
