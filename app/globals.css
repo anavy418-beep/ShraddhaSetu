@@ -72,6 +72,18 @@ body > * {
   z-index: 1;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -358,6 +370,14 @@ a {
 .hero-content {
   position: relative;
   z-index: 1;
+}
+
+.hero-logo-image {
+  width: min(620px, 90vw);
+  height: auto;
+  display: block;
+  object-fit: contain;
+  margin-bottom: 18px;
 }
 
 .hero h1 {
@@ -768,6 +788,10 @@ td {
 }
 
 @media (max-width: 760px) {
+  .hero-logo-image {
+    width: min(420px, 92vw);
+  }
+
   .home-city-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

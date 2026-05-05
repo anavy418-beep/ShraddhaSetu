@@ -70,7 +70,13 @@ export default async function HomePage() {
     <>
       <section className="hero">
         <div className="container hero-content">
-          <h1>ShraddhaSetu</h1>
+          <h1 className="sr-only">Shraddha Setu</h1>
+          <img
+            src="/images/brand/shraddha-setu-3d-logo.png"
+            alt="Shraddha Setu"
+            className="hero-logo-image"
+            loading="eager"
+          />
           <p>Book Verified Pandits for Pooja, Havan and Sanskar</p>
           <HeroSearch popularPujas={popularPujas} />
         </div>
