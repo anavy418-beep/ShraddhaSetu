@@ -105,7 +105,7 @@ export default async function HomePage() {
               <div>Verified Pandits</div>
             </div>
             <div>
-              <div className="stat-value">14+</div>
+              <div className="stat-value">60+</div>
               <div>Active Cities</div>
             </div>
             <div>

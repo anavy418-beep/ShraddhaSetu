@@ -20,7 +20,6 @@ export default async function Footer() {
           <Link href="/services">All Puja Services</Link>
           <Link href="/booking">Book Now</Link>
           <Link href="/e-puja">E-Puja</Link>
-          <Link href="/panchang">Panchang</Link>
         </section>
         <section>
           <h4>Puja Services</h4>
@@ -41,7 +40,6 @@ export default async function Footer() {
         <section>
           <h4>Blog & Policies</h4>
           <Link href="/blog">Festive Puja Guide</Link>
-          <Link href="/blog/category/astrology">Astrology Insights</Link>
           <Link href="/contact">Contact Us</Link>
           <Link href="/privacy-policy">Privacy Policy</Link>
           <Link href="/refund-policy">Refund Policy</Link>
@@ -49,7 +47,7 @@ export default async function Footer() {
         </section>
         <section>
           <h4>Contact</h4>
-          <p>Phone: +91 90000 12345</p>
+          <p>Phone: Coming soon</p>
           <p>Email: support@shraddhasetu.in</p>
           <p>Hours: 7:00 AM - 10:00 PM IST</p>
         </section>
