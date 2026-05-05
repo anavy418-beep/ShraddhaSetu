@@ -31,7 +31,14 @@ const ePujaPackageOptions = [
 const isValidEPujaPackage = (packageId) => ePujaPackageOptions.some((item) => item.id === packageId);
 const isValidStandardPackage = (packageId) => standardPackageOptions.some((item) => item.id === packageId);
 
-export default function BookingFlow({ initialPuja = "", initialCity = "", initialMode = "", initialPackage = "" }) {
+export default function BookingFlow({
+  initialPuja = "",
+  initialCity = "",
+  initialMode = "",
+  initialPackage = "",
+  showEPujaGuidance = false,
+  hasInitialPackageQuery = false
+}) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [services, setServices] = useState([]);
@@ -272,6 +279,36 @@ export default function BookingFlow({ initialPuja = "", initialCity = "", initia
                 {index + 1}. {label}
               </span>
             ))}
+            {showEPujaGuidance && isOnlineEPuja ? (
+              <div
+                style={{
+                  marginTop: 14,
+                  background: "#fff5e5",
+                  border: "1px solid #f2d4a1",
+                  borderRadius: 12,
+                  padding: "10px 12px",
+                  color: "#6f5b4d",
+                  fontWeight: 600
+                }}
+              >
+                After booking, our team will confirm your slot and share live puja joining details on WhatsApp/Email.
+              </div>
+            ) : null}
+            {showEPujaGuidance && hasInitialPackageQuery && isOnlineEPuja ? (
+              <div
+                style={{
+                  marginTop: 10,
+                  background: "#fffdf8",
+                  border: "1px solid #eadcc8",
+                  borderRadius: 12,
+                  padding: "10px 12px",
+                  color: "#4d2d1a",
+                  fontWeight: 700
+                }}
+              >
+                Selected Package: {chosenPackage.name} - Rs {chosenPackage.price.toLocaleString("en-IN")}
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -530,7 +567,7 @@ export default function BookingFlow({ initialPuja = "", initialCity = "", initia
               )}
               {step === 5 && (
                 <button className="btn btn-primary" onClick={confirmBooking} disabled={isSubmitting}>
-                  {isSubmitting ? "Processing..." : isOnlineEPuja ? "Pay and Confirm E-Puja Booking" : "Pay and Confirm Booking"}
+                  {isSubmitting ? "Processing..." : isOnlineEPuja ? "Confirm E-Puja Booking" : "Pay and Confirm Booking"}
                 </button>
               )}
             </div>

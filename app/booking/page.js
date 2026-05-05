@@ -12,13 +12,18 @@ export default async function BookingPage({ searchParams }) {
   const initialCity = params?.city || "";
   const initialMode = params?.mode || "";
   const initialPackage = params?.package || "";
+  const isEPujaMode = initialMode === "e-puja";
 
   return (
     <>
       <section className="page-header">
         <div className="container">
-          <h1>Book a Pandit</h1>
-          <p>Complete your booking in 5 steps with transparent pricing.</p>
+          <h1>{isEPujaMode ? "Book E-Puja" : "Book a Pandit"}</h1>
+          <p>
+            {isEPujaMode
+              ? "Fill Sankalp and online puja details to confirm your E-Puja booking."
+              : "Complete your booking in 5 steps with transparent pricing."}
+          </p>
         </div>
       </section>
       <BookingFlow
@@ -26,6 +31,8 @@ export default async function BookingPage({ searchParams }) {
         initialCity={initialCity}
         initialMode={initialMode}
         initialPackage={initialPackage}
+        showEPujaGuidance={isEPujaMode}
+        hasInitialPackageQuery={Boolean(initialPackage)}
       />
     </>
   );

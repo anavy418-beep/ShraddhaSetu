@@ -30,7 +30,8 @@ const packages = [
     title: "Basic E-Puja",
     price: "Rs 499",
     features: ["Online sankalp", "Digital confirmation", "Suitable for simple puja"],
-    href: "/booking?mode=e-puja&package=basic"
+    href: "/booking?mode=e-puja&package=basic",
+    ctaLabel: "Book Basic E-Puja"
   },
   {
     key: "standard",
@@ -38,14 +39,16 @@ const packages = [
     price: "Rs 999",
     features: ["Live video puja", "Sankalp by pandit", "WhatsApp coordination"],
     href: "/booking?mode=e-puja&package=standard",
-    recommended: true
+    recommended: true,
+    ctaLabel: "Book Standard E-Puja"
   },
   {
     key: "premium",
     title: "Premium E-Puja",
     price: "Rs 1499",
     features: ["Live video puja", "Sankalp by pandit", "Prasad delivery support", "Priority scheduling"],
-    href: "/booking?mode=e-puja&package=premium"
+    href: "/booking?mode=e-puja&package=premium",
+    ctaLabel: "Book Premium E-Puja"
   }
 ];
 
@@ -156,7 +159,7 @@ export default function EPujaPage() {
                     ))}
                   </ul>
                   <Link href={item.href} className="btn btn-primary" style={{ marginTop: 10 }}>
-                    Book Now
+                    {item.ctaLabel}
                   </Link>
                 </div>
               </article>
