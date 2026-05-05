@@ -1,4 +1,5 @@
 import Link from "next/link";
+import EPujaProcessSteps from "@/components/EPujaProcessSteps";
 
 export const metadata = {
   title: "E-Puja | ShraddhaSetu"
@@ -21,15 +22,6 @@ const howItWorksSteps = [
     title: "Receive Prasad / Confirmation",
     description: "Receive puja completion confirmation and prasad delivery support as per selected package."
   }
-];
-
-const processSteps = [
-  "Step 1: Choose E-Puja package",
-  "Step 2: Fill Sankalp and devotee details",
-  "Step 3: Confirm booking",
-  "Step 4: Receive WhatsApp/Email confirmation",
-  "Step 5: Join live puja",
-  "Step 6: Receive prasad if selected"
 ];
 
 const packages = [
@@ -142,19 +134,13 @@ export default function EPujaPage() {
           <h2 className="section-title">Complete E-Puja Booking Process</h2>
           <div className="card">
             <div className="card-body">
-              <div className="card-grid">
-                {processSteps.map((item) => (
-                  <div className="epuja-detail-item" key={item}>
-                    {item}
-                  </div>
-                ))}
-              </div>
+              <EPujaProcessSteps />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: 0 }}>
+      <section className="section" style={{ paddingTop: 0 }} id="e-puja-packages">
         <div className="container">
           <h2 className="section-title">E-Puja Packages</h2>
           <div className="card-grid">
@@ -197,6 +183,32 @@ export default function EPujaPage() {
       </section>
 
       <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <h2 className="section-title">Live Puja and Confirmation Support</h2>
+          <div className="card-grid">
+            <article className="card" id="e-puja-confirmation-info">
+              <div className="card-body">
+                <h3 style={{ marginTop: 0 }}>WhatsApp/Email Confirmation</h3>
+                <p style={{ marginBottom: 0, color: "#6f5b4d" }}>
+                  After booking submission and review, you receive confirmation updates on your registered phone, WhatsApp and
+                  email.
+                </p>
+              </div>
+            </article>
+            <article className="card" id="live-puja-support">
+              <div className="card-body">
+                <h3 style={{ marginTop: 0 }}>Live Puja Support</h3>
+                <p style={{ marginBottom: 0, color: "#6f5b4d" }}>
+                  Before puja starts, our team shares live joining details and helps devotees connect smoothly for sankalp and
+                  participation.
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section className="section" style={{ paddingTop: 0 }} id="prasad-delivery-info">
         <div className="container">
           <h2 className="section-title">Sankalp Details Required</h2>
           <div className="card">

@@ -613,6 +613,40 @@ textarea {
   font-weight: 600;
 }
 
+.epuja-process-card {
+  width: 100%;
+  border: 1px solid #eadcc8;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #fffdf8;
+  color: #5d3b28;
+  font-weight: 700;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.epuja-process-card:hover {
+  border-color: #cb9a53;
+  box-shadow: 0 10px 24px rgba(75, 48, 28, 0.1);
+  transform: translateY(-2px);
+}
+
+.epuja-process-card:focus-visible {
+  outline: 2px solid #cb9a53;
+  outline-offset: 2px;
+}
+
+.epuja-process-arrow {
+  color: #7f1d1d;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
 .wa-fab {
   position: fixed;
   right: 18px;
