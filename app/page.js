@@ -1,7 +1,6 @@
 import Link from "next/link";
 import HeroSearch from "@/components/HeroSearch";
 import PujaCard from "@/components/PujaCard";
-import CityCard from "@/components/CityCard";
 import TestimonialCard from "@/components/TestimonialCard";
 import { getCities, getPublicReviews, getServices } from "@/lib/queries";
 
@@ -76,10 +75,18 @@ export default async function HomePage() {
       <section className="section">
         <div className="container">
           <h2 className="section-title">Book a Pandit Online in Your City</h2>
-          <p className="section-subtitle">Serving metro cities and sacred destinations across India.</p>
-          <div className="card-grid">
-            {(Array.isArray(cities) ? cities : []).map((city) => (
-              <CityCard city={city} key={city.id} />
+          <p className="section-subtitle">Book experienced Pandits for all pujas in top cities near you.</p>
+          <div className="home-city-grid">
+            {(Array.isArray(cities) ? cities : []).slice(0, 12).map((city) => (
+              <Link key={city.id} href={`/cities/${city.slug}`} className="home-city-tile">
+                <img
+                  src={city.image}
+                  alt={`${city.name} - ${city.templeName || "Temple"}`}
+                  className="home-city-tile-image"
+                />
+                <div className="home-city-tile-overlay" />
+                <h3 className="home-city-tile-title">{city.name}</h3>
+              </Link>
             ))}
           </div>
         </div>
