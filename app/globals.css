@@ -329,9 +329,9 @@ a {
   position: relative;
   overflow: hidden;
   padding: 74px 0 62px;
-  background-color: #f4c37b;
+  background-color: #d86122;
   background-image:
-    linear-gradient(90deg, rgba(255, 238, 202, 0.58), rgba(232, 137, 32, 0.48)),
+    linear-gradient(90deg, rgba(255, 232, 190, 0.35), rgba(120, 22, 22, 0.3)),
     url("/images/hero/devotional-orange-pattern.jpg");
   background-size: cover;
   background-position: center;
