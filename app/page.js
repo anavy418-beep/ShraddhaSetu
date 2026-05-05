@@ -2,6 +2,7 @@ import Link from "next/link";
 import HeroSearch from "@/components/HeroSearch";
 import PujaCard from "@/components/PujaCard";
 import TestimonialCard from "@/components/TestimonialCard";
+import FaqAccordion from "@/components/FaqAccordion";
 import { getCities, getPublicReviews, getServices } from "@/lib/queries";
 
 export const metadata = {
@@ -22,23 +23,43 @@ const popularPujas = [
 const faqItems = [
   {
     q: "How to book pandit?",
-    a: "Select your puja, city, date and package, then confirm booking in 5 simple steps."
+    a: "You can book a pandit by selecting puja service, choosing your city, selecting date/time, filling devotee details, and confirming the booking. After booking, our team will contact you for final confirmation."
   },
   {
     q: "Are pandits verified?",
-    a: "Yes, all listed pandits go through identity, experience and ritual authenticity checks."
+    a: "Yes, ShraddhaSetu lists verified pandits. Pandits are checked for identity, puja experience, ritual knowledge, and service reliability before being shown for booking."
   },
   {
     q: "Which cities are available?",
-    a: "ShraddhaSetu currently serves major metro and spiritual cities across India."
+    a: "ShraddhaSetu currently serves 60+ cities across India including Delhi, Mumbai, Bangalore, Ahmedabad, Ayodhya, Varanasi, Jaipur, Lucknow, Pune, Hyderabad, Chennai, Kolkata, Surat, Indore, Bhopal, Dehradun, Haridwar, Rishikesh and more."
   },
   {
     q: "What pujas can I book?",
-    a: "You can book sanskar puja, dosha nivaran, havan, mukti karmas and special event rituals."
+    a: "You can book popular pujas like Satyanarayan Puja, Griha Pravesh Puja, Rudrabhishek Puja, Marriage Puja, Pitru Dosh Puja, Kaal Sarp Dosh Puja, Lakshmi Puja, Ganesh Puja, Navgraha Shanti, Havan, Sanskar Puja and festival pujas."
   },
   {
     q: "Online puja available or not?",
-    a: "Yes, E-Puja is available with live streaming support and prasad delivery options."
+    a: "Yes, E-Puja is available. Devotees can join puja online through live video support. Prasad delivery and sankalp details can also be managed based on the selected service."
+  },
+  {
+    q: "Can I book puja for another city?",
+    a: "Yes, you can book puja in any available city. Select the city, puja service, date and share required details during booking."
+  },
+  {
+    q: "How will I get booking confirmation?",
+    a: "After submitting the booking form, you will receive confirmation through phone, email or WhatsApp depending on available contact details. Admin can review and confirm the booking."
+  },
+  {
+    q: "Is payment online available?",
+    a: "Online payment support can be enabled through Razorpay. If payment is not active yet, booking can still be submitted and payment can be handled after confirmation."
+  },
+  {
+    q: "Can I choose date and time for puja?",
+    a: "Yes, you can choose preferred date and time during booking. Final timing may be confirmed based on pandit availability and muhurat."
+  },
+  {
+    q: "What details are required for booking?",
+    a: "Basic details like name, phone number, city, puja type, date/time, address, gotra if applicable, and special instructions may be required."
   }
 ];
 
@@ -131,16 +152,7 @@ export default async function HomePage() {
       <section className="section">
         <div className="container">
           <h2 className="section-title">Frequently Asked Questions</h2>
-          <div className="card-grid">
-            {faqItems.map((item) => (
-              <article className="card" key={item.q}>
-                <div className="card-body">
-                  <h3 style={{ marginTop: 0 }}>{item.q}</h3>
-                  <p style={{ color: "#6f5b4d" }}>{item.a}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+          <FaqAccordion items={faqItems} />
         </div>
       </section>
     </>
