@@ -81,12 +81,13 @@ export default function BookingFlow({
       const requestedMode = initialMode === "e-puja" ? "ONLINE_E_PUJA" : "AT_HOME";
       const requestedPackage =
         requestedMode === "ONLINE_E_PUJA" && isValidEPujaPackage(initialPackage) ? initialPackage : "standard";
+      const isValidInitialCity = allCities.some((city) => city.slug === initialCity);
       setServices(allServices);
       setCities(allCities);
       setForm((prev) => ({
         ...prev,
         puja: initialPuja || allServices[0]?.slug || "",
-        city: initialCity || allCities[0]?.slug || "",
+        city: isValidInitialCity ? initialCity : allCities[0]?.slug || "",
         pujaMode: requestedMode,
         packageId: requestedPackage
       }));

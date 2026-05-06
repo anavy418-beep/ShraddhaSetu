@@ -8,11 +8,9 @@ export default function CityCard({ city }) {
   const citySlug = city?.slug || cityName.toLowerCase();
   const cityImage = city?.image || CITY_CARD_FALLBACK_IMAGE;
   const templeName = city?.templeName || "Sacred Temple";
-  const popularPujas = Array.isArray(city?.popularPujas) && city.popularPujas.length ? city.popularPujas : ["Satyanarayan Puja", "Rudrabhishek Puja", "Griha Pravesh Puja"];
   const stats = city?.stats || {};
   const pujaConducted = stats?.pujaConducted ?? 0;
   const pandits = stats?.pandits ?? 0;
-  console.log("City Image Fix:", cityName, cityImage);
 
   return (
     <article className="card">
@@ -60,25 +58,12 @@ export default function CityCard({ city }) {
             <strong>{pandits}</strong> Pandits
           </span>
         </div>
-        <div className="row" style={{ gap: 8, marginBottom: 12 }}>
-          {popularPujas.slice(0, 3).map((puja) => (
-            <span key={puja} className="chip">
-              {puja}
-            </span>
-          ))}
-        </div>
         <div className="row">
-          <Link
-            className="btn btn-outline"
-            href={{
-              pathname: `/cities/${citySlug}`,
-              query: { image: cityImage, temple: templeName }
-            }}
-          >
-            View City
+          <Link className="btn btn-primary" href={`/booking?city=${citySlug}`}>
+            Book Now
           </Link>
-          <Link className="btn btn-outline" href={`/cities/${citySlug}/griha-pravesh-puja`}>
-            Popular Puja
+          <Link className="btn btn-outline" href={`/cities/${citySlug}`}>
+            Details
           </Link>
         </div>
       </div>
