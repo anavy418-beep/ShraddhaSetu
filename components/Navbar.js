@@ -73,7 +73,7 @@ export default function Navbar() {
     <header className="nav-wrap">
       <div className="container nav">
         <Link className="brand" href="/">
-          ShraddhaSetu
+          Shraddha Setu
         </Link>
         <button type="button" className="nav-toggle" onClick={() => setMobileOpen((open) => !open)}>
           {mobileOpen ? "Close" : "Menu"}
