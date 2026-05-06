@@ -53,7 +53,10 @@ export default async function Footer() {
         </section>
       </div>
       <div className="container" style={{ marginTop: 22, borderTop: "1px solid #4a3426", paddingTop: 16 }}>
-        Copyright {new Date().getFullYear()} ShraddhaSetu. All rights reserved.
+        <p style={{ margin: 0 }}>Copyright {new Date().getFullYear()} ShraddhaSetu. All rights reserved.</p>
+        <p style={{ margin: "8px 0 0", color: "#ffe5bd", fontSize: "0.95rem" }}>
+          Powered by <span style={{ color: "#ffcf78", fontWeight: 700 }}>Malachite Technologies</span>
+        </p>
       </div>
     </footer>
   );
