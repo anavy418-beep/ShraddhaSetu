@@ -532,6 +532,13 @@ textarea {
   background: #fffdf8;
 }
 
+.field-error {
+  margin: 6px 0 0;
+  color: #dc2626;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
 .step-pill {
   display: inline-flex;
   align-items: center;

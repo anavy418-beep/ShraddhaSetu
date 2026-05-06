@@ -47,6 +47,8 @@ export default function BookingFlow({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [validationError, setValidationError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const [form, setForm] = useState({
     puja: "",
@@ -116,10 +118,97 @@ export default function BookingFlow({
   const advanceAmount = Math.min(totalAmount, Math.max(501, Math.round(totalAmount * 0.3)));
   const payableAmount = form.paymentOption === "ADVANCE" ? advanceAmount : totalAmount;
 
-  const setValue = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
+  const setValue = (key, value) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    setFieldErrors((prev) => {
+      if (!prev[key]) {
+        return prev;
+      }
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+    setValidationError("");
+  };
+
+  const getFieldErrorStyle = (key) =>
+    fieldErrors[key]
+      ? {
+          borderColor: "#dc2626",
+          background: "#fff7f7"
+        }
+      : {};
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const hasValidPhone = (value) => String(value || "").replace(/\D/g, "").length >= 10;
+
+  const validateStepTwo = () => {
+    const nextErrors = {};
+
+    if (!form.pujaMode) nextErrors.pujaMode = "Please select puja mode.";
+    if (!form.city) nextErrors.city = "Please select city.";
+    if (!form.date) nextErrors.date = "Please select date.";
+    if (!form.time) nextErrors.time = "Please select time.";
+    if (!form.language) nextErrors.language = "Please select language.";
+
+    if (Object.keys(nextErrors).length) {
+      setFieldErrors((prev) => ({ ...prev, ...nextErrors }));
+      setValidationError("Please select date and time before continuing.");
+      return false;
+    }
+    return true;
+  };
+
+  const validateStepThree = () => {
+    const nextErrors = {};
+
+    if (!form.fullName.trim()) nextErrors.fullName = "Please enter full name.";
+    if (!form.email.trim()) {
+      nextErrors.email = "Please enter email address.";
+    } else if (!emailPattern.test(form.email.trim())) {
+      nextErrors.email = "Please enter a valid email address.";
+    }
+
+    if (!isOnlineEPuja) {
+      if (!form.phone.trim()) {
+        nextErrors.phone = "Please enter phone number.";
+      } else if (!hasValidPhone(form.phone)) {
+        nextErrors.phone = "Please enter a valid phone number.";
+      }
+      if (!form.address.trim()) nextErrors.address = "Please enter puja location/address.";
+    } else {
+      if (!form.devoteeName.trim()) nextErrors.devoteeName = "Please enter devotee name.";
+      if (!form.whatsappNumber.trim()) {
+        nextErrors.whatsappNumber = "Please enter WhatsApp number.";
+      } else if (!hasValidPhone(form.whatsappNumber)) {
+        nextErrors.whatsappNumber = "Please enter a valid phone number.";
+      }
+      if (form.prasadDeliveryRequired === "YES" && !form.deliveryAddress.trim()) {
+        nextErrors.deliveryAddress = "Please enter delivery address.";
+      }
+    }
+
+    if (Object.keys(nextErrors).length) {
+      setFieldErrors((prev) => ({ ...prev, ...nextErrors }));
+      setValidationError("Please fill all customer details before continuing.");
+      return false;
+    }
+    return true;
+  };
 
   const nextStep = () => setStep((prev) => Math.min(5, prev + 1));
   const prevStep = () => setStep((prev) => Math.max(1, prev - 1));
+
+  const onContinue = () => {
+    if (step === 2 && !validateStepTwo()) {
+      return;
+    }
+    if (step === 3 && !validateStepThree()) {
+      return;
+    }
+    setValidationError("");
+    nextStep();
+  };
 
   const confirmBooking = async () => {
     setIsSubmitting(true);
@@ -334,6 +423,11 @@ export default function BookingFlow({
             {error && (
               <p style={{ color: "#991b1b", background: "#fee2e2", padding: "10px 12px", borderRadius: 10 }}>{error}</p>
             )}
+            {validationError && (
+              <p style={{ color: "#991b1b", background: "#fee2e2", padding: "10px 12px", borderRadius: 10 }}>
+                {validationError}
+              </p>
+            )}
             {successMessage && (
               <p style={{ color: "#166534", background: "#dcfce7", padding: "10px 12px", borderRadius: 10 }}>
                 {successMessage}
@@ -358,25 +452,58 @@ export default function BookingFlow({
               <>
                 <h2>Select city, date and time</h2>
                 <div className="form-grid">
-                  <select value={form.pujaMode} onChange={(event) => setValue("pujaMode", event.target.value)}>
-                    <option value="AT_HOME">At Home</option>
-                    <option value="AT_TEMPLE">At Temple</option>
-                    <option value="ONLINE_E_PUJA">Online E-Puja</option>
-                  </select>
-                  <select value={form.city} onChange={(event) => setValue("city", event.target.value)}>
-                    {cities.map((city) => (
-                      <option key={city.id} value={city.slug}>
-                        {city.name}
-                      </option>
-                    ))}
-                  </select>
-                  <input type="date" value={form.date} onChange={(event) => setValue("date", event.target.value)} />
-                  <input type="time" value={form.time} onChange={(event) => setValue("time", event.target.value)} />
-                  <select value={form.language} onChange={(event) => setValue("language", event.target.value)}>
-                    {(chosenPuja?.language || ["Hindi"]).map((language) => (
-                      <option key={language}>{language}</option>
-                    ))}
-                  </select>
+                  <div>
+                    <select
+                      value={form.pujaMode}
+                      onChange={(event) => setValue("pujaMode", event.target.value)}
+                      style={getFieldErrorStyle("pujaMode")}
+                    >
+                      <option value="AT_HOME">At Home</option>
+                      <option value="AT_TEMPLE">At Temple</option>
+                      <option value="ONLINE_E_PUJA">Online E-Puja</option>
+                    </select>
+                    {fieldErrors.pujaMode ? <p className="field-error">{fieldErrors.pujaMode}</p> : null}
+                  </div>
+                  <div>
+                    <select value={form.city} onChange={(event) => setValue("city", event.target.value)} style={getFieldErrorStyle("city")}>
+                      {cities.map((city) => (
+                        <option key={city.id} value={city.slug}>
+                          {city.name}
+                        </option>
+                      ))}
+                    </select>
+                    {fieldErrors.city ? <p className="field-error">{fieldErrors.city}</p> : null}
+                  </div>
+                  <div>
+                    <input
+                      type="date"
+                      value={form.date}
+                      onChange={(event) => setValue("date", event.target.value)}
+                      style={getFieldErrorStyle("date")}
+                    />
+                    {fieldErrors.date ? <p className="field-error">{fieldErrors.date}</p> : null}
+                  </div>
+                  <div>
+                    <input
+                      type="time"
+                      value={form.time}
+                      onChange={(event) => setValue("time", event.target.value)}
+                      style={getFieldErrorStyle("time")}
+                    />
+                    {fieldErrors.time ? <p className="field-error">{fieldErrors.time}</p> : null}
+                  </div>
+                  <div>
+                    <select
+                      value={form.language}
+                      onChange={(event) => setValue("language", event.target.value)}
+                      style={getFieldErrorStyle("language")}
+                    >
+                      {(chosenPuja?.language || ["Hindi"]).map((language) => (
+                        <option key={language}>{language}</option>
+                      ))}
+                    </select>
+                    {fieldErrors.language ? <p className="field-error">{fieldErrors.language}</p> : null}
+                  </div>
                 </div>
               </>
             )}
@@ -386,45 +513,69 @@ export default function BookingFlow({
                 <h2>Enter customer details</h2>
                 {!isOnlineEPuja ? (
                   <div className="form-grid">
-                    <input
-                      type="text"
-                      placeholder="Full name"
-                      value={form.fullName}
-                      onChange={(event) => setValue("fullName", event.target.value)}
-                    />
-                    <input
-                      type="tel"
-                      placeholder="Phone number"
-                      value={form.phone}
-                      onChange={(event) => setValue("phone", event.target.value)}
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email address"
-                      value={form.email}
-                      onChange={(event) => setValue("email", event.target.value)}
-                    />
-                    <textarea
-                      placeholder="Puja location / address"
-                      rows={4}
-                      value={form.address}
-                      onChange={(event) => setValue("address", event.target.value)}
-                    />
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Full name"
+                        value={form.fullName}
+                        onChange={(event) => setValue("fullName", event.target.value)}
+                        style={getFieldErrorStyle("fullName")}
+                      />
+                      {fieldErrors.fullName ? <p className="field-error">{fieldErrors.fullName}</p> : null}
+                    </div>
+                    <div>
+                      <input
+                        type="tel"
+                        placeholder="Phone number"
+                        value={form.phone}
+                        onChange={(event) => setValue("phone", event.target.value)}
+                        style={getFieldErrorStyle("phone")}
+                      />
+                      {fieldErrors.phone ? <p className="field-error">{fieldErrors.phone}</p> : null}
+                    </div>
+                    <div>
+                      <input
+                        type="email"
+                        placeholder="Email address"
+                        value={form.email}
+                        onChange={(event) => setValue("email", event.target.value)}
+                        style={getFieldErrorStyle("email")}
+                      />
+                      {fieldErrors.email ? <p className="field-error">{fieldErrors.email}</p> : null}
+                    </div>
+                    <div>
+                      <textarea
+                        placeholder="Puja location / address"
+                        rows={4}
+                        value={form.address}
+                        onChange={(event) => setValue("address", event.target.value)}
+                        style={getFieldErrorStyle("address")}
+                      />
+                      {fieldErrors.address ? <p className="field-error">{fieldErrors.address}</p> : null}
+                    </div>
                   </div>
                 ) : (
                   <div className="form-grid">
-                    <input
-                      type="text"
-                      placeholder="Primary contact name"
-                      value={form.fullName}
-                      onChange={(event) => setValue("fullName", event.target.value)}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Devotee name"
-                      value={form.devoteeName}
-                      onChange={(event) => setValue("devoteeName", event.target.value)}
-                    />
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Primary contact name"
+                        value={form.fullName}
+                        onChange={(event) => setValue("fullName", event.target.value)}
+                        style={getFieldErrorStyle("fullName")}
+                      />
+                      {fieldErrors.fullName ? <p className="field-error">{fieldErrors.fullName}</p> : null}
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Devotee name"
+                        value={form.devoteeName}
+                        onChange={(event) => setValue("devoteeName", event.target.value)}
+                        style={getFieldErrorStyle("devoteeName")}
+                      />
+                      {fieldErrors.devoteeName ? <p className="field-error">{fieldErrors.devoteeName}</p> : null}
+                    </div>
                     <input type="text" placeholder="Gotra" value={form.gotra} onChange={(event) => setValue("gotra", event.target.value)} />
                     <input
                       type="text"
@@ -444,18 +595,26 @@ export default function BookingFlow({
                       value={form.time}
                       onChange={(event) => setValue("time", event.target.value)}
                     />
-                    <input
-                      type="tel"
-                      placeholder="WhatsApp number"
-                      value={form.whatsappNumber}
-                      onChange={(event) => setValue("whatsappNumber", event.target.value)}
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email address"
-                      value={form.email}
-                      onChange={(event) => setValue("email", event.target.value)}
-                    />
+                    <div>
+                      <input
+                        type="tel"
+                        placeholder="WhatsApp number"
+                        value={form.whatsappNumber}
+                        onChange={(event) => setValue("whatsappNumber", event.target.value)}
+                        style={getFieldErrorStyle("whatsappNumber")}
+                      />
+                      {fieldErrors.whatsappNumber ? <p className="field-error">{fieldErrors.whatsappNumber}</p> : null}
+                    </div>
+                    <div>
+                      <input
+                        type="email"
+                        placeholder="Email address"
+                        value={form.email}
+                        onChange={(event) => setValue("email", event.target.value)}
+                        style={getFieldErrorStyle("email")}
+                      />
+                      {fieldErrors.email ? <p className="field-error">{fieldErrors.email}</p> : null}
+                    </div>
                     <select
                       value={form.prasadDeliveryRequired}
                       onChange={(event) => setValue("prasadDeliveryRequired", event.target.value)}
@@ -464,12 +623,16 @@ export default function BookingFlow({
                       <option value="YES">Prasad Delivery Required? Yes</option>
                     </select>
                     {form.prasadDeliveryRequired === "YES" ? (
-                      <textarea
-                        placeholder="Delivery address"
-                        rows={4}
-                        value={form.deliveryAddress}
-                        onChange={(event) => setValue("deliveryAddress", event.target.value)}
-                      />
+                      <div>
+                        <textarea
+                          placeholder="Delivery address"
+                          rows={4}
+                          value={form.deliveryAddress}
+                          onChange={(event) => setValue("deliveryAddress", event.target.value)}
+                          style={getFieldErrorStyle("deliveryAddress")}
+                        />
+                        {fieldErrors.deliveryAddress ? <p className="field-error">{fieldErrors.deliveryAddress}</p> : null}
+                      </div>
                     ) : null}
                   </div>
                 )}
@@ -583,7 +746,7 @@ export default function BookingFlow({
                 </button>
               )}
               {step < 5 && (
-                <button className="btn btn-primary" onClick={nextStep} disabled={isSubmitting}>
+                <button className="btn btn-primary" onClick={onContinue} disabled={isSubmitting}>
                   Continue
                 </button>
               )}
