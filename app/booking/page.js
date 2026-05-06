@@ -1,4 +1,5 @@
 import BookingFlow from "@/components/BookingFlow";
+import { getPanditBySlug } from "@/lib/pandits";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,8 @@ export default async function BookingPage({ searchParams }) {
   const initialCity = params?.city || "";
   const initialMode = params?.mode || "";
   const initialPackage = params?.package || "";
+  const initialPandit = params?.pandit || "";
+  const selectedPandit = initialPandit ? getPanditBySlug(initialPandit) : null;
   const isEPujaMode = initialMode === "e-puja";
 
   return (
@@ -31,6 +34,7 @@ export default async function BookingPage({ searchParams }) {
         initialCity={initialCity}
         initialMode={initialMode}
         initialPackage={initialPackage}
+        selectedPanditName={selectedPandit?.name || ""}
         showEPujaGuidance={isEPujaMode}
         hasInitialPackageQuery={Boolean(initialPackage)}
       />

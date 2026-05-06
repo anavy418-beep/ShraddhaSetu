@@ -8,6 +8,7 @@ const navItems = [
   { label: "All Puja Services", href: "/services" },
   { label: "Cities", href: "/cities" },
   { label: "E-Puja", href: "/e-puja" },
+  { label: "Pandits", href: "/pandits" },
   { label: "Book Now", href: "/booking" }
 ];
 

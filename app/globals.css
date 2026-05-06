@@ -630,6 +630,216 @@ textarea {
   gap: 12px;
 }
 
+.pandits-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.pandits-filter-card {
+  background: #fffdf8;
+  border: 1px solid #eadcc8;
+  border-radius: 18px;
+  box-shadow: 0 12px 24px rgba(75, 48, 28, 0.08);
+  padding: 14px;
+  position: sticky;
+  top: 92px;
+}
+
+.pandits-filter-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.pandits-filter-head h3 {
+  margin: 0;
+  color: #5f1c1f;
+}
+
+.pandits-filter-label {
+  display: grid;
+  gap: 8px;
+  color: #5d3b28;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.pandits-card-list {
+  display: grid;
+  gap: 14px;
+}
+
+.pandit-card {
+  background: #fffdf8;
+  border: 1px solid #eadcc8;
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(75, 48, 28, 0.08);
+  padding: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pandit-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(75, 48, 28, 0.12);
+}
+
+.pandit-card-header {
+  display: grid;
+  grid-template-columns: 86px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.pandit-avatar {
+  width: 86px;
+  height: 86px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 3px solid #f2d4a1;
+  background: #fff7eb;
+}
+
+.pandit-card h3 {
+  margin: 0 0 8px;
+  color: #5f1c1f;
+}
+
+.pandit-bio {
+  margin: 0;
+  color: #6f5b4d;
+}
+
+.pandit-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 8px 14px;
+  margin: 12px 0;
+  color: #4d2d1a;
+  font-weight: 600;
+}
+
+.pandit-rating-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  color: #5d3b28;
+  font-weight: 600;
+}
+
+.pandit-stars {
+  color: #c77919;
+  letter-spacing: 0.06em;
+}
+
+.pandit-mode {
+  border: 1px solid #e5ceb0;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: #fff7ea;
+  font-size: 0.86rem;
+}
+
+.pandit-mode.active {
+  border-color: #d39a43;
+  background: #fff1da;
+}
+
+.pandit-card-actions {
+  margin-top: 14px;
+}
+
+.pandit-detail-card {
+  background: #fffdf8;
+  border: 1px solid #eadcc8;
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(75, 48, 28, 0.08);
+  padding: 20px;
+}
+
+.pandit-detail-top {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.pandit-detail-image {
+  width: 100%;
+  border-radius: 18px;
+  border: 3px solid #f2d4a1;
+  object-fit: cover;
+  background: #fff7eb;
+}
+
+.pandit-detail-top h2 {
+  margin: 0 0 8px;
+  color: #5f1c1f;
+}
+
+.pandit-detail-bio {
+  margin: 0;
+  color: #6f5b4d;
+  line-height: 1.65;
+}
+
+.pandit-detail-stats {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.pandit-stat-item {
+  border: 1px solid #eadcc8;
+  border-radius: 14px;
+  background: #fff8ee;
+  padding: 12px 14px;
+  display: grid;
+  gap: 2px;
+}
+
+.pandit-stat-item strong {
+  color: #5f1c1f;
+  font-size: 1.1rem;
+}
+
+.pandit-stat-item span {
+  color: #6f5b4d;
+  font-weight: 600;
+}
+
+.pandit-availability-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.pandit-availability-card {
+  border: 1px solid #eadcc8;
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #fff8ee;
+  color: #5d3b28;
+}
+
+.pandit-availability-card.active {
+  border-color: #d39a43;
+  background: #fff2dd;
+}
+
+.pandit-detail-list {
+  margin: 18px 0 0;
+  padding-left: 22px;
+  color: #4d2d1a;
+  line-height: 1.8;
+}
+
 .placeholder-video {
   aspect-ratio: 16 / 9;
   border-radius: 18px;
@@ -762,6 +972,18 @@ td {
 }
 
 @media (max-width: 920px) {
+  .pandits-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pandits-filter-card {
+    position: static;
+  }
+
+  .pandit-detail-top {
+    grid-template-columns: 1fr;
+  }
+
   .home-city-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -789,6 +1011,15 @@ td {
 }
 
 @media (max-width: 768px) {
+  .pandit-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pandit-detail-stats,
+  .pandit-availability-grid {
+    grid-template-columns: 1fr;
+  }
+
   .hero-logo-image {
     width: min(300px, 78vw);
   }

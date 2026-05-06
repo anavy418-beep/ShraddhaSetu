@@ -36,6 +36,7 @@ export default function BookingFlow({
   initialCity = "",
   initialMode = "",
   initialPackage = "",
+  selectedPanditName = "",
   showEPujaGuidance = false,
   hasInitialPackageQuery = false
 }) {
@@ -148,6 +149,7 @@ export default function BookingFlow({
       const notes = isOnlineEPuja
         ? [
             `Mode: Online E-Puja`,
+            `Selected Pandit: ${selectedPanditName || "Auto Assign"}`,
             `Devotee: ${ePujaDetails?.devoteeName || "N/A"}`,
             `Gotra: ${ePujaDetails?.gotra || "N/A"}`,
             `Sankalp: ${ePujaDetails?.sankalpPurpose || "N/A"}`,
@@ -156,7 +158,7 @@ export default function BookingFlow({
             `Prasad Delivery: ${ePujaDetails?.prasadDeliveryRequired ? "Yes" : "No"}`,
             `Delivery Address: ${ePujaDetails?.deliveryAddress || "N/A"}`
           ].join(" | ")
-        : `Booked by ${form.fullName || "Customer"} | Phone: ${form.phone || "N/A"} | Email: ${form.email || "N/A"}`;
+        : `Booked by ${form.fullName || "Customer"} | Phone: ${form.phone || "N/A"} | Email: ${form.email || "N/A"} | Selected Pandit: ${selectedPanditName || "Auto Assign"}`;
 
       const bookingRes = await fetch("/api/bookings", {
         method: "POST",
@@ -279,6 +281,21 @@ export default function BookingFlow({
                 {index + 1}. {label}
               </span>
             ))}
+            {selectedPanditName ? (
+              <div
+                style={{
+                  marginTop: 12,
+                  background: "#fff8eb",
+                  border: "1px solid #ecd8ba",
+                  borderRadius: 12,
+                  padding: "10px 12px",
+                  color: "#4d2d1a",
+                  fontWeight: 700
+                }}
+              >
+                Selected Pandit: {selectedPanditName}
+              </div>
+            ) : null}
             {showEPujaGuidance && isOnlineEPuja ? (
               <div
                 style={{
@@ -504,6 +521,11 @@ export default function BookingFlow({
                     <p>
                       <strong>Puja:</strong> {chosenPuja?.title}
                     </p>
+                    {selectedPanditName ? (
+                      <p>
+                        <strong>Selected Pandit:</strong> {selectedPanditName}
+                      </p>
+                    ) : null}
                     <p>
                       <strong>City:</strong> {cities.find((city) => city.slug === form.city)?.name}
                     </p>
