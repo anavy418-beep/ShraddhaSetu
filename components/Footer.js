@@ -3,6 +3,11 @@ import { getCities, getServices } from "@/lib/queries";
 
 export default async function Footer() {
   const [cities, pujas] = await Promise.all([getCities(), getServices()]);
+  const configuredPhone = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || process.env.WHATSAPP_ADMIN_PHONE || "").replace(
+    /\D/g,
+    ""
+  );
+  const footerPhone = configuredPhone ? `+${configuredPhone}` : "Coming soon";
 
   return (
     <footer className="footer">
@@ -47,7 +52,7 @@ export default async function Footer() {
         </section>
         <section>
           <h4>Contact</h4>
-          <p>Phone: Coming soon</p>
+          <p>Phone: {footerPhone}</p>
           <p>Email: support@shraddhasetu.in</p>
           <p>Hours: 7:00 AM - 10:00 PM IST</p>
         </section>
