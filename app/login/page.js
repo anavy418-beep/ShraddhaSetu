@@ -15,6 +15,7 @@ export default async function LoginPage({ searchParams }) {
     <>
       <section className="page-header">
         <div className="container">
+          <img src="/images/brand/shraddha-setu-logo.png" alt="Shraddha Setu" className="auth-brand-logo" />
           <h1>Login</h1>
           <p>Sign in to manage your bookings and profile.</p>
         </div>

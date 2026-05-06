@@ -9,6 +9,11 @@ export const metadata = {
   title: "ShraddhaSetu | Book Verified Pandits Online",
   description:
     "ShraddhaSetu is a premium online platform to book verified pandits for pooja, havan, sanskar and e-puja across India.",
+  icons: {
+    icon: "/images/brand/shraddha-setu-icon.png",
+    shortcut: "/images/brand/shraddha-setu-icon.png",
+    apple: "/images/brand/shraddha-setu-icon.png"
+  },
   metadataBase: new URL(siteUrl),
   alternates: {
     canonical: "/"

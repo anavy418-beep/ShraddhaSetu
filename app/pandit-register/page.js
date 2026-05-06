@@ -9,6 +9,7 @@ export default function PanditRegisterPage() {
     <>
       <section className="page-header">
         <div className="container">
+          <img src="/images/brand/shraddha-setu-logo.png" alt="Shraddha Setu" className="auth-brand-logo" />
           <h1>Pandit Registration Form</h1>
           <p>Join ShraddhaSetu as a verified pandit partner.</p>
         </div>

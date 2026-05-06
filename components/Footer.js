@@ -13,7 +13,14 @@ export default async function Footer() {
     <footer className="footer">
       <div className="container footer-grid">
         <section>
-          <h4>ShraddhaSetu</h4>
+          <h4 className="sr-only">Shraddha Setu</h4>
+          <Link href="/" className="footer-brand-link" aria-label="Shraddha Setu">
+            <img
+              src="/images/brand/shraddha-setu-logo.png"
+              alt="Shraddha Setu"
+              className="footer-brand-logo"
+            />
+          </Link>
           <p>
             Premium platform to book verified pandits for puja, havan, sanskar and online rituals with trusted
             support.

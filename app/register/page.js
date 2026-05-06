@@ -10,6 +10,7 @@ export default function RegisterPage() {
     <>
       <section className="page-header">
         <div className="container">
+          <img src="/images/brand/shraddha-setu-logo.png" alt="Shraddha Setu" className="auth-brand-logo" />
           <h1>Create Account</h1>
           <p>Join ShraddhaSetu and track all puja bookings in one dashboard.</p>
         </div>
