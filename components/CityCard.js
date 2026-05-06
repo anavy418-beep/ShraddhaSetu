@@ -58,12 +58,10 @@ export default function CityCard({ city }) {
             <strong>{pandits}</strong> Pandits
           </span>
         </div>
-        <div className="row">
-          <Link className="btn btn-primary" href={`/booking?city=${citySlug}`}>
-            Book Now
-          </Link>
-          <Link className="btn btn-outline" href={`/cities/${citySlug}`}>
-            Details
+        <div>
+          <Link className="city-card-book-btn" href={`/booking?city=${citySlug}`}>
+            <span aria-hidden="true">🗓️</span>
+            <span>Book Now</span>
           </Link>
         </div>
       </div>

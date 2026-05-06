@@ -637,6 +637,29 @@ textarea {
   gap: 12px;
 }
 
+.city-card-book-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #8b1018, #b51622);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 16px 22px;
+  font-weight: 800;
+  font-size: 18px;
+  box-shadow: 0 12px 24px rgba(139, 16, 24, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+}
+
+.city-card-book-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(139, 16, 24, 0.28);
+}
+
 .pandits-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
