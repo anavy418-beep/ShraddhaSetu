@@ -1205,10 +1205,12 @@ td {
 .site-footer .footer-brand,
 footer .footer-brand {
   display: inline-flex !important;
+  align-items: center !important;
+  white-space: nowrap !important;
   margin-bottom: 14px !important;
   font-weight: 900 !important;
-  font-size: 38px !important;
-  letter-spacing: -0.035em !important;
+  font-size: 30px !important;
+  letter-spacing: -0.03em !important;
   color: #8b1e1e !important;
   line-height: 1 !important;
   text-decoration: none !important;
@@ -1219,7 +1221,7 @@ footer .footer-brand {
   .footer .footer-brand,
   .site-footer .footer-brand,
   footer .footer-brand {
-    font-size: 30px !important;
+    font-size: 26px !important;
   }
 }
 
@@ -1227,6 +1229,6 @@ footer .footer-brand {
   .footer .footer-brand,
   .site-footer .footer-brand,
   footer .footer-brand {
-    font-size: 26px !important;
+    font-size: 22px !important;
   }
 }
