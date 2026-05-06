@@ -12,7 +12,7 @@ export default async function Footer() {
   return (
     <footer className="footer site-footer">
       <div className="container footer-grid">
-        <section>
+        <section className="footer-column">
           <Link href="/" className="footer-brand" aria-label="Shraddha Setu">
             Shraddha Setu
           </Link>
@@ -21,14 +21,14 @@ export default async function Footer() {
             support.
           </p>
         </section>
-        <section>
+        <section className="footer-column">
           <h4>Quick Links</h4>
           <Link href="/">Home</Link>
           <Link href="/services">All Puja Services</Link>
           <Link href="/booking">Book Now</Link>
           <Link href="/e-puja">E-Puja</Link>
         </section>
-        <section>
+        <section className="footer-column">
           <h4>Puja Services</h4>
           {pujas.slice(0, 5).map((puja) => (
             <Link href={`/services/${puja.slug}`} key={puja.slug}>
@@ -36,7 +36,7 @@ export default async function Footer() {
             </Link>
           ))}
         </section>
-        <section>
+        <section className="footer-column">
           <h4>Cities</h4>
           {cities.slice(0, 6).map((city) => (
             <Link key={city.id} href={`/cities/${city.slug}`}>
@@ -44,7 +44,7 @@ export default async function Footer() {
             </Link>
           ))}
         </section>
-        <section>
+        <section className="footer-column">
           <h4>Blog & Policies</h4>
           <Link href="/blog">Festive Puja Guide</Link>
           <Link href="/contact">Contact Us</Link>
@@ -52,7 +52,7 @@ export default async function Footer() {
           <Link href="/refund-policy">Refund Policy</Link>
           <Link href="/terms">Terms</Link>
         </section>
-        <section>
+        <section className="footer-column footer-contact">
           <h4>Contact</h4>
           <p>Phone: {footerPhone}</p>
           <p>Email: support@shraddhasetu.in</p>
