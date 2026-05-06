@@ -435,6 +435,11 @@ a {
 .brand {
   display: inline-flex;
   align-items: center;
+  color: #8b1e1e;
+  font-weight: 800;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  text-decoration: none;
 }
 
 .brand-logo-full {
@@ -1149,6 +1154,10 @@ td {
   .brand-logo-full {
     height: 34px;
     max-width: 210px;
+  }
+
+  .brand {
+    font-size: 24px;
   }
 }
 

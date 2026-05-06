@@ -73,17 +73,7 @@ export default function Navbar() {
     <header className="nav-wrap">
       <div className="container nav">
         <Link className="brand" href="/">
-          <img
-            src="/images/brand/shraddha-setu-logo.png"
-            alt="Shraddha Setu"
-            className="brand-logo-full"
-          />
-          <img
-            src="/images/brand/shraddha-setu-icon.png"
-            alt="SS"
-            className="brand-logo-icon"
-            aria-hidden="true"
-          />
+          Shraddha Setu
         </Link>
         <button type="button" className="nav-toggle" onClick={() => setMobileOpen((open) => !open)}>
           {mobileOpen ? "Close" : "Menu"}
