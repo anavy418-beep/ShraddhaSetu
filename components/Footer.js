@@ -10,7 +10,7 @@ export default async function Footer() {
   const footerPhone = configuredPhone ? `+${configuredPhone}` : "Coming soon";
 
   return (
-    <footer className="footer">
+    <footer className="footer site-footer">
       <div className="container footer-grid">
         <section>
           <Link href="/" className="footer-brand" aria-label="Shraddha Setu">

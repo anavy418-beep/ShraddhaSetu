@@ -1200,3 +1200,33 @@ td {
     grid-template-columns: 1fr;
   }
 }
+
+.footer .footer-brand,
+.site-footer .footer-brand,
+footer .footer-brand {
+  display: inline-flex !important;
+  margin-bottom: 14px !important;
+  font-weight: 900 !important;
+  font-size: 38px !important;
+  letter-spacing: -0.035em !important;
+  color: #8b1e1e !important;
+  line-height: 1 !important;
+  text-decoration: none !important;
+  text-shadow: 0 2px 8px rgba(255, 220, 160, 0.22) !important;
+}
+
+@media (max-width: 768px) {
+  .footer .footer-brand,
+  .site-footer .footer-brand,
+  footer .footer-brand {
+    font-size: 30px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .footer .footer-brand,
+  .site-footer .footer-brand,
+  footer .footer-brand {
+    font-size: 26px !important;
+  }
+}
