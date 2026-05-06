@@ -642,16 +642,16 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   background: linear-gradient(135deg, #f59e0b 0%, #ea8a00 100%);
   color: #ffffff;
   border: none;
-  border-radius: 14px;
-  padding: 16px 22px;
-  font-weight: 800;
-  font-size: 18px;
+  border-radius: 12px;
+  padding: 13px 18px;
+  font-weight: 750;
+  font-size: 16px;
   line-height: 1;
-  box-shadow: 0 12px 24px rgba(234, 138, 0, 0.24);
+  box-shadow: 0 10px 20px rgba(234, 138, 0, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
   text-decoration: none;
 }
@@ -665,13 +665,15 @@ textarea {
 .city-card-book-btn .icon {
   color: #ffffff;
   flex-shrink: 0;
+  width: 18px;
+  height: 18px;
 }
 
 .puja-card-actions {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-top: 18px;
+  gap: 10px;
+  margin-top: 16px;
 }
 
 .puja-card-details-btn {
@@ -679,14 +681,14 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   background: #fffdf9;
   color: #8b1e1e;
   border: 1.5px solid #d9b27a;
-  border-radius: 14px;
-  padding: 15px 20px;
+  border-radius: 12px;
+  padding: 12px 18px;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15.5px;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.03);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   text-decoration: none;
@@ -703,16 +705,16 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   background: linear-gradient(135deg, #f59e0b 0%, #ea8a00 100%);
   color: #ffffff;
   border: none;
-  border-radius: 16px;
-  padding: 16px 22px;
-  font-weight: 800;
-  font-size: 17px;
+  border-radius: 12px;
+  padding: 13px 18px;
+  font-weight: 750;
+  font-size: 16px;
   line-height: 1;
-  box-shadow: 0 14px 28px rgba(234, 138, 0, 0.24);
+  box-shadow: 0 10px 20px rgba(234, 138, 0, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
   text-decoration: none;
 }
@@ -726,6 +728,8 @@ textarea {
 .puja-card-details-btn .icon,
 .puja-card-book-btn .icon {
   flex-shrink: 0;
+  width: 18px;
+  height: 18px;
 }
 
 .pandits-layout {
