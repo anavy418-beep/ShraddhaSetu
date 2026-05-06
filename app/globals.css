@@ -511,13 +511,14 @@ a {
 
 .footer-brand {
   display: inline-flex;
-  margin-bottom: 10px;
-  font-weight: 800;
-  font-size: 28px;
-  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+  font-weight: 900;
+  font-size: 38px;
+  letter-spacing: -0.035em;
   color: #8b1e1e;
-  line-height: 1.1;
+  line-height: 1;
   text-decoration: none;
+  text-shadow: 0 2px 8px rgba(255, 220, 160, 0.22);
 }
 
 .footer a {
@@ -1161,7 +1162,7 @@ td {
 
 @media (max-width: 768px) {
   .footer-brand {
-    font-size: 24px;
+    font-size: 30px;
   }
 
   .pandit-meta-grid {
@@ -1183,6 +1184,10 @@ td {
 }
 
 @media (max-width: 420px) {
+  .footer-brand {
+    font-size: 26px;
+  }
+
   .brand-logo-full {
     display: none;
   }
