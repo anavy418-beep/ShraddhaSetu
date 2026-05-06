@@ -60,7 +60,10 @@ export default function CityCard({ city }) {
         </div>
         <div>
           <Link className="city-card-book-btn" href={`/booking?city=${citySlug}`}>
-            <span aria-hidden="true">🗓️</span>
+            <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" strokeWidth="2" />
+              <path d="M8 2v4M16 2v4M3 10h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
             <span>Book Now</span>
           </Link>
         </div>
