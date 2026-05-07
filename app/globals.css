@@ -1207,14 +1207,20 @@ footer .footer-brand {
   display: inline-flex !important;
   align-items: center !important;
   white-space: nowrap !important;
-  margin-bottom: 18px !important;
+  margin-bottom: 8px !important;
   font-weight: 900 !important;
   font-size: 30px !important;
   letter-spacing: -0.025em !important;
-  color: #8b1e1e !important;
+  color: #fff1d6 !important;
   line-height: 1.05 !important;
   text-decoration: none !important;
-  text-shadow: 0 2px 10px rgba(80, 20, 10, 0.18) !important;
+  text-shadow: 0 2px 10px rgba(80, 20, 10, 0.22) !important;
+}
+
+.site-footer .footer-about p,
+.footer .footer-about p,
+footer .footer-about p {
+  margin-top: 0 !important;
 }
 
 .site-footer .footer-inner,
